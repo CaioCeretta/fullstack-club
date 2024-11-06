@@ -3,8 +3,7 @@ import { auth } from '@clerk/nextjs/server'
 import { dark } from '@clerk/themes'
 import { redirect } from 'next/navigation'
 
-const name = "";
-
+const name = ''
 
 export default async function Home() {
   const { userId } = await auth()
@@ -15,9 +14,9 @@ export default async function Home() {
 
   return (
     <div className="h-full flex items-center justify-center">
-              <UserButton
+                <UserButton
         showName
-         appearance={{
+        appearance={{
           baseTheme: dark,
         }}
       />
