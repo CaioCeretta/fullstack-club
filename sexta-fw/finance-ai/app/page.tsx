@@ -1,8 +1,10 @@
-import { Button } from "@/app/_components/ui/button";
-import { UserButton } from "@clerk/nextjs";
-import { auth } from "@clerk/nextjs/server";
-import { dark } from "@clerk/themes";
-import { redirect } from "next/navigation";
+import { UserButton } from '@clerk/nextjs'
+import { auth } from '@clerk/nextjs/server'
+import { dark } from '@clerk/themes'
+import { redirect } from 'next/navigation'
+
+const name = "";
+
 
 export default async function Home() {
   const { userId } = await auth()
@@ -13,9 +15,12 @@ export default async function Home() {
 
   return (
     <div className="h-full flex items-center justify-center">
-      <UserButton showName appearance={{
-        baseTheme: dark
-      }} />
+              <UserButton
+        showName
+         appearance={{
+          baseTheme: dark,
+        }}
+      />
     </div>
-  );
+  )
 }
