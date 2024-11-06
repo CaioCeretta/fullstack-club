@@ -15,3 +15,14 @@ We are also going to need the components.json created by shadcn.
 By creating the class dark on the @layer.base { .dark { ... } } we will be able to alter the layout css, add this dark class
 and it's going to be applied to the whole layout
 
+If we want the body and the html, to occupy the whole height, we change the global.css and we add
+
+  html {
+    @apply h-full
+  }
+
+  body {
+    @apply bg-background text-foreground h-full;
+  }
+
+the h-full inside the @layer base { }

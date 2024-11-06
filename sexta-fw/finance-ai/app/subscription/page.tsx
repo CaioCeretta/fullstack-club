@@ -1,5 +1,5 @@
-export default function Subscription() {
+export default function SubscriptionPage() {
   return (
-    <h1>Subscription</h1>
+    <h1>SubscriptionPage</h1>
   )
 }
