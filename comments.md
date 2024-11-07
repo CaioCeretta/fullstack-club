@@ -26,3 +26,17 @@ If we want the body and the html, to occupy the whole height, we change the glob
   }
 
 the h-full inside the @layer base { }
+
+
+## Docker explanations
+
+### Bind Mount - 
+  for the postgres container we used the bind mount, which means that Docker is linking directory from our host machine
+  (./.postgres-data) to a directory inside the container (/var/lib/postgresdata)
+
+  When the container first runs it will check if that folder exist in the host
+  if not it will create on the host machine, then docker will bind this directory to that one inside the container
+
+  In subsequent runs, any changes made inside /var/lib... in the container will be reflected on the host machine in
+  .postgres-data because of the link, and any file inside the host machine folder will be managed by the postgres user
+  which is the default user in the container, this may lead to permissions users.
