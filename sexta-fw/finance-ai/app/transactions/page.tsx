@@ -18,9 +18,9 @@ async function TransactionsPage() {
       <div className="w-full flex justify-between items-center p-6">
         {/* Título e botão */}
         <h1 className="font-bold text-2xl">Transações</h1>
-        <Button className="rounded-full">
-          <ArrowDownUp />
+        <Button className="rounded-full font-bold">
           Adicionar transação
+          <ArrowDownUp />
         </Button>
       </div>
       {/* DataTable is a client component and this components is a server one, so we need to keep in mind that we can import
