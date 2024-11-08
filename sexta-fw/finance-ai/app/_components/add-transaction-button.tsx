@@ -42,14 +42,20 @@ import {
   SelectValue,
 } from './ui/select'
 import { DatePicker } from './ui/date-picker'
+import { addTransaction } from '../_actions/add-transaction'
+import { useState } from 'react'
 
 const addTransactionFormSchema = z.object({
   name: z.string().trim().min(1, {
     message: 'O nome é obrigatório',
   }),
-  amount: z.string().trim().min(1, {
-    message: 'A quantia é obrigatória',
-  }),
+  amount: z
+    .number({
+      required_error: 'O valor é obrigatório',
+    })
+    .positive({
+      message: 'O valor deve ser positivo',
+    }),
   type: z.nativeEnum(TransactionType, {
     required_error: 'O tipo é obrigatório',
   }),
@@ -67,10 +73,12 @@ const addTransactionFormSchema = z.object({
 type AddTransactionFormData = z.infer<typeof addTransactionFormSchema>
 
 const AddTransactionButton = () => {
+  const [isOpen, setIsOpen] = useState<boolean>(false)
+
   const form = useForm<AddTransactionFormData>({
     resolver: zodResolver(addTransactionFormSchema),
     defaultValues: {
-      amount: '',
+      amount: 50,
       category: TransactionCategory.OTHER,
       date: new Date(),
       name: '',
@@ -79,15 +87,22 @@ const AddTransactionButton = () => {
     },
   })
 
-  const onSubmit = (data: AddTransactionFormData) => {
+  const onSubmit = async (data: AddTransactionFormData) => {
     // Handle the form submission, e.g., send data to your API
-    console.log(data)
+    try {
+      await addTransaction(data)
+      setIsOpen(false)
+      form.reset()
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   return (
     <Dialog
       onOpenChange={(open) => {
         if (!open) {
+          setIsOpen(true)
           form.reset()
         }
       }}
@@ -127,7 +142,16 @@ const AddTransactionButton = () => {
                 <FormItem>
                   <FormLabel>Valor</FormLabel>
                   <FormControl>
-                    <MoneyInput placeholder="Digite o valor" {...field} />
+                    <MoneyInput
+                      placeholder="Digite o valor"
+                      /* Because the value we are receiving from the input, is a string, and zod required it to be a number
+                      we use this function whenever the value changes, to transform it into a number */
+                      onValueChange={({ floatValue }) => {
+                        return field.onChange(floatValue)
+                      }}
+                      onBlur={field.onBlur}
+                      disabled={field.disabled}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
