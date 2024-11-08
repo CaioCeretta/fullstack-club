@@ -7,9 +7,11 @@ import type {
   TransactionPaymentMethod,
   TransactionType,
 } from '@prisma/client'
-import { addTransactionSchema } from './schema'
+import { revalidatePath } from 'next/cache'
+import { upsertTransactionSchema } from './schema'
 
-interface AddTransactionParams {
+interface UpsertTransactionParams {
+  id?: string
   name: string
   amount: number
   type: TransactionType
@@ -25,16 +27,21 @@ that we are creating the transactions for the logged user, don't make any sense 
 because the backend will already know about who we are talking about.
 */
 
-export const addTransaction = async (params: AddTransactionParams) => {
+export const upsertTransaction = async (params: UpsertTransactionParams) => {
   /* On the server, is a good practice to create a separate file to parse its parameters */
-  addTransactionSchema.parse(params)
+  upsertTransactionSchema.parse(params)
   const { userId } = await auth()
 
   if (!userId) {
     throw new Error('Unauthorized')
   }
 
-  await db.transaction.create({
-    data: { ...params, userId },
+  await db.transaction.upsert({
+    where: {
+      id: params.id,
+    },
+    update: { ...params, userId },
+    create: { ...params, userId },
   })
+  revalidatePath('/transactions')
 }
