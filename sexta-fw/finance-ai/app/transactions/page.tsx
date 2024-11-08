@@ -3,14 +3,26 @@
 /* When we mark a component as use client, with the default behavior of a component to be server side, this component will
 not be able to access server side informations anymore, such as the db, or being async */
 
+import { auth } from '@clerk/nextjs/server'
+import { redirect } from 'next/navigation'
 import AddTransactionButton from '../_components/add-transaction-button'
 import { DataTable } from '../_components/ui/data-table'
 import { db } from '../_lib/prisma'
 import { transactionColumns } from './_columns'
 
 async function TransactionsPage() {
+  const { userId } = await auth()
+
+  if (!userId) {
+    redirect('/login')
+  }
+
   /* Access the transactions of our database */
-  const transactions = await db.transaction.findMany()
+  const transactions = await db.transaction.findMany({
+    where: {
+      userId,
+    },
+  })
 
   return (
     <>
