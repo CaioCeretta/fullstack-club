@@ -84,3 +84,23 @@ TRANSACTION_CATEGORY_LABEL[transaction.category] looks up the corresponding labe
 
 So in summary, using bracketr notation on the object keys allows for dynamic and flexible key definitions based on the
 values, which is why it works so well with enums or other constant set of values  
+
+## Why using the "use server" if everything in next is server side?
+
+The reason for it, is primarily related to the app router and its way of distinguishing between server-side and client-side
+logic. While next.js does automatically run certain functions on the server (like API routes, server-side rendering, etc),
+it also offers a more explicit way to designate server-only code, specially in the context of reat server components and
+how they interact with the client.
+
+So explicity declaring the use server directive is part of next.js new RSC system. In Next.js 13, when we use the app router
+app/ directory, the framework introduces server-side actions and server-side functions that can be called from client-side
+components, but are explicitly run on the server. By making the function with 'use server', you're telling next that this
+function is server-only. 
+
+You don't need to explicitly mark every server-side function with 'use server'. However, if you're using a function inside a Server Component or a function that’s meant to be used exclusively on the server (like database calls, authentication, etc.), you can use 'use server' to clarify that.
+
+Here's the distinction:
+
+Without 'use server': Functions can be run both on the server and client, depending on how you invoke them.
+With 'use server': Functions are explicitly marked to run on the server, which is especially useful for actions or
+functions that should never execute on the client (like database queries or server-side authentication).
