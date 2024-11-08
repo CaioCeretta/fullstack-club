@@ -1,37 +1,14 @@
 'use client'
 
-import {
-  TransactionCategory,
-  TransactionPaymentMethod,
-  TransactionType,
-  type Transaction,
-} from '@prisma/client'
-import { ColumnDef } from '@tanstack/react-table'
-import TransactionTypeBadge from '../_components/type-badge'
 import { Button } from '@/app/_components/ui/button'
+import { TransactionType, type Transaction } from '@prisma/client'
+import { ColumnDef } from '@tanstack/react-table'
 import { PencilIcon, TrashIcon } from 'lucide-react'
-
-const TRANSACTION_CATEGORY_LABEL = {
-  [TransactionCategory.HOUSING]: 'Moradia',
-  [TransactionCategory.EDUCATION]: 'Educação',
-  [TransactionCategory.ENTERTAINMENT]: 'Entretenimento',
-  [TransactionCategory.FOOD]: 'Comida',
-  [TransactionCategory.HEALTH]: 'Saúde',
-  [TransactionCategory.OTHER]: 'Outro',
-  [TransactionCategory.SALARY]: 'Salário',
-  [TransactionCategory.TRANSPORATION]: 'Transporte',
-  [TransactionCategory.UTILITY]: 'Utilidades',
-}
-
-const TRANSACTION_PAYMENT_METHOD = {
-  [TransactionPaymentMethod.BANK_SLIP]: 'Boleto',
-  [TransactionPaymentMethod.BANK_TRANSFER]: 'Transferência Bancária',
-  [TransactionPaymentMethod.CASH]: 'Dinheiro',
-  [TransactionPaymentMethod.CREDIT_CARD]: 'Cartão de Crédito',
-  [TransactionPaymentMethod.DEBIT_CARD]: 'Cartão de Débito',
-  [TransactionPaymentMethod.OTHER]: 'Outro',
-  [TransactionPaymentMethod.PIX]: 'PIX',
-}
+import TransactionTypeBadge from '../_components/type-badge'
+import {
+  TRANSACTION_CATEGORY_LABELS,
+  TRANSACTION_PAYMENT_METHOD_LABELS,
+} from '@/app/_utils/constants/transactions'
 
 export const transactionColumns: ColumnDef<Transaction>[] = [
   {
@@ -55,13 +32,13 @@ export const transactionColumns: ColumnDef<Transaction>[] = [
     accessorKey: 'category',
     header: 'Categoria',
     cell: ({ row: { original: transaction } }) =>
-      TRANSACTION_CATEGORY_LABEL[transaction.category],
+      TRANSACTION_CATEGORY_LABELS[transaction.category],
   },
   {
     accessorKey: 'paymentMethod',
     header: 'Método',
     cell: ({ row: { original: transaction } }) => {
-      return TRANSACTION_PAYMENT_METHOD[transaction.paymentMethod]
+      return TRANSACTION_PAYMENT_METHOD_LABELS[transaction.paymentMethod]
     },
   },
   {

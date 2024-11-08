@@ -3,10 +3,9 @@
 /* When we mark a component as use client, with the default behavior of a component to be server side, this component will
 not be able to access server side informations anymore, such as the db, or being async */
 
-import { ArrowDownUp } from 'lucide-react'
-import { Button } from '../_components/ui/button'
-import { db } from '../_lib/prisma'
+import AddTransactionButton from '../_components/add-transaction-button'
 import { DataTable } from '../_components/ui/data-table'
+import { db } from '../_lib/prisma'
 import { transactionColumns } from './_columns'
 
 async function TransactionsPage() {
@@ -18,10 +17,7 @@ async function TransactionsPage() {
       <div className="w-full flex justify-between items-center p-6">
         {/* Título e botão */}
         <h1 className="font-bold text-2xl">Transações</h1>
-        <Button className="rounded-full font-bold">
-          Adicionar transação
-          <ArrowDownUp />
-        </Button>
+        <AddTransactionButton />
       </div>
       {/* DataTable is a client component and this components is a server one, so we need to keep in mind that we can import
       a client component inside a server component, but a client component can't import a server component

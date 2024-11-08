@@ -34,13 +34,13 @@ enum TransactionType {
 
 enum TransactionCategory {
   HOUSING
-  TRANSPORATION
   FOOD
   ENTERTAINMENT
   HEALTH
   UTILITY
   SALARY
   EDUCATION
+  TRANSPORTATION
   OTHER
 }
 
