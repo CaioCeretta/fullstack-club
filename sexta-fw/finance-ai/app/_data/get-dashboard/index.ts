@@ -4,7 +4,10 @@ then we could make sensible data to be available to the client */
 
 import { db } from '@/app/_lib/prisma'
 import { TransactionType } from '@prisma/client'
-import type { TransactionsPercentagePerType } from './types'
+import type {
+  TotalExpensePerCategory,
+  TransactionsPercentagePerType,
+} from './types'
 
 export const getDashboard = async (month: string) => {
   const where = {
@@ -38,6 +41,7 @@ export const getDashboard = async (month: string) => {
       })
     )._sum?.amount,
   )
+
   const expensesTotal = Number(
     (
       await db.transaction.aggregate({
@@ -70,11 +74,60 @@ export const getDashboard = async (month: string) => {
     ),
   }
 
+  const totalExpensePerCategory: TotalExpensePerCategory[] =
+    /** Grouping all the expenses per category, summing all and the _sum is an aggregate operation that tells prisma to sum
+     * the values of the amount field for each group, (i. e., each category)
+     * - _sum is not a property that we're manually defining in our database schema, it's a special prisma syntax that we
+     * use to perform aggregations
+     * - the _sum object tells prisma to perform a summing operation on the amount field for each group (each category) and
+     * return that sum as part of the result
+     *
+     * After executing this query, each grouped item (category) will contain a _sum object, which holds the sum of the amount
+     * for that particular category
+     * 
+     * so in the end we will get something like
+     * 
+     * [
+     *   {
+     *     category: 'Food',
+     *     _sum: {
+     *       amount: 500,
+     *     },
+     *   },
+     *   {
+     *     category: 'Entertainment',
+     *     _sum: {
+     *       amount: 300,
+     *     },
+     *   },
+    // More categories...
+     * ]
+     */
+    (
+      await db.transaction.groupBy({
+        by: ['category'],
+        where: {
+          ...where,
+          type: TransactionType.EXPENSE,
+        },
+        _sum: {
+          amount: true,
+        },
+      })
+    ).map((category) => ({
+      category: category.category,
+      totalAmount: Number(category._sum.amount),
+      percentageOfTotal: Math.round(
+        (Number(category._sum.amount) / Number(expensesTotal)) * 100,
+      ),
+    }))
+
   return {
     balance,
     depositsTotal,
     investmentsTotal,
     expensesTotal,
     typesPercentage,
+    totalExpensePerCategory,
   }
 }
