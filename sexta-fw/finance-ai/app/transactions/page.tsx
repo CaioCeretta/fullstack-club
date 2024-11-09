@@ -6,6 +6,7 @@ not be able to access server side informations anymore, such as the db, or being
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import AddTransactionButton from '../_components/add-transaction-button'
+import Navbar from '../_components/navbar'
 import { DataTable } from '../_components/ui/data-table'
 import { db } from '../_lib/prisma'
 import { transactionColumns } from './_columns'
@@ -27,6 +28,7 @@ async function TransactionsPage() {
   return (
     <>
       <div className="p-6 space-y-6">
+        <Navbar />
         <div className="w-full flex justify-between items-center p-6">
           {/* Título e botão */}
           <h1 className="font-bold text-2xl">Transações</h1>
