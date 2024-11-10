@@ -28,6 +28,12 @@ export const getDashboard = async (month: string) => {
     )._sum?.amount,
   )
 
+  const lastTransactions = await db.transaction.findMany({
+    where,
+    orderBy: { date: 'desc' },
+    take: 10,
+  })
+
   /* Here we might think that the return of that query is already the sum, but what is happening here, is the parentheses
     rensures that the aggregation result is fully resolved until the await completes, and then we'll immediately access the
     .amount field, if we remove the parentheses, it would still work the same way, but it makes it clearer and help avoid
@@ -129,5 +135,6 @@ export const getDashboard = async (month: string) => {
     expensesTotal,
     typesPercentage,
     totalExpensePerCategory,
+    lastTransactions,
   }
 }

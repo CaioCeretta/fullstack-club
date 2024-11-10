@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation'
 import Navbar from '../_components/navbar'
 import { getDashboard } from '../_data/get-dashboard'
 import ExpensesPerCategory from './_components/expenses-per-category'
+import LastTransactions from './_components/last-transactions'
 import SummaryCards from './_components/summary-cards'
 import TimeSelect from './_components/time-select'
 import TransactionsPieChart from './_components/transactions-pie-charts'
@@ -49,6 +50,7 @@ const Home = async ({ searchParams: { month } }: HomeProps) => {
               />
             </div>
           </div>
+          <LastTransactions lastTransactions={dashboard.lastTransactions} />
         </div>
       </div>
     </>
