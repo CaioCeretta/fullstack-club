@@ -8,6 +8,7 @@ import { redirect } from 'next/navigation'
 import AddTransactionButton from '../_components/add-transaction-button'
 import Navbar from '../_components/navbar'
 import { DataTable } from '../_components/ui/data-table'
+import { ScrollArea } from '../_components/ui/scroll-area'
 import { db } from '../_lib/prisma'
 import { transactionColumns } from './_columns'
 
@@ -27,7 +28,7 @@ async function TransactionsPage() {
 
   return (
     <>
-      <div className="p-6 space-y-6">
+      <div className="p-6 space-y-6 overflow-hidden">
         <Navbar />
         <div className="w-full flex justify-between items-center p-6">
           {/* Título e botão */}
@@ -46,7 +47,9 @@ async function TransactionsPage() {
       Server components can't be imported or used directly in Client Components because the cc is intended for the browser
       environment, and it can't handle or execute server-side logic or rendering.
       */}
-        <DataTable columns={transactionColumns} data={transactions} />
+        <ScrollArea>
+          <DataTable columns={transactionColumns} data={transactions} />
+        </ScrollArea>
       </div>
     </>
   )

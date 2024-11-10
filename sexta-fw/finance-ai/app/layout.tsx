@@ -26,7 +26,7 @@ export default function RootLayout({
         }}
       >
         <body className={`${mulish.className} antialiased dark`}>
-          {children}
+          <div className="flex flex-col h-full overflow-hidden">{children}</div>
         </body>
       </ClerkProvider>
     </html>
