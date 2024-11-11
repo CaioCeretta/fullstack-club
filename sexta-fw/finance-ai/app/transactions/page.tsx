@@ -9,6 +9,7 @@ import AddTransactionButton from '../_components/add-transaction-button'
 import Navbar from '../_components/navbar'
 import { DataTable } from '../_components/ui/data-table'
 import { ScrollArea } from '../_components/ui/scroll-area'
+import { canUserAddATransaction } from '../_data/can-user-add-transaction'
 import { db } from '../_lib/prisma'
 import { transactionColumns } from './_columns'
 
@@ -26,6 +27,8 @@ async function TransactionsPage() {
     },
   })
 
+  const userCanAddTransactions = await canUserAddATransaction()
+
   return (
     <>
       <div className="p-6 space-y-6 overflow-hidden">
@@ -33,7 +36,9 @@ async function TransactionsPage() {
         <div className="w-full flex justify-between items-center p-6">
           {/* Título e botão */}
           <h1 className="font-bold text-2xl">Transações</h1>
-          <AddTransactionButton />
+          <AddTransactionButton
+            userCanAddTransaction={userCanAddTransactions}
+          />
         </div>
         {/* DataTable is a client component and this components is a server one, so we need to keep in mind that we can import
       a client component inside a server component, but a client component can't import a server component
