@@ -2,8 +2,8 @@ import { auth } from '@clerk/nextjs/server'
 import { CheckIcon, XIcon } from 'lucide-react'
 import { redirect } from 'next/navigation'
 import Navbar from '../_components/navbar'
-import { Button } from '../_components/ui/button'
 import { Card, CardContent, CardHeader } from '../_components/ui/card'
+import AcquirePlanButton from './_components/acquire_plan_button'
 
 export default function SubscriptionPage() {
   const { userId } = auth()
@@ -62,9 +62,7 @@ export default function SubscriptionPage() {
                 <CheckIcon className="text-primary" />
                 <p>Relatórios de IA</p>
               </div>
-              <Button className="w-full rounded-full font-bold">
-                Adquirir plano
-              </Button>
+              <AcquirePlanButton />
             </CardContent>
           </Card>
         </div>
