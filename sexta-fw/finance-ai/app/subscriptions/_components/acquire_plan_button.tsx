@@ -1,10 +1,14 @@
 'use client'
 
 import { Button } from '@/app/_components/ui/button'
-import { createStripeCheckout } from '@/app/login/_actions/create-checkout'
+import { createStripeCheckout } from '@/app/subscriptions/_actions/create-checkout'
+import { useUser } from '@clerk/nextjs'
 import { loadStripe } from '@stripe/stripe-js'
+import Link from 'next/link'
 
 const AcquirePlanButton = () => {
+  const { user } = useUser()
+
   const handleAcquirePlanClick = async () => {
     const { sessionId } = await createStripeCheckout()
 
@@ -27,12 +31,27 @@ const AcquirePlanButton = () => {
     await stripe.redirectToCheckout({ sessionId })
   }
 
+  const hasPremiumPlan = user?.publicMetadata.subscriptionPlan === 'premium'
+
+  if (hasPremiumPlan) {
+    return (
+      <Button className="w-full rounded-full font-bold" variant="link">
+        <Link
+          href={`${process.env.NEXT_PUBLIC_STRIPE_CUSTOMER_PORTAL_URL}?prefilled_email=${user.emailAddresses[0].emailAddress}`}
+        >
+          Gerenciar Plano
+        </Link>
+      </Button>
+    )
+  }
+
   return (
     <Button
       className="w-full rounded-full font-bold"
       onClick={handleAcquirePlanClick}
+      variant={hasPremiumPlan ? 'link' : 'default'}
     >
-      Adquirir plano
+      {hasPremiumPlan ? 'Gerenciar plano' : 'Adquirir plano'}
     </Button>
   )
 }
