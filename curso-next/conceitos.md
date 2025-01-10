@@ -1,7 +1,6 @@
 # Programming Concepts
 
 ## Differences between a library and a framework
-
 ### Library
 
 React is a library, a library specialized in creating UI interfaces. A library typycally has certain characteristics: it
@@ -18,7 +17,7 @@ On the other hand, a framework often combines on or more libraries to provide a 
 a wider range of challenges developers might encounter
 
 A framework is generally more opiniated. For example, Next.js, unlike react, is a framework. It uses react, as a library,
-to render the interface, but also includes additional features, like image optimization, fonts optimizatrion, server components, built-in data fetching mechanism, server actions, its own approach to implementing a middleware, and more.
+to render the interface, but also includes additional features, like image optimization, fonts optimizatrion, server components, built-in data fetching mechanism, server actions, its own approach to implementing a middleware, and so on.
 
 Because of these features, Next.js offer a more complete solution by integrating multiple tools and functionalities into
 a single package;
