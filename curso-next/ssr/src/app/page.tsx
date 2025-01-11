@@ -116,4 +116,10 @@ export const getServerSideProps: GetServerSideProps =
 		)
 
 		const data = await res.json()
+
+		return {
+			props: {
+				tasks: data,
+			},
+		}
 	}
