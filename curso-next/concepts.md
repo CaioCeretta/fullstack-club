@@ -173,7 +173,47 @@ rendering a page, some key uses are
       }
     }
 
-    Coke Breakdown
+    Now these props are going to be passed as a parameter to the component of the page at render time. One pratical example
+    would be
+
+    export default function ProfilePage({user}: {user: { id: number; name: string} }) => {
+      return (
+        <div>
+          <h1>Bem vindo, {user.name}!</h1>
+          <p>Id do usuário: {user.id}</p>
+        </div>
+      )
+    }
+
+    The page component indeed receives an object named props, which contain the properties returned by GSSP, but when
+    we use the destructuring directly on the function parameters, the word props does nort appear explictly, but it is
+    implicit.
+
+    So in Next.js, the page component receives automatically the props returned, and those properties are passed as the
+    first argument to the function component, so if we didn't destructured the parameter, the component will receive the
+    object props explictly, such as (props: {user: {id: number; name: string}}) ...
+
+    So the destructuring "skips" it, leaving only the variables we want, which would be the equivalent of doing
+
+    const ProfilePage = (props) => {
+      const { user } = props
+    }
+
+    One thing we might notice is, in the way it's done above, we returned a CHUMBATED object, and it would be better to specify the types of the `getServerSideProps` return, by doing something as
+
+    type User = {
+      id: number;
+      name: string
+    }
+
+    export const getServerSideProps: GetServerSIdeProps<user: User> = async (context) => {
+      ...
+    }
+
+
+
+
+    Code Breakdown
 
       1. Context: The context argument received by this function is a "server-side context object" provided by Next.JS. It contains
       important request-specific data that you can use to tailor the responsive for a specific request.
@@ -209,7 +249,7 @@ rendering a page, some key uses are
 
       const { term } = context.query // term === "nextjs" 
 
-  3. SEO Optimization
+  1. SEO Optimization
    
   . GSSP is useful for ensuring content is fully rendered on the server for search engine crawlers
 
@@ -263,3 +303,59 @@ When we type getServerSideProps, it enhances the developer experience for all th
 . Returning props: The type ensures you return the correct structure, helping maintain consistency between server-side
 code and your page components
 
+
+## SSR (Netflix) / CSR (Linkedin)
+
+### Use case example:
+
+Linkedin have a small performance issue when the user accesses the page, because one thing we already discussed about csr
+is that the user will only see something after the js being downloaded, then after the it has has been processed, but
+on large applications, such as Linkedin, it might take a while
+
+However, in netflix, we use `SSR` to optimize this loading process.
+
+#### How Netflix Uses Performance to Improve User Experience
+
+##### 1. Test Setup
+- Access the Netflix page.
+- In the developer tools, set the network speed to the slowest possible.
+- Filter the network requests to only display `.js` files.
+
+##### 2. SSR in Action
+- Netflix uses **SSR (Server-Side Rendering)** but still requests JavaScript files to perform **hydration** with React.
+- During the download of these `.js` files, the initial page is not entirely blank:
+  - Basic elements like the **header**, **footer**, and **styles** are rendered before all JavaScript files are fully downloaded.
+  - This differs from CSR (Client-Side Rendering), where the screen would be completely blank until all JavaScript is loaded.
+
+##### 3. Benefits of SSR
+- Users do not need to wait for all JavaScript files to download to see something on the page.
+- Requests to the Netflix API are only initiated after the initial JavaScript files are loaded and hydrated.
+- This improves the initial user experience by displaying visible content quickly.
+
+##### 4. SSR vs. CSR
+- **SSR:**
+  - Renders basic content directly on the server.
+  - Provides a faster initial experience, even on slow networks.
+- **CSR:**
+  - Fully relies on JavaScript to render any content.
+  - On slow networks, users see a blank page until all JavaScript is downloaded and processed.
+
+##### 5. Performance Decisions in SSR
+- In SSR, API calls can be made as soon as the user accesses a page.
+- However, making API calls on the server, such as within `getServerSideProps (GSSP)`, can pose challenges:
+  - If the API call is slow, it delays the page load for the user.
+  - To mitigate this:
+    - Avoid making the API call on the server.
+    - Use client-side requests with tools like React's `useEffect`.
+    - This approach ensures the interface loads quickly while API requests occur in the background.
+
+##### 6. Netflix Example
+- When accessing the Netflix page:
+  - Only the header and footer are rendered initially by the server.
+  - API requests are triggered only after the JavaScript is loaded and hydration is completed.
+  - This ensures a more responsive user interface.
+
+## 7. Comparison with LinkedIn
+- LinkedIn uses **CSR**:
+  - On slow networks, the user sees a blank page until all JavaScript files are downloaded and processed.
+  - This highlights the key differences between SSR and CSR in terms of user experience.
