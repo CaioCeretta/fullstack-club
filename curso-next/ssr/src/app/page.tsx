@@ -1,5 +1,6 @@
 'use client'
 
+import type { GetServerSideProps } from 'next'
 import Image from 'next/image'
 import { useState } from 'react'
 
@@ -107,3 +108,12 @@ export default function Home() {
 		</div>
 	)
 }
+
+export const getServerSideProps: GetServerSideProps =
+	async () => {
+		const res = await fetch(
+			'https://jsonplaceholder.typicode.com/todos?_limit=5'
+		)
+
+		const data = await res.json()
+	}
