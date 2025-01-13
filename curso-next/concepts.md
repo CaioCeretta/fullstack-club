@@ -354,8 +354,12 @@ However, in netflix, we use `SSR` to optimize this loading process.
   - Only the header and footer are rendered initially by the server.
   - API requests are triggered only after the JavaScript is loaded and hydration is completed.
   - This ensures a more responsive user interface.
-
 ## 7. Comparison with LinkedIn
 - LinkedIn uses **CSR**:
   - On slow networks, the user sees a blank page until all JavaScript files are downloaded and processed.
   - This highlights the key differences between SSR and CSR in terms of user experience.
+
+
+## SSG (Static Site Generation) 
+
+SSG is useful when
