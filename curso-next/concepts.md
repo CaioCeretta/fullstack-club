@@ -362,4 +362,34 @@ However, in netflix, we use `SSR` to optimize this loading process.
 
 ## SSG (Static Site Generation) 
 
-SSG is useful when
+### How does it work?
+
+. The HTML of the application is generated ONLY ONCE, on build time. Different from SSR, when we use SSR in our app, everytime
+a user accesses the page, we generate a html for it, no matter how many times the user access it.
+  In SSG it do not work this way, it does not require a server being executed. We saw before, that everytime we access a
+page, on a server side rendered application, it will call the server, it will run during the lifecycle of our app, while it
+is still running, it is required to have one.
+  
+### Which problems does it solve?
+
+  SEO: One of the main problems it solves, is the SEO one, because with the app HTML being already loaded with content, search
+  engines such as google, are able to track it more easily. 
+  
+  Lower js load: For the same reason as the ssr, with the html already "coming" with content, it is not an empty html
+  that the csr apps have, and  we also have the same hydration process.
+
+## Which problems does the SSG have?
+
+  The content may turn obsolete, because the HTML is generated only once. So if the content is updated, our app won't be
+  also updated, because different from ssr, that generated a html for each time we enter a page. So if we look at our
+  previous example with the getServerSideProps, it will execute this gssp function, everytime we enter the page, but if we
+  are using SSG, this does not happen. We still can fetch an api, call the database, but this will happen only once, so it
+  is not indicated for dynamic applications.
+
+  SSG is only recommended for applications we are sure the content won't change, such as a landing page, for a specific
+  product selling, in these cases we won't need to have a server running unnecessarily. 
+
+  But we need to make sure we are not using it on ecommerces products, which the stock of the product may vary and places
+  like this.
+
+  
