@@ -393,3 +393,20 @@ is still running, it is required to have one.
   like this.
 
   
+  ## ISR - Incremental Static Generation
+
+  `ISR` is very similar to `SSG`, the application html is generated in the build momento, but different from SSG, it can
+  be modified, which explains its name, and it has this name because the html can be regenerated during the app lifecycle
+
+  ### Which problems does it solve?
+
+  It solves the same problems which SSG have, that are
+
+  SEO: The page html already have content, search engines, such as google, can track it.
+  Lower Load of JS: Instead of the application being mounted entirely by JS (React), a quicker and faster way, which we
+  call Hydration, is done.
+
+  ### Problems of ISR
+
+  Even though it is possible to regenerate the app html during its lifecycle, there are still possibility that the data
+  will become obsolete.
