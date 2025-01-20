@@ -14,11 +14,18 @@ import type {
 //   searchTerm: string;
 // }
 
-export default function Home({ tasks }: { tasks: any[] }) {
+export default function Home({
+	tasks,
+	randomNumber,
+}: {
+	tasks: any[]
+	randomNumber: number
+}) {
 	return (
 		<div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
 			<h1>Server Side Rendering / Static Props</h1>
 
+			<h1>{randomNumber}</h1>
 			<main>
 				{tasks.map((task) => (
 					<div key={task.id}>
@@ -123,9 +130,13 @@ export const getStaticProps: GetStaticProps = async () => {
 
 	const data = await res.json()
 
+	const randomNumber = Math.random() * 10
+
 	return {
 		props: {
 			tasks: data,
+			randomNumber,
 		},
+		revalidate: 10, //This function will be called every 10 seconds
 	}
 }
