@@ -409,4 +409,129 @@ is still running, it is required to have one.
   ### Problems of ISR
 
   Even though it is possible to regenerate the app html during its lifecycle, there are still possibility that the data
-  will become obsolete.
+  will become obsolete.  
+
+  So, basically, we can add a property to the getStaticProps, which is the revalidate, where we will pass the number of
+  seconds after which the page will be revalidated. This revalidation, can also be done, programatically, for example, we
+  have a product listing and we generated this page utilizing isr, but we want to revalidate this list whenever we add
+  a new product, and this can also be done.
+
+  One thing we need to keep in mind is, ISR also needs a running server, because this html regeneration will occur from
+  time to time, so a server is needed for it, is not like a ssg where we need a server, it has updates on the page, but
+  they are not frequent.
+
+  ## Conclusion
+
+  The rendering methods in Next.js, include Static Site Generation (SSG), Server-Side Rendering (SSR), Incremental Static
+  Regeneration (ISR) and Client Side Rendering (CSR). Each method serves different purposes, balancing performance, data
+  freshness and user experience
+
+  ## Server Side Rendering (SSR)
+
+  When is it executed? in each client request
+
+  Where is it executed? In the server, each time a request is done for the page.
+
+  What it does? Uses the function getServerSideProps to fetch api data, databases, or other operations in the server on each
+  request. The page is generated dynamically, personalized and always updated
+
+  Benefits:
+    . Personalization: It allows page personalization based on informations specific of each user, such as login data
+    or preferences
+
+    . Security: There is no code running on the client, which means that sensitive data are kept on the server
+
+    . When to use? For pages that requires real time data or personalization (ex: Dashboards, Profile pages, Result Search
+    Pages)
+
+
+  ### Static Site Generation (SSG)
+
+  - When is it executed? During the build of the project
+
+  Where is it executed? In the server, but only once, during build
+
+  What it does? Uses the function getServerSideProps to fetch api data, databases, or other operations generating a static
+  page that will be exhjibited and served directly from a CDN. This results in quick loading time and high escability
+
+  Benefits:
+
+    - Performance: Pages are pre-generated and stored in a CDN, offering quick loading
+
+    - Security: There is no code running on the client, which means that sensitive data are kept on the server
+
+    - When to use it: For pages that the content does not change frequently, (ex: Blogs, Product pages that do not change
+    frequently )
+
+  ### Incremental Static Regeneration (ISR)
+
+    . When is it executed?
+    
+    During the build of the project, but allow pages to be revalidated in an incremental way after
+    the deployment
+
+    . Where is it executad?
+    
+    In the server, but in an incremental way, which means that the pages can be generated static generated
+    in the beginning, and afterwards, revalidated on configured intervals
+
+    . What it does?
+
+    It combines the benefits from SSG, the capacity of updating static pages without the need to rebuild the whole site.
+    The paparameter revalidate defines the time interval after which the page will be revalidated on the server, generating
+    a new dynamic way
+
+    . Benefits
+
+      - Performance: Keep the pages quick just like the ssg, but allows revalidation for fresh data
+      - When to use it? Pages that can be static, but need to be updated from time to time with new data (ex: products
+      catalog, blogs with new articles, news)
+
+  ### CSR (Client Side Rendering)
+
+    . When is it executed?
+    
+    On the client's browser, after the page is loaded
+
+    . Where is it executad?
+    
+    On the browser, after the initial HTML is loaded
+
+    . What it does?
+
+    It does not depends on the server rendering. Instead, it usews js on the client to load the data after the page loading.
+    The rendering is made directly on the browser
+
+    . Benefits
+
+      - Interactivity: Ideal to web sites that require a lot of interactivity or dynamic functionalities
+      - When to use it? For SPAs (Single Page Applications) where the data is loaded and manipulated on the server side
+        after the HTML has been served (ex: real time chats, social media feed)
+
+  ### Quick Comparison
+
+  **SSG** - Executed during build, on the server (only once), for pages with static data or that do not change frequently
+  **SSR** - Executed on each request, in the server (each request), for pages that need real time data or personalized
+  **ISR** - Executed during build, with incremental revalidation, in the server (with revalidation), for pages that are static
+  but need to be updated from time to time
+  **CSR** - Executed on client side, on the browser, dynamic pages that load data after the initial loading
+    
+  ### Summary
+
+SSG and ISR are ideal for static pages, with ISR allowing incremental content updates without the need for a full rebuild.
+Both methods ensure high performance, fast load times, and security by keeping sensitive data and logic on the server,
+ensuring that no private information is exposed to the client. In ISR, after the initial static generation, pages can be
+revalidated at set intervals to keep content fresh.
+
+SSR is more suitable for dynamic pages that need real-time data based on the current client, such as personalized content
+or live information. Since the code is executed on the server for every request, sensitive data is kept safe on the server
+side, preventing any exposure to the client. This is ideal for pages that require up-to-date, user-specific data or highly
+dynamic content.
+
+CSR is more commonly used for fully dynamic and interactive pages, where the rendering happens entirely on the client after
+the initial page load. CSR allows the page to be interactive and reactive to changes on the client side without reloading
+the page. However, CSR needs special care regarding security, as it’s important to ensure that no sensitive data or logic
+is exposed to the client through JavaScript.
+
+
+  
