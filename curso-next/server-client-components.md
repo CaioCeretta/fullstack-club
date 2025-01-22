@@ -113,5 +113,100 @@ hydration of the page, and it may lead to a performance loss that could be avoid
   So by using a server component, neither the server component, nor its dependencies, are going to be included inside this
   bundle. 
 
-- Faster loading
+- Faster loading and other benefits that come with this approach
+
+One example of this, would be, as shown on the class, a todolist that is being retrieved by the database on the first line
+of a component, so for example, the query is, on the first line of the component {}
+
+const tasks = (await pool.query("SELECT * FROM tasks ORDER BY due_date ASC))
+  .rows;
+
+now this tasks component is populated with all the tasks, and now, on the return of the function, he is mapping througha all
+the tasks and returning them to the client.
+
+Because next all components are server components, if we don't say they are client components, by doing this we won't even
+need JS for this page to work, it's going to work just as expected
+
+In next.js, the behavior of the JS bundle sent to the client, is carefully optimized to include only the required resources
+for each page.
+
+1. What is sent in the bundle for the client?
+
+When a user accesses a page inside a next application, he downloads a js bundle with:
+
+. The necessary code to render the accessed page
+. Any additional logic used in the page, e. g. event handlers
+. The components or dependencies EXPLICTLY utilized in the page
+
+________________________________________________________________________________________________________________________
+
+2. Does the imported libraries come inside the bundle?
+
+Not directly, if we import a library inside a page, what is going to be included inside the bundle is only the necessary
+code of this library for what is being used in the page. This technique is called tree-shaking, so for example
+
+```ts
+import { debounce } from 'lodash'
+
+function MyComponent() {
+  return <div>{debounce(() => console.log('ciao'), 300)}</div>
+}
+```
+
+In this example, only the code related to the debounce function is going to be included in the bundle, and not the
+whole lodash.
+If no functionalities of the library is being used directly, the library won't be included in the bundle.
+
+________________________________________________________________________________________________________________________
+
+3. What about the component?
+
+The component itself (e.g. the JSX/React code) that is going to be rendered is sent to the client in the bundle
+
+But there are important optimizations
+
+. Code splitting by page: Each page in next.js generates its own bundle. This means that the client downloads only the
+necessary code for the page hs is accessing, and no the code from all the app pages.
+
+. Dynamic components (Lazy loading): If we use the dynamic of next.js or the lazy from react, the component will only be
+loaded when necessary
+
+dynamic() example
+
+```ts
+import dynamic from 'next/dynamic';
+
+const HeavyComponent = dynamic(() => import('./HeavyComponent), {
+  ssr: false // The component will only be loaded in the client
+})
+
+export default function Page() {
+  return <HeavyComponent />
+}
+```
+
+In this case, HeavyComponent is only going to be loaded by the client when the page is RENDERED on the browser
+
+________________________________________________________________________________________________________________________
+
+4. What does not go into the bundle?
+
+What is not sent to the client includes:
+
+. Code previously executed on the server, such as GSSP, GSP, GIP
+. Variables or server side logic, such as DB operations
+. Dependencies or libraries imported only on the server
+
+
+________________________________________________________________________________________________________________________
+
+5. Benefits of the optimizations
+
+. Reduce the size of the bundle
+. Improves the performance of the client's app
+. Guarantees the security by keeping the sensitive logic on the server side
+
+
+
+
 
