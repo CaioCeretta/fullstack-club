@@ -258,6 +258,226 @@ and the reason the client can't is because it's executed on the browser, and bec
 he can't fetch the logic or the necessary data to render a rsc, and server components depend on the server execution, so codes
 such as calls to the db or access to environment variables won't be possible
 
+Buuuuut, it's possible to call a server component inside a client component, but we need to understand the reason and how
+it is done
+
+How it works?
+
+By default, server components can't utilize functionalities from the client side, however, using server component
+inside a client component is indeed possible
+
+A pratical example for it would be
+
+### First Approach: server inside client
+
+```ts
+
+/* Server Component*/
+export default async function ServerComponent() {
+  const data = await fetch('https://jsonplaceholder.typicode.com/posts/1').then(res => res.json());
+
+  return (
+    <div>
+      <h1>{data.title}</h1>
+      <p>{data.body}</p>
+    </div>
+  )
+
+  /* Client Component */
+  'use client'
+
+  import ServerComponent from './ServerComponent';
+
+  export default function ClientComponent() {
+    <div>
+      <h1> Sono un componente client! </h1>
+      <ServerComponent />
+    </div>
+  }
+}
+
+```
+
+In this example, the ServerComponent is called and rendered inside the ClientComponent. The server component will be
+processed in the server and sent like HTML, while the Client Component will add interactivity on the browser
+
+
+Real use case:
+
+A pratical use case would be an e-commerce
+
+1. Scenario
+  . The page has a product list (which doesn't need direct interactivity and can be generated on the server)
+  . There's also an add to cart button, which needs interactivity on the client (state, animation, etc)
+
+2. Solution
+   . The product list is rendered using a Server Component, as it can fetch the products directly from the database on
+   the server
+
+   . The "Add to Cart" button is part of a Client Component, because it needs state and event handling
+
+```ts
+
+  export default async function ProductsList() {
+    const products = await fetch('https://fakestoreapi.com/products').then(res => res.json());
+
+    return (
+    <ul>
+      {products.map((product) => (
+        <li key={product.id}>
+          <h2>{product.title}</h2>
+          <p>{product.description}</p>
+        </li>
+      ))}
+    </ul>
+    )
+  }
+
+  /* Client Component */
+
+  import { useState } from 'react';
+  import ProductList from './ProductList';
+
+  export default function ProductPage() {
+    const [cart, setCart] = useState([]);
+
+    const addToCart = (product) => {
+      setCart((...prevCart) => [...prevCart, product])
+    }
+
+    return (
+      <div>
+        <h1>Product List</h1>
+        <ProductList />
+
+      <button onClick={() => addToCart({ id: 1, name: 'Test Product' })}>
+          Add Test Product To Cart
+      </button>
+
+      <p>Cart: {cart.length} items</p>
+
+
+      </div>
+    )
+  }
+```
+
+This wouldn't be the best approach, but i'm letting this on the code just for learning purposes.
+
+### Second Approach: Client inside the server to add interactivity
+
+```ts
+  /* Server Component */
+
+export default async function ProductList({ onAddToCart }) {
+  const products = await fetch('https://fakestoreapi.com/products').then((res) => res.json());
+
+  return (
+    <ul>
+      {products.map((product) => (
+        <li key={product.id}>
+          <h2>{product.title}</h2>
+          <p>{product.description}</p>
+          <button onClick={() => onAddToCart(product)}>Add to Cart</button>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+/* Here the server component keeps on rendering the product list, but now recives a function named addToCart as prop. This
+function will be defined in the client component and passed to the server component to handle the interaction 
+
+Client Component:
+*/
+
+'use client';
+
+import { useState } from 'react';
+import ProductList from './ProductList';
+
+export default function ProductPage() {
+  const [cart, setCart] = useState([]);
+
+  const addToCart = (product) => {
+    setCart((prevCart) => [...prevCart, product]);
+  };
+
+  return (
+    <div>
+      <h1> Product List </h1>
+      <ProductList onAddToCart={addToCart} />
+      <div>
+        <h2>Cart</h2>
+        {cart.length > 0 ? (
+          <ul>
+            {cart.map((item, index) => (
+              <li key={index}>
+                {item.title} - ${item.price}
+              </li>
+            ))}
+            </ul>
+        ) : (
+          <p> Your cart is empty </p>
+        )}
+      </div>
+    </div>
+  )
+}
+
+```
+
+What changed?
+
+The addToCart is now being passed to the productList as a prop and the button inside the server component call this function
+which adds the selected product to the cart state
+
+
+### When to use each approach?
+
+1. Server Inside Client: Use when the focus is complex interactivity on the whole page, such as a dynamic form or advanced
+interactions with state, we use this approach when the interactivity dominates the whole page, e.g.
+
+1. Dynamic Advanced Forms
+
+- When we have a form that changes based on the user interaction, such as adding or removing fields dynamically
+
+- Example: A purchase form that changes the fields according to the payment method
+
+Practical Example
+
+  This example will be on another tsx file, let's imagine a form where the fields change based on the user interaction
+  such as adding rows like this case
+
+  In this scenario, server components would have obligations that don't make sense, because it would have to delegate the
+  adding of fields and as the state (dynamic fields) change constantly, the client component would be forced to manage
+  almost everything, so the server component would be a mere container
+
+
+
+2. Client inside Server: Use when the page is mainly static, with small interactive parts, such as buttons, menus, etc.
+This is the preferred pattern inside next.js
+
+### Summary
+
+In summary, most times the best options depends on the app "nature" and what we are looking to achieve, so
+
+1. Use client component inside server component (preferred in next.js)
+   
+   This approach is more recommended in most cases, specially in modern applications, because: 
+
+    . We keep the most possible in the server (seo optimization and better performance)
+    . Only small interactive parts are loaded as client components, reducing the hydration on the client
+
+  When to use it?
+
+    . When most of the page is static or focused on server rendering
+    . Example: A product list rendered on the server with interactive buttons of "adding to cart" as client components
+
+    
+
+
+
 
 
 

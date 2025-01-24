@@ -82,7 +82,7 @@ export default function Home({
       query parameters to get the result of the searchTerm to structure our page dynamically based on the searchTerm, in
       the static paths we are not doing it like this, we are simply, statically, fetching the todos from the api, limiting
       it by 5, and returning it in the props: { tasks: data }, just like the gssp
-
+        
       different from the gssp that this request will be done every time a user accesses the page, this function will only
       be executed once the applications builds.
 
