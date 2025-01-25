@@ -72,7 +72,23 @@ object in a single step
 so, if the object is { params: { id: 123 } } the destructuring in the params of the function need to respect this hierarchy
 so it will be { params: { id } }, which will express this hierarchy
 
+Summary
 
+So, the summary is, in a dynamic route, such as [id], by using next app router, thye component receives, by default, an
+object `params` containing this dybamic value, so for example, a /product/123, params object will have the value of
+{id: "123"}
+
+The difference in destructuring, is that the params is first accessed and then the destructuring to extract the id occurs
+const { id } = params
+
+Here the params is the default object that contain the key id, so first we access param and then the id, whereas
+const { id } = params means "create a constant id and then assign the value of params.id to it"
+
+while ({params: { id }}: { params: { id: string }}) we are destructuring the object params directly on the function, before
+entering the body of the component. This expression inside the parameters of the function means to destructure the property
+param, and, inside params, destructure the id
+
+So in the signature {params: { id }} we receive params already destructured directly by passing the parameters to the function
 
 
 
