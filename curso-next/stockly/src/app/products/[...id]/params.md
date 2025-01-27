@@ -1,6 +1,7 @@
 # Explanation of the param in a next js page
 
 
+## Single [param] folder
 
 A dynamic page, has its parameter, what is inside the square brackets, and it can be accessed directly through the
 property `param`  that is passed to the page components, and in our case, of the [id], we'll extract the id from the
@@ -90,5 +91,16 @@ param, and, inside params, destructure the id
 
 So in the signature {params: { id }} we receive params already destructured directly by passing the parameters to the function
 
+
+## Inner folder inside [param]
+
+Let's say now, instead of accessing a page of localhost:3000/products/123 we know want to access localhost:3000/products/test/123
+
+if we do it like this in the current folder structure, we will receive a 404, but if we want to show to the user, in this
+screen, the products table, we can change the folder name from [id] to [...id], the difference will be, that on the [id]
+object we get from the params now, it will contain both the url parameters, so by printing the id we get from the param
+we will get the value of test123. This happens because now, with the ... we are basically spreading the parameters we send
+onto it, so we can use as many dynamic parameters as we want, but we need to know that, inside the id param, we will now
+have an array with all the parameters we are passing to the url in order
 
 
