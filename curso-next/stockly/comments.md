@@ -206,4 +206,6 @@ The variants and the size do not need to be passed because the cva already defin
 anything, the button will still work normally, because the cva has the defaultVariants, so if we do a simple
 <Button>Click me!</Button>
 
-it will work
+it will still work.
+
+the cva defaultVariants make this button to not need any property by using the defaults
