@@ -209,3 +209,8 @@ anything, the button will still work normally, because the cva has the defaultVa
 it will still work.
 
 the cva defaultVariants make this button to not need any property by using the defaults
+
+## Projects that already have migrations
+
+In these cases, we simply execute a npx prisma db push and this will get our migrations inside the code and apply them to
+our db
