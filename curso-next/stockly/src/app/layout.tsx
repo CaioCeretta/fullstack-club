@@ -6,7 +6,7 @@ inside of our app, and use with this library, like we did on the comment below o
 import localFont from 'next/font/local' */
 import { Inter } from "next/font/google";
 import "./globals.css";
-import SideBar from "./_components/Sidebar";
+import SideBar from "./_components/sidebar";
 
 const inter = Inter({
   subsets: ["latin"],
