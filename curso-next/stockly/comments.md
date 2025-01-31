@@ -214,3 +214,11 @@ the cva defaultVariants make this button to not need any property by using the d
 
 In these cases, we simply execute a npx prisma db push and this will get our migrations inside the code and apply them to
 our db
+
+## Extending Interfaces
+
+In the $extend from where we create the PrismaClient instance inside prisma.ts, we used it to create a generated column
+named status to say if a product is in stock or out of stock, but later, we used the same product in the table, and
+typed it as a Product from prisma, but what happenned here is that the prisma product does not have a status, so a turn
+around is to import that Prisma product, rename it as anything we'd like, then, create a new interface, extending the
+product and adding the status property, this way, we wouldn't have any more errors
