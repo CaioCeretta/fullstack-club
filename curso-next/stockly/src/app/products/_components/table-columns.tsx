@@ -6,7 +6,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { CircleIcon } from "lucide-react";
 
 export interface Product extends PrismaProduct {
-  status: "IN_STOCK" | "OUT_OF_STOCK";
+  status: string;
 }
 
 const getStatusLabel = (status: string) => {

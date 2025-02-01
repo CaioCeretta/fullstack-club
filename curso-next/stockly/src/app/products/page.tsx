@@ -3,6 +3,7 @@ import { Button } from "@/app/_components/ui/button";
 import { PlusIcon } from "lucide-react";
 import { DataTable } from "../_components/ui/data-table";
 import { productTableColumns } from "./_components/table-columns";
+import { getProducts } from "@/_data/dal/product/get-products";
 
 export interface ProductsPageProps {}
 
@@ -16,7 +17,7 @@ const prismaClient = new PrismaClient(); */
 
 const ProductsPage = async () => {
   /* Call the database here, not the ideal, but educational purposes  */
-  const products = await db.product.findMany();
+  const products = await getProducts();
 
   return (
     <div className="ml-8 mt-8 w-full space-y-8 bg-white p-8 py-8">
