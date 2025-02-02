@@ -222,3 +222,143 @@ named status to say if a product is in stock or out of stock, but later, we used
 typed it as a Product from prisma, but what happenned here is that the prisma product does not have a status, so a turn
 around is to import that Prisma product, rename it as anything we'd like, then, create a new interface, extending the
 product and adding the status property, this way, we wouldn't have any more errors
+
+## Data Access Layer
+
+We usually don't utilize queries on client components, because there is a possibility that the query return sensitive data
+and for this reason, is better for us to create every server communication, on a separate file, in most cases, in a data
+access layer folder, where we will separate every database table calls into functions for REST operations.
+
+But we need to be careful of one thing, if we wished to make the component that uses this dal, a client component, to use
+the data retrieved as a state, we'll see that we couldn't have done this, because we will be trying to run the prisma
+environment in a browser environment, which occasionally would crash, but even after this crash, we will still be importing
+the file that makes this fetch, has access to our db credentials, and there is a high risk of this file go into the js
+bundle to the client. So when we have functions that are part of the dal, there is one option to prevent this, that is
+using a library named server-only.
+
+### Server-Only Library
+
+This library will simply prevent modules, that are part of the dal, being imported into client components. To use it, we
+simply go inside the file that we don't wish to be shown to the client, import "server-only"
+
+## Data Table Interfaces
+
+It took a certain while to understand, first, we created a file named table-columns.tsx, where created the columns the
+data table would get
+
+1. What ColumnDef<Product> does?
+
+when we create the productTableColumns like this
+
+export const productTableColumns: ColumnDef<Product>[] = [
+{ accessorKey: "name", header: "Product" },
+{ accessorKey: "price", header: "Unit Value" },
+];
+
+here, ColumnDef<Product> means that, each column uses data of the type Product, which means that we are saying that the
+data shown on the screen, come from the structure of Product, so ts now knows that
+. "name" needs to be a property in Product
+. "price" also needs to exist in Product
+. If we use a wrong property, it will give an error
+
+2. How does data table uses the generics?
+   Our Datatable was created like this
+
+export function DataTable<TData, TValue>({
+columns,
+data,
+}: DataTableProps<TData, TValue>){...}
+
+here we are saying that TData represents the type of the table values, which is Product
+TValue represents the values of the columns automatically
+
+This means that TData is not "fixed" in the code. He is only defined when we pass the DataTable and pass the data
+
+3. What happens when we pass the DataTable
+
+We are passing like this <DataTable columns={productTableColumns} data={products} />
+
+now typescript makes the following reasoning
+
+1. looks at data={products}
+
+.He sees that products is of type Product[]
+.since data in DataTable is an array of Data[] he understands that TData = Product
+
+2. Looks at columns={productTableColumns}.
+
+. ColumnDef<Product> is already defined
+. since TData = Product, the DataTable knows that the columns and data are from the same type
+
+so it infers automatically that TData = Product with no need to write <DataTable<Product, TValue>>
+
+The TValue, in the context of ColumnDef, represent the types of the cell, for each specific column of the table.
+
+For example, if we have a column that shows the name of the product (string), the value of the cell will be of the type
+string, if a column is the price of the product (a number), the value of the cell will be of type Number, but where is
+TValue applied?
+
+ColumnDef has the following structure
+
+interface ColumnDef<TData, TValue = unknown> {
+/// other fields
+acessorKey?: keyof TData; // Key field that maps a property of TData
+cell?: (row: Row<TData>) => TValue; // Function that defines the value of each cell
+}
+
+so here is the part of TValue
+
+. accessorKey: Tells ts which property of TData will be accessible to obtain the value of the cell
+
+. cell: the function cell can be mused to define how the cell value will be rendered, the return type of cell is a TValue,
+the real value of the Cell
+
+So TValue is the final output of the cell value, that can be a simple value, such as string, number, boolean, or a JSX
+component, like the Badge we used
+
+So in a practical example, let's look at our columns example
+
+For the culumns name and price, the cell values is simply the value of the property Product, that can be a string "name",
+or number to "price". TS will now infer the type of cell after the acessorKey, for the column status, its infered as
+React.jsx (Badge Component). This happens because the function cell returns a JSX, and TValue is automatically adjusted
+for this type.
+
+Final Summary Of TValue Type
+
+. TValue is the type of the value for each cell
+. It can be automatically inferred after the accessorKey (if it's a simple property such as name or price) or it can be
+explicitly defined inside the cell function (such as JSX and other custom types)
+
+The reason for this is
+
+- When we define accessorKey: "name", we are saying: "This value is showing the value of the property name from the Product
+- It knows that the type Product has a property name of type string
+- Typescript defines that the TValue is string
+- TValue is infered as Product['name'] = string
+
+Behind the scenes, in a case of { accessorKey: "name", header: "Name", {accessorKey: "price", header: "Unit Value}}
+
+1. Typescript sees that ColumnDef<Product> means that TData = Product
+2. When it sees that accessorKey: "name" , it knows that "name" is a valid key inside Product
+3. Since Product["name"] is string, ts defines tvalue = string
+4. the same happens with price, that TValue = number
+
+And it all happens because, as the TData is Product, typescript will know the type of the value an accessorKey holds, and
+even if TValue hasn't been specifically specified, because we didn' define a cell, typescript then assumes that the column
+uses the value firectly from the accesssorKey
+
+The reason it is infered even without cell is that ts does not explicitly know that TValue must be TData[keyof TData] inside
+the interface definition, but it infers by default by:
+
+1. ColumnDef<Product> fixes TData as Product
+2. acessorKey: "name" implies that the cell will show Product["name"]
+3. There is no cell, so it assumes that the value type is TData[acessorKey]
+4. And the interface of ColumnDef is <TData, TValue = unknown>
+
+And TValue type will be equal to (row: { row: { original: TData}}) => TValue
+
+but if no cell is specified, he sees that TData is product, and he assumes the TValue is of type of acessorKey, this
+happens because by typing ColumnDef<Product>[], typescript analyzes each object and maps TValue implicitly to TData[acessorKey]
+because the key indicates the shown value
+
+5. That's why it automatically adjusts the TValue
