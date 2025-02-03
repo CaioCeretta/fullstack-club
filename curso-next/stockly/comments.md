@@ -414,3 +414,5 @@ const parsedProduct = product.map(product => ({
 ...product,
 price: produce.price.toNumber(), // Converts decimal to number
 }))
+
+This solution fixes most of these problems, i wouldn't say all because i'm not sure
