@@ -1,11 +1,8 @@
-import { db } from "@/_lib/prisma";
 import { Button } from "@/app/_components/ui/button";
 import { PlusIcon } from "lucide-react";
 import { DataTable } from "../_components/ui/data-table";
 import { productTableColumns } from "./_components/table-columns";
 import { getProducts } from "@/_data/dal/product/get-products";
-
-export interface ProductsPageProps {}
 
 /* 
   By creating here like this, everytime the application is rebuilded, we are going to generate a new db connection, because
@@ -18,6 +15,11 @@ const prismaClient = new PrismaClient(); */
 const ProductsPage = async () => {
   /* Call the database here, not the ideal, but educational purposes  */
   const products = await getProducts();
+
+  const productsWithStatus = products.map((product) => ({
+    ...product,
+    status: product.stock > 0 ? "IN_STOCK" : "OUT_OF_STOCK",
+  }));
 
   return (
     <div className="ml-8 mt-8 w-full space-y-8 bg-white p-8 py-8">
@@ -65,7 +67,7 @@ const ProductsPage = async () => {
           New Product
         </Button>
       </div>
-      <DataTable columns={productTableColumns} data={products} />
+      <DataTable columns={productTableColumns} data={productsWithStatus} />
     </div>
   );
 };
