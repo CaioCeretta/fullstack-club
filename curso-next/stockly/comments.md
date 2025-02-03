@@ -373,3 +373,44 @@ happens because by typing ColumnDef<Product>[], typescript analyzes each object 
 because the key indicates the shown value
 
 5. That's why it automatically adjusts the TValue
+
+## Only plain objects can be passed to client components from server components error
+
+This error is caused when we pass objects that are not plain objects, we need to understand that the data is going from
+the network, kind of like a request is being made in the "middle" of it, and in this communication, we can only pass
+objects that are transferable, which are:
+
+. Primitive types
+. String
+. Array
+. Map
+. Set
+. FormData instances
+. Date
+. Promises
+. Plain objects, that are created with object initializers, with serializible properties
+. Functions that are server actions
+
+not supported types are
+
+. React elements, or JSX
+. Functions, including component functions or any other function that is not a Server Action
+. Classes
+. Objects that are instances of any class (other than the built-ins mentioned) or objects with a null prototype
+. Symbols not registered globally ex: Symbol('my new symbol')
+
+But here we are having a problem in the product where the type of the price is Decimal, so we are not being able to send
+this product because his type is not acceptable by tsx. so to fix this, on our data, we must do
+
+JSON.parse(JSON.stringify(product))
+
+This will make the error go away, because JSON.stringify transforms the whole object in a JSON strinc, and JSON.parse
+rebuildes the objeto after this string. This removes any type of special data that is not serializable for JSON, such
+as Decimal from prisma
+
+there could also be another option where we create, for exemple
+
+const parsedProduct = product.map(product => ({
+...product,
+price: produce.price.toNumber(), // Converts decimal to number
+}))
