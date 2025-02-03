@@ -238,8 +238,19 @@ using a library named server-only.
 
 ### Server-Only Library
 
-This library will simply prevent modules, that are part of the dal, being imported into client components. To use it, we
-simply go inside the file that we don't wish to be shown to the client, import "server-only"
+Aqui está a explicação corrigida e mais clara em inglês:
+
+Server-Only Library
+This library ensures that certain modules, such as those in the data access layer (DAL), cannot be imported into client
+components.
+
+To use it, simply import "server-only" in the file that should not be accessible to the client. This prevents client
+components from mistakenly importing functions meant to run only on the server.
+
+If a client component tries to import a server-only function, the application will throw an error immediately, rather
+than breaking after the bundle is loaded. Even if the server file could theoretically be included in the client’s
+JavaScript bundle, "server-only" ensures that the error occurs beforehand, maintaining the security and integrity of
+server-side logic.
 
 ## Data Table Interfaces
 
