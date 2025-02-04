@@ -498,3 +498,23 @@ follows the fetch pattern, where a response is directly returned instead of bein
 it's an approach focused on being compatible with all sorts of environments (e.g. serverless environments and native web APIs)
 
 So we must not use res: NextResponse as an argument to route handlers
+
+## Dynamic Route Handlers
+
+We can also receive parameters in our route handlers, so for instance, we want to create a route GET /products/{id} to
+fetch a specific product. Inside of the api/products folder, like we do for dynamic routes, with the dynamic parameter
+being enclosed in brackets, we'll also create an [id] folder inside of the api/products folder, and a route.ts inside.
+
+Now we export our GET function just as we did on the "default" route.ts file, usually is not all the CRUDs we focus on
+these dynamic files, just some files that this route is going to support, then we do something as
+
+export async function GET(
+request: NextRequest,
+{ params }: { params: { id: string } },
+)
+
+One other thing we can do is retrieve the query parameters, so if we get have a URL like http://localhost:3000/products/1234?teste="teste"
+in this request, we can do something like
+
+const searchParams = request.nextUrl.searchParams
+const teste = searchParam.get('teste')
