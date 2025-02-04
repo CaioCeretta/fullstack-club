@@ -1,9 +1,8 @@
+import { getProducts } from "@/_data/dal/product/get-products";
 import { Button } from "@/app/_components/ui/button";
 import { PlusIcon } from "lucide-react";
 import { DataTable } from "../_components/ui/data-table";
 import { productTableColumns } from "./_components/table-columns";
-import type { Product } from "@prisma/client";
-import { getProducts } from "@/_data/dal/product/get-products";
 
 /* 
   By creating here like this, everytime the application is rebuilded, we are going to generate a new db connection, because
