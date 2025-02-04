@@ -416,3 +416,85 @@ price: produce.price.toNumber(), // Converts decimal to number
 }))
 
 This solution fixes most of these problems, i wouldn't say all because i'm not sure
+
+## Route handlers
+
+With Route handlers in Next.JS we can create HTTP routes in our application, utilizing all CRUD operations.
+
+If we were to create a route /products, it will be accessible from the server.
+
+Inside the app/api/products we create a route.ts file. This file will define the API routes for our application.
+
+Within route.ts, we define functions named after CRUD operations, When we makle a request, such as
+fetch('/api/products', {
+method: "POST"
+})
+
+ou fetch('/api/products')
+
+the corresponding functions (e. g. POST or GET) inside route.ts will be triggered.
+
+In a GET operation, we can retrieve various pieces of information from the request, such as cookies and headers. We can also return a response with different headers, set cookies, and so on.
+
+In the fetch operation, we need to use the absolute path instead or relative, because in the server, by calling an api
+with fetch, the relative path (/api/products) may not be resolved correctly, so we should or set and use environment,
+variables for these calls, or use window.location.origin, or explictly pass the URL.
+
+We've created the product api route to get and create new products, but instead of doing this on a server component, like
+we previously did with the DAL that would do practically the same thing, we ended up creating an api route for this.
+
+According to the instructor, that is a situation where does not make much sense for us to create the route, because creating
+an http route like this, makes more sense in two situations
+
+1. When we are working with a webhook, such as integrating our app with Stripe or any platform that needs to call an app
+   route, after some operation finishes (e.g. We have an integration with Stripe and when we complete a purchase, stripe will
+   process this purchase and, via a webhook, it will call a route of our app and this route will update our db with the purchase
+   status), in a case like this, is more indicated to create a route handler, when we wish to expose any behavior of our app
+   to a third party app.
+
+2. When we have other application, so for example, we have our web app that's made with next and we want to expose a
+   specific route for a mobile app, for example
+
+So in most cases, we might prefer to make this communication with the db, through a server component and use the dal
+instead of api routes, because we could see, in the development process, that the api route does not have any typing,
+we had to do it in our own, is not like the function from our dal that we already typed the return as Promise<Product[]>
+a route handler don't have this, we had to do something like
+
+const "products: Product[] = await db.product.findMany();" on the route handler, then on the component
+
+"const response = await fetch(`${baseUrl}/api/products`);
+
+const products: Product[] = await response.json();"
+
+if we didn't explicitly typed it like this, it would be any.
+
+The same error would occur in the post method, our body wouldn't have a typing, and wouldn't argue if we passed a nonexistent
+property.
+
+While using DAL, we can type the arguments it will receive.
+
+## Error in the API, NextResponse e NextRequest
+
+I faced an error, where i tried using in the arguments of the functions, res: NextResponse, then when i return a response
+i used res.json({..}), and i got an error saying that the function res.json wasn't expecting any arguments and i passed
+one or more.
+
+1. res doesn't exist there
+
+. Next.js doesn't pass the NextResponse as an argument to the route handlers
+. Different from Express, we don't manipulate the responses directly
+
+2. We need to use NextResponse.json()
+
+. Because res does not exist, we can't call the res.json()
+
+So in summary
+
+In express, route handlers receive two arguments, req and res, and on express, res is necessary, because we need to call
+it manually to send the response
+
+However in Next.js app router, there is no explicit res because the route handler shall return the response directly, it
+follows the fetch pattern, where a response is directly returned instead of being manipulated, so it is not pure node.js
+it's an approach focused on being compatible with all sorts of environments (e.g. serverless environments and native web APIs)
+
+So we must not use res: NextResponse as an argument to route handlers
