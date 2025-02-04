@@ -2,6 +2,7 @@ import { Button } from "@/app/_components/ui/button";
 import { PlusIcon } from "lucide-react";
 import { DataTable } from "../_components/ui/data-table";
 import { productTableColumns } from "./_components/table-columns";
+import type { Product } from "@prisma/client";
 import { getProducts } from "@/_data/dal/product/get-products";
 
 /* 
@@ -13,8 +14,20 @@ import { getProducts } from "@/_data/dal/product/get-products";
 const prismaClient = new PrismaClient(); */
 
 const ProductsPage = async () => {
-  /* Call the database here, not the ideal, but educational purposes  */
   const products = await getProducts();
+
+  //   const baseUrl =
+  //     typeof window !== "undefined"
+  //       ? window.location.origin
+  //       : process.env.NEXT_PUBLIC_SITE_URL;
+
+  //   const response = await fetch(`${baseUrl}/api/products`);
+
+  //   if (!response.ok) {
+  //     throw new Error(`Error: ${response.status} ${response.statusText}`);
+  //   }
+
+  //   const products: Product[] = await response.json();
 
   const productsWithStatus = products.map((product) => ({
     ...product,
@@ -67,7 +80,10 @@ const ProductsPage = async () => {
           New Product
         </Button>
       </div>
-      <DataTable columns={productTableColumns} data={productsWithStatus} />
+      <DataTable
+        columns={productTableColumns}
+        data={JSON.parse(JSON.stringify(productsWithStatus))}
+      />
     </div>
   );
 };
