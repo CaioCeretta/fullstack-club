@@ -1,9 +1,8 @@
-// import { getProducts } from "@/_data/dal/product/get-products";
+import { getProducts } from "@/_data/dal/product/get-products";
 import { Button } from "@/app/_components/ui/button";
 import { PlusIcon } from "lucide-react";
 import { DataTable } from "../_components/ui/data-table";
 import { productTableColumns } from "./_components/table-columns";
-// import type { Product } from "@prisma/client";
 
 /* 
   By creating here like this, everytime the application is rebuilded, we are going to generate a new db connection, because
@@ -14,55 +13,24 @@ import { productTableColumns } from "./_components/table-columns";
 const prismaClient = new PrismaClient(); */
 
 const ProductsPage = async () => {
-  const baseUrl =
-    typeof window !== "undefined"
-      ? window.location.origin
-      : process.env.NEXT_PUBLIC_SITE_URL;
+  //   const baseUrl =
+  //     typeof window !== "undefined"
+  //       ? window.location.origin
+  //       : process.env.NEXT_PUBLIC_SITE_URL;
 
-  const response = await fetch(`${baseUrl}/api/products`, {
-    next: {
-      revalidate: 5,
-    },
-  });
+  //   const response = await fetch(`${baseUrl}/api/products`);
 
-  if (!response.ok) {
-    throw new Error(`Error: ${response.status} ${response.statusText}`);
-  }
+  //   if (!response.ok) {
+  //     throw new Error(`Error: ${response.status} ${response.statusText}`);
+  //   }
 
-  const { products, randomNumber } = await response.json();
+  //   const products: Product[] = await response.json();
 
-  // const products: Product[] = data;
-
-  // console.log(randomNumber);
-
-  // const products: Product[] = await response.json();
-
-  /*
-
-  three ways of calling a promise and getting its value as json
-  
-  1: await the response and then await its transform to json
-  
-    const responseNumber = await fetch(`${baseUrl}/api/number`);
-    const dataNumber = await responseNumber.json();
-
-  2: using then to get the result of the await
-
-   const responseNumber = await fetch(`${baseUrl}/api/number`).then((data) =>
-   data.json(),
-
-  3. nesting awaits: 
-  
-  const responseNumber = await (await fetch(${baseUrl}/api/number)).json(); 
-  );
-
-  */
-
-  const responseNumber = await fetch(`${baseUrl}/api/number`);
-
-  const dataNumber = await responseNumber.json();
-
-  const { randomNumber: randomNumber2 } = dataNumber;
+  const products = await getProducts();
+  const productsWithStatus = products.map((product) => ({
+    ...product,
+    status: product.stock > 0 ? "IN_STOCK" : "OUT_OF_STOCK",
+  }));
 
   return (
     <div className="ml-8 mt-8 w-full space-y-8 bg-white p-8 py-8">
@@ -100,12 +68,6 @@ const ProductsPage = async () => {
       {/*/Left*/}
       <div className="flex w-full items-center justify-between">
         <div className="space-y-1">
-          <h1 className="text-xl font-medium">
-            Random Number from /products: {randomNumber}
-          </h1>
-          <h1 className="text-xl font-medium">
-            Random Number from /number: {randomNumber2}
-          </h1>
           <span className="text-xs font-semibold text-slate-500">
             Products Management
           </span>
@@ -118,7 +80,7 @@ const ProductsPage = async () => {
       </div>
       <DataTable
         columns={productTableColumns}
-        data={JSON.parse(JSON.stringify(products))}
+        data={JSON.parse(JSON.stringify(productsWithStatus))}
       />
     </div>
   );

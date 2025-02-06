@@ -5,7 +5,9 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET() {
   const products: Product[] = await db.product.findMany();
 
-  return NextResponse.json(products, { status: 200 }); // Correção aqui
+  const randomNumber = Math.random();
+
+  return NextResponse.json({ products, randomNumber }, { status: 200 });
 }
 
 export async function POST(req: NextRequest) {
