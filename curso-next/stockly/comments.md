@@ -627,3 +627,38 @@ Even though it looks like we are making two identical requests on the same page,
 because Next.js recognizes that two server components are making the same request, with the same parameters, same path, etc.
 Now, instead of performing two separate fetches requests, Next.js executes the request once and automatically passes the
 result.
+
+Keep in mind that we can only use the request memoization if we don't remove cache from fetches
+
+## Database Caching
+
+On our app, we use the getProducts from data access layer to fetch the products from the database.
+
+By building the app, the product page will be generated as a static one, meaning that this component is being executed
+with its HTML being generated based on that call. Now, if we create a new product on the database, the page will not be
+re-rendered.
+
+To prevent this from happen, we have two options
+
+1. export const dynamic = "force-dynamic"
+
+This forces the page to be always rendered on demand, which means that it will render everytime a user accesses the page,
+by using SSR
+
+2. using a fetch and pass to it, on the options, the next { revalidate } with the desired interval or cache: "no-cache"
+
+There are also options less used for these cases, such as invoking functions to get the header or cache values from the
+request.
+
+Other important thing to remember is, if the page receives any parameter, like the [id] one, our page will always be
+dynamic.
+
+We can also use ISG for this getProducts, function, to do so, we use unstable_cache from next/cache, now, where we define
+this function, we create another function named something like cachedGetProducts, and creates the function like
+
+export const cachedGetProducts = unstable_cache(getProducts, ["get-products"], {
+revalidate: 5
+}),
+
+where getProducts is the function that has an unstableCache, the second parameter is the key used when we want to invalidate
+this cache, and as third parameter the time interval in which we want to revalidate this cache.
