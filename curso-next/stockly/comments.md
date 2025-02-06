@@ -604,3 +604,26 @@ non ISR fetches at component level. To modify this behavior, the only option is 
 second fetch
 
 And also keep in mind that cache only works in server components, not on client components
+
+## Request Memoization
+
+For this example, we created a new products-list component, which receives the products as prop and renders them
+in a <ul>.
+Now let's say this ProductList is at the bottom of the component hierarchy, so the products page, hypotetically renders
+5 components, and then last component renders the ProductList, for example:
+
+a renders b that renders c that renders d that renders e that renders the ProductList, which then renders ProductList.
+In this case, ProductList receives the products that were originally loaded in the component A.
+
+This situation is an example of prop drilling, that happens when we pass down the prop to more than one level below,
+most of the times, some components in the middle of the hierarchy receive the prop only to pass it further down.
+
+And for these cases, where ProductList is a server component, we are able to use the request memoization.
+
+To do this, we can basically do the request on the component 'a', we remove the requirement for the products prop
+inside the ProductList and make the same request to products that we did on the component a.
+
+Even though it looks like we are making two identical requests on the same page, the request is only being made once,
+because Next.js recognizes that two server components are making the same request, with the same parameters, same path, etc.
+Now, instead of performing two separate fetches requests, Next.js executes the request once and automatically passes the
+result.
