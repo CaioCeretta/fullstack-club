@@ -602,3 +602,5 @@ If we perform a fetch with revalidation in a file and then make another fetch wi
 the second fetch will still be re-executed when the first one revalidates. This happens because we can't mix `ISG` with
 non ISR fetches at component level. To modify this behavior, the only option is increase the revalidation interval for the
 second fetch
+
+And also keep in mind that cache only works in server components, not on client components
