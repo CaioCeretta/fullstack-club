@@ -473,6 +473,43 @@ property.
 
 While using DAL, we can type the arguments it will receive.
 
+## Destructuring Reminder
+
+if data was is an object that exports an object containing more properties than just the products, we couldn't do it
+like this, because it is not an array, but an object with various keys, for example, products, totalProducts, lastUpdated
+
+in cases like an object with more keys we can simply use
+
+interface ProductResponse {
+products: Product[];
+totalProducts: number;
+lastUpdated: string;
+}
+
+const data: ProductResponse = await fetchData();
+
+then we do simply
+
+const { products } = data
+
+If we want to manually type for some reason, would be like
+
+cost { products }: { products: Product[] } = data, or assigning a type to a variable
+const product: Product[] = data.products
+
+and if we do something like const { product: Product } = data; it would be interpreted as
+
+get products from data and rename products to Product
+
+another reminder
+
+when we are destructuring (extracting values of an object), the name before the : is the original key and after the : is
+the new variable name
+
+when we are creating an object or defining properties
+
+before the : is the key of the new object and after it, is an existing variable value
+
 ## Error in the API, NextResponse e NextRequest
 
 I faced an error, where i tried using in the arguments of the functions, res: NextResponse, then when i return a response
@@ -518,3 +555,50 @@ in this request, we can do something like
 
 const searchParams = request.nextUrl.searchParams
 const teste = searchParam.get('teste')
+
+## Request Caching and ISR
+
+In the product route, which retrieves the products object, we created a new constant which holds a `randomNumber` from 0
+to 1, and export it together with the products, by retrieving its value inside the product page, and rendering it, even
+though we might think that it would be calculated again, this doesn't happen, it stays the same
+
+This happens because everytime we do a fetch, with the GET method, every get we execute with NextJS fetch, it is cached
+by default, even if we now use an anonymous tab and visit the page, it will also render the same number. Because this
+cache is in a server level, so all the users of our app, will see the same number.
+
+This behavior is similar to static site generation, if we run a build, we will see that all pages that don't use
+ssr, will to be rendered as static
+
+Even though the fetch request runs on the server to populate the products, at build time, it runs only once and stores
+the result in the cache. As a result, both the products and randomNumber become static.
+
+If we want to get a new response on each API fetch, we can use the cache option in the second parameter of the `fetch`.
+This allow us to specify the maximum caching duration or disable caching entirely.
+
+By running npm run dev again, after disabling the cache, the randomNumber is going to be calculated again.
+
+However, when we run a npm run build, the products folder is now being generated dynamically (server-rendered on demand).
+This means that everytime we access the page, the server generates it using SSR, therefore, each time we run a npm run start
+our random number will always be different. This happens because NextJS is smart enough to recognize that if we don't want
+the response to be cached, it should continuously render a new page everytime a user accesses it.
+
+But let's suppose we want to unite the "two worlds" with incremental static generation, which means, we want to generate
+a static page, but from time to time we want to update the cache, we do like this
+
+fetch('/api/products', {
+next: {
+revalidate: 5
+}
+})
+
+Now, basically every 5 seconds the cache will be revalidated and be recalculated.
+
+By running a npm run build, we'll see the page being rendered as static.
+
+This happens because in ISG we generate a static page with SSG, but from time to time, it gets updated with a running
+server.
+
+If we perform a fetch with revalidation in a file and then make another fetch without revalidation in the same component,
+the second fetch will still be re-executed when the first one revalidates. This happens because we can't mix `ISG` with
+non ISR fetches at component level. To modify this behavior, the only option is increase the revalidation interval for the
+second fetch
