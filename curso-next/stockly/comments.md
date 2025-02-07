@@ -662,3 +662,177 @@ revalidate: 5
 
 where getProducts is the function that has an unstableCache, the second parameter is the key used when we want to invalidate
 this cache, and as third parameter the time interval in which we want to revalidate this cache.
+
+## Function Memoization with React Cache
+
+It's possible to use the request memoization also on db queries. Previously we have seen that if there are multiple GET
+requests to the same url, params, we can condensate 2 or more requests using request memoization. The same thing is possible
+for database calls.
+
+Now, we are making the same request twice, one on the product page component and other one on product list component, and
+we will like to do it only once.
+
+There's an option not using ISG, that is, instead of us using the unstable_cache, we'll simply use
+
+export const cachedProducts = cache(getProducts)
+
+This will also memoize any type of function
+
+## Difference between `unstable_cache` and `cache(getProducts)`
+
+1. Unstable Cache
+   . Allows us to store the response of getProducts in cache
+   . Cache is shared between all requests and will be invalidated after the specified time interval
+   . If multiple calls occur within the same period, all of them will receive the same cached response
+
+2. cache(getProducts)
+
+   . Uses in-memory(RAM) caching at the function level
+   . The cache lasts only during the function execution and does not "persist across" server restarts
+   . There is no automatic revalidation, it simply avoids the re-execution of the same function within the **same rendering
+   cycle**
+
+In summary
+
+. If we need a global, persistent, and automatically revalidated cache, use unstable_cache
+. If we only want to avoid repetitive calls during the same execution, use `cache`
+
+## Granular Form
+
+The concept of granularity refers to the level of detail details or fragmentation at which something can be controlled,
+processed or managed. The more granular, the smaller unit of control. The less granular, the larger and more comprehensive
+the unit.
+
+In the real world, we can think of
+
+1. Little Granularity (Batch updates)
+
+   . We rebuild the entire page using getStaticProps().
+   . If a price change, the whole catalog needs to be updated.
+   . This can be inefficient, because even products that haven't changed, are going to be re-rendered.
+
+2. Moderate Granularity (Revalidation by Category)
+
+   . If one uses ISR (revalidatePath('/products/category/X') ), only products of the category are going to be revalidated
+   . Less processing than re-creating the whole site, but still is not the most efficient
+
+3. High Granularity (individual updates by product)
+
+   . With useSWR or react-query, each product can be updated without affecting the others, e.g.
+
+   ```ts
+   const { data, mutate } = useSWR(`/api/products/${id}`, fetcher);
+
+   const updatePrice = async (newPrice) => {
+     await fetch(`/api/products/${id}`, {
+       method: "PUT",
+       body: JSON.stringify({ price: newPrice }),
+     });
+     mutate();
+   };
+
+   /* 
+      1. useSWR(`/api/products/${id}`, fetcher)
+         Here we are using useSWR, useSWR fetches the product data with the specified id and fetcher is a function that fires
+      the API request.
+      2. mutate()
+         Revalidates the data after the update.
+         useSWR will keep a request cache, and mutate makes it to fetch again the updated data.
+      3. updatePrice Function
+         Realizes a PUT to update the product price
+         Uses Mutate() to ensure that the UI is going to reflect the most recent data
+   */
+   ```
+
+   OR
+
+```ts
+
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
+
+const fetchProduct = async (id) => {
+  const res = await fetch(`/api/products/${id}`);
+  return res.json();
+};
+
+export default function Product({ id }) {
+  const queryClient = useQueryClient();
+
+  const { data: product } = useQuery({
+    queryKey: ["product", id],
+    queryFn: () => fetchProduct(id),
+  });
+
+  const mutation = useMutation({
+    mutationFn: async (newPrice) => {
+      await fetch(`/api/products/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ price: newPrice }),
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["product", id]); // Revalida os dados no cache
+    },
+  });
+
+  return (
+    <div>
+      <p>Price: {product?.price}</p>
+      <button onClick={() => mutation.mutate(99.99)}>Update Price</button>
+    </div>
+  );
+}
+
+/*
+
+   In the
+
+*/
+
+```
+
+Incremental Static Generation can be used in a "granular form" which can refer to different aspects of the application,
+depending on the contex. This wraps up
+
+1. Granular Rendering
+
+. Next.JS allows rendering components or pages in a granular way by choosing the best strategy for each case:
+. SSG (Static Site Generation) for static pages.
+. SSR (Server-Side Rendering) for dybamic pages on the server.
+. ISR (Incremental Static Regeneration) to revalidate pages on demand
+. CSR (Client-Side Rendering) for loading in the browser
+
+. One can combine strategies within the same project, applying them to different routes or even with a single page using
+`useSWR` (Stale While Revalidate) that is a react hook from the swr library, that is an alternative to TanStack Query for
+data fetching, caching, and revalidation in a React app, or the react query
+
+2. Granular Code Splitting
+
+. Next.js automatically splits code by page, loading the necessary resources.
+. One can futher optimize this with
+. React.lazy() and next/dynamic to load components on demand
+. Dynamic layouts to avoid loading large components unnecessarly
+
+3. Granular Caching
+
+. Next.js 14 introduces Partial Prerendering and improved granular caching with the revalidatePath() function, allowing
+one to revalidate only specific parts of a page in ISR
+. One can also manually configure caching for different parts of the application using cache-control and revalidate.
+
+4. Granular Permissions and Authentication
+
+. In apps that use authentication, one can define granular permissions, restricting access to specific parts of the app
+using Middleware, RSC and useSession()
+
+```
+
+```
+
+```
+
+```
