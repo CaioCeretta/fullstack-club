@@ -697,54 +697,59 @@ In summary
 . If we need a global, persistent, and automatically revalidated cache, use unstable_cache
 . If we only want to avoid repetitive calls during the same execution, use `cache`
 
-## Granular Form
+## SWR and Tannstack Query
 
-The concept of granularity refers to the level of detail details or fragmentation at which something can be controlled,
-processed or managed. The more granular, the smaller unit of control. The less granular, the larger and more comprehensive
-the unit.
+1. SWR
 
-In the real world, we can think of
+   . What is SWR ?
 
-1. Little Granularity (Batch updates)
+   SWR is a library used for data fetching. Its name is Stale-While-Revalidate, which means that the data are initially
+   provided by the cache (stale) and, at the same time, they are updated (revalidated), on the background. SWR aids on
+   performance improvement by minimizing requests, storing data on cache and re-fetching it again when necessary.
 
-   . We rebuild the entire page using getStaticProps().
-   . If a price change, the whole catalog needs to be updated.
-   . This can be inefficient, because even products that haven't changed, are going to be re-rendered.
-
-2. Moderate Granularity (Revalidation by Category)
-
-   . If one uses ISR (revalidatePath('/products/category/X') ), only products of the category are going to be revalidated
-   . Less processing than re-creating the whole site, but still is not the most efficient
-
-3. High Granularity (individual updates by product)
-
-   . With useSWR or react-query, each product can be updated without affecting the others, e.g.
+   The main idea is to supply data immediately why they are revalidate synchronously
 
    ```ts
-   const { data, mutate } = useSWR(`/api/products/${id}`, fetcher);
+      import useSWR from 'swr'
 
-   const updatePrice = async (newPrice) => {
-     await fetch(`/api/products/${id}`, {
-       method: "PUT",
-       body: JSON.stringify({ price: newPrice }),
-     });
-     mutate();
-   };
+      const fetchProduct = async (id) => {
+         const res = await fetch(/api/products/${id});
+         return res.json();
+      }
 
-   /* 
-      1. useSWR(`/api/products/${id}`, fetcher)
-         Here we are using useSWR, useSWR fetches the product data with the specified id and fetcher is a function that fires
-      the API request.
-      2. mutate()
-         Revalidates the data after the update.
-         useSWR will keep a request cache, and mutate makes it to fetch again the updated data.
-      3. updatePrice Function
-         Realizes a PUT to update the product price
-         Uses Mutate() to ensure that the UI is going to reflect the most recent data
-   */
+      export default function Product({id}) {
+         const { data: product, mutate} = useSWR(`/api/products/${id}`, fetchProduct)
+
+         const updatePrice = async (newPrice) => {
+            await fetch(`/api/products/${id}`, {
+               method: "PUT",
+               headers: {"Content-Type": "application/json" },
+               body: JSON.stringify({price: newPrice}),
+               })
+               mutate(); // Revalidates cache data
+         }
+
+         return (
+            <div>
+               <p>Price: {product?.price}</p>
+               <button onClick={() => updatePrice(99.99)}> Update Price </button>
+            </div>
+         )
+      }
+
+      /*
+         In this example useSWR is used to fetch data of a product. By updating it, we call the mutate(), that forces a
+         cache revalidation and keeps it updated, reflecting on UI changes
+      */
    ```
 
-   OR
+2. TanStack Query
+
+   TansStack Query is a more robust library for assynchronous data management in React. In addition to fetch data like
+   SWR, it offers us more advanced functionalities, like the support to mutations (change in data), automatic refetch,
+   cache control, optimistic updates, etc.
+
+   Example:
 
 ```ts
 
@@ -763,8 +768,8 @@ export default function Product({ id }) {
   const queryClient = useQueryClient();
 
   const { data: product } = useQuery({
-    queryKey: ["product", id],
-    queryFn: () => fetchProduct(id),
+    queryKey: ["product", id], // Unique key for cache
+    queryFn: () => fetchProduct(id), // Function that fetches data
   });
 
   const mutation = useMutation({
@@ -790,11 +795,96 @@ export default function Product({ id }) {
 
 /*
 
-   In the
+   Code breakdown:
+
+      1. useQueryClient() returns a query client instance, that is responsible to manage the cache and allow invalidation
+
+
+      2. useQuery to fetch the product
+
+         . useQuery is being used to fetch the product
+         . it receives a configuration object with two main properties
+            1. queryKey: defines a unique identifier to store data incache
+            2. queryFn: defines the function that fetches data
+
+         How does the caching works?
+
+            . If ["product", id] are already on cache, react query immediately returns the data
+
+            . Otherwise, the fetchProduct(id) will be called
+
+      3. useMutation to update the price
+
+         . useMutation is used to perform the mutation (i.e. changing data on server)
+         . It receives a configuration object with two main properties
+
+            1. mutationFn: assynchronous function that sends the PUT request to update the product data
+            2. onSuccess: After the mutation success, we call the queryClient.invalidateQueries(["product", id]), which
+            forces the cache revalidation
+
+      4. Flow of execution in tanstack query
+
+         1. Component is rendered - useQuery tries to fetch the data
+            . If there is already a cache, the data will be loaded immediately
+            . Otherwise, fetchProduct(id) is called
+
+         2. User clicks on the update price button - mutation.mutate(99.99)
+            . Dispatch the PUT request to update the price on the server
+            . After the success, invalidates the query
+
+         3. Cache is invalidated.
+            . This makes that the UI show the updated data automatically
 
 */
 
 ```
+
+###🔍 Comparison: `useSWR` (Vercel) vs `useQuery` (TanStack)
+
+| **Feature**               | **useSWR (Vercel)**         | **useQuery (TanStack)**              |
+| ------------------------- | --------------------------- | ------------------------------------ |
+| **Default Fetching**      | Stale-while-revalidate      | Background refetching                |
+| **Mutations**             | ✅ Yes (`mutate`)           | ✅ Yes (`useMutation`)               |
+| **Auto Refetch on Focus** | ✅ Yes                      | ✅ Yes                               |
+| **Interval Refetching**   | ✅ Yes (`refreshInterval`)  | ✅ Yes (`refetchInterval`)           |
+| **Prefetching Data**      | ✅ Yes                      | ✅ Yes (`queryClient.prefetchQuery`) |
+| **Query Key Structure**   | URL-based                   | Flexible (custom query keys)         |
+| **Server-Side Support**   | ✅ Yes (Next.js API Routes) | ✅ Yes (`React Query Hydration`)     |
+
+💡 **Conclusion:**
+
+- `useSWR` is great for simple URL-based data fetching and works seamlessly within the Vercel ecosystem.
+- `useQuery` provides more control and flexibility, making it a powerful choice for complex applications.
+
+In Summary
+
+SWR - Better for simple requests and cases where performance and simplicity are key
+
+TanStack Query - Best for complex cases involving mutations, real-time synchronization, cache granular control
+and advanced optimizations
+
+## Granular Form
+
+The concept of granularity refers to the level of detail details or fragmentation at which something can be controlled,
+processed or managed. The more granular, the smaller unit of control. The less granular, the larger and more comprehensive
+the unit.
+
+In the real world, we can think of
+
+1. Little Granularity (Batch updates)
+
+   . We rebuild the entire page using getStaticProps().
+   . If a price change, the whole catalog needs to be updated.
+   . This can be inefficient, because even products that haven't changed, are going to be re-rendered.
+
+2. Moderate Granularity (Revalidation by Category)
+
+   . If one uses ISR (revalidatePath('/products/category/X') ), only products of the category are going to be revalidated
+   . Less processing than re-creating the whole site, but still is not the most efficient
+
+3. High Granularity (individual updates by product)
+
+   . With useSWR or react-query, each product can be updated without affecting the others, e.g.
 
 Incremental Static Generation can be used in a "granular form" which can refer to different aspects of the application,
 depending on the contex. This wraps up
@@ -809,7 +899,7 @@ depending on the contex. This wraps up
 
 . One can combine strategies within the same project, applying them to different routes or even with a single page using
 `useSWR` (Stale While Revalidate) that is a react hook from the swr library, that is an alternative to TanStack Query for
-data fetching, caching, and revalidation in a React app, or the react query
+data fetching, caching, and revalidation in a React app, or the react query (View the topic about the differences)
 
 2. Granular Code Splitting
 
@@ -828,11 +918,3 @@ one to revalidate only specific parts of a page in ISR
 
 . In apps that use authentication, one can define granular permissions, restricting access to specific parts of the app
 using Middleware, RSC and useSession()
-
-```
-
-```
-
-```
-
-```
