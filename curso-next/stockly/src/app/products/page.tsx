@@ -1,12 +1,8 @@
-import {
-  cachedGetProducts,
-  getProducts,
-} from "@/_data/dal/product/get-products";
+import { cachedGetProducts } from "@/_data/dal/product/get-products";
 import { Button } from "@/app/_components/ui/button";
 import { PlusIcon } from "lucide-react";
 import { DataTable } from "../_components/ui/data-table";
 import { productTableColumns } from "./_components/table-columns";
-import { unstable_cache } from "next/cache";
 
 /* 
   By creating here like this, everytime the application is rebuilded, we are going to generate a new db connection, because
