@@ -72,7 +72,7 @@ const ProductsPage = async () => {
           <DialogTrigger asChild>
             <Button className="gap-2">
               <PlusIcon size={20} />
-              New Product
+              New Producta
             </Button>
           </DialogTrigger>
           <DialogContent>
