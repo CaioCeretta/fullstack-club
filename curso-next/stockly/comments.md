@@ -970,4 +970,20 @@ one to revalidate only specific parts of a page in ISR
 . In apps that use authentication, one can define granular permissions, restricting access to specific parts of the app
 using Middleware, RSC and useSession()
 
-## React Hook Form & Zod
+## Shadcn Dialog & React Hook Form & Zod
+
+In the dialog component, one error that we may face during the next development is, that the Dialog needs a DialogTrigger
+that will fire for opening the dialog, but if we do something as
+
+<DialogTrigger>
+   <button> Open the Dialog </button>
+</DialogTrigger>
+
+DialogTrigger is a component that, at the end of the day, is "just" a button, so when clicking on this trigger, we'll see
+a hydration error. This happens when we have something like a button inside antoher button, which is an invalid HTML. As
+a result, the server sends this incorrect HTML, and the client needs to fix it, leading to a mismatch between what is
+rendered for the user and what the server originally sent.
+
+To fix this, we need to add the `asChild` property to the `DialogTrigger` component. By doing this, we indicate that the
+trigger will now render its child element directly. Essentially, the functionality of this component is passed down to
+its child, eliminating the outer button and preventing the hydration error.
