@@ -1,5 +1,45 @@
 # File for components that i found useful
 
+## Folder Structure
+
+**Even though it is a personal preference, in projects with more developers, it's always better to always follow the
+structure preferred and chosen by the team, this comment is only for personal projects**
+
+One thing the instructor does, that is not so common and i don't think it's the correct, is that he creates the folder
+components inside the app, aswell as the shadcn components/utils.
+
+This approach is not the best one, because when we put components inside app, even though it may work, it can possibly
+cause some problems such as:
+
+1. Separation of Concerns
+
+   The folder app/ is specifically for the routing structure of the pages inside app router. Reusable components are not
+   exclusive of a specific route and can be used in different parts of the application, so it makes more sense for it to
+   be outside app/
+
+2. Avoid Unnecessary Re-render
+
+   By puting components/ inside app/ it can lead to extra re-renderings, specially because any change inside app/ may af-
+   fect next's cache behavior. Keeping the components folder outside of the app, will improve the predictability of the
+   cache behavior and react server components
+
+So the best approach, in my view is
+
+src/
+├── app/ # Pages and Layouts
+├── components/ # Reusable Components
+├── utils/ # Auxiliary functions
+├── lib/ # Third-party configuring (ex: shadcn, prisma)
+├── styles/ # Global Styling
+
+and if there are specific components of a route
+
+src/
+├── app/
+│ ├── dashboard/|  
+│ │ ├── page.tsx
+│ │ ├── components/ # Dashboard exclusive component
+
 ## Naming conventions
 
 1. Prefix with \_ folders that won't have a page inside of it, in practice, it will make this a private folder for next, so
@@ -929,3 +969,5 @@ one to revalidate only specific parts of a page in ISR
 
 . In apps that use authentication, one can define granular permissions, restricting access to specific parts of the app
 using Middleware, RSC and useSession()
+
+## React Hook Form & Zod
