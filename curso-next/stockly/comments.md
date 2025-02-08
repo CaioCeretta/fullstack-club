@@ -815,12 +815,22 @@ export default function Product({ id }) {
 
       3. useMutation to update the price
 
+         . useMetation avoids unnecessary re-fetches, being invoked only when the mutation is triggered (different from
+         useQuery that is automatic)
+         . It has an automated state management, tanstackq query deals with the states of loading, error and success, so
+         we do not need to controll it manually
+         . Efficient cache updates, when we use (e.g. queryClient.invalidateQueries(["product", id])) the product cache is
+         updated after the mutation, avoiding inconsistences
          . useMutation is used to perform the mutation (i.e. changing data on server)
          . It receives a configuration object with two main properties
-
             1. mutationFn: assynchronous function that sends the PUT request to update the product data
             2. onSuccess: After the mutation success, we call the queryClient.invalidateQueries(["product", id]), which
             forces the cache revalidation
+
+         . In conclusion it allows us to modify in data server with no need to manage the state manually, allowing us to
+         invalidate the cache in an efficient manner, ensuring that the frontend will always show updated information.
+
+
 
       4. Flow of execution in tanstack query
 
@@ -834,6 +844,7 @@ export default function Product({ id }) {
 
          3. Cache is invalidated.
             . This makes that the UI show the updated data automatically
+
 
 */
 
