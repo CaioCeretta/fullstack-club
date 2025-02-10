@@ -1,16 +1,7 @@
 import { cachedGetProducts } from "@/_data/dal/product/get-products";
-import { Button } from "@/app/_components/ui/button";
-import { PlusIcon } from "lucide-react";
 import { DataTable } from "../_components/ui/data-table";
+import AddProductButton from "./_components/add-product-button";
 import { productTableColumns } from "./_components/table-columns";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "../_components/ui/dialog";
 
 /* 
   By creating here like this, everytime the application is rebuilded, we are going to generate a new db connection, because
@@ -68,22 +59,7 @@ const ProductsPage = async () => {
           </span>
           <h2 className="text-xl font-semibold">Products</h2>
         </div>
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button className="gap-2">
-              <PlusIcon size={20} />
-              New Producta
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Create Product</DialogTitle>
-              <DialogDescription>
-                Please enter the information below
-              </DialogDescription>
-            </DialogHeader>
-          </DialogContent>
-        </Dialog>
+        <AddProductButton />
       </div>
 
       <DataTable
