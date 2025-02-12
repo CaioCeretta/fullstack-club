@@ -5,99 +5,80 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 /*
-   Full Explanation of the Code:
-
-   Here we created a dynamic form using rhf to manipulate an array of products. Users can add and remove products dynami
-   cally, and the values are validated using Zod
-
-   Main Structure
-
-   1. Form configuration with RHF
-   2. Fields manipulation with useFieldArray
-   3. Styling with tailwind for a more pleasant layout
-
-   Step 1: Form Configuration
-
-   . useForm: Manages the values of the form and validation
-   . useFieldArray: Allow us to manipulate input fields in an optimized manner
-   . zod: defines the rules of validation
-   . zodResolver: Integrates zod to rhf to validate the data automatically
-
-   Step 2: Creating Zod Validation
-
-   We'll use zod to ensure the user will fill the fiels correctly
-   so here name needs at least 2 characters and price must be a number
-
-   Step 3: Initializing the Form
-
-   const { register, control, handlSubmit, formState: { errors } } = useForm({
-   resolver: zodResolver(schema),
-   defaultValues: { products: [{name: "", price: ""}]}
-   })
-
-   register - register the fields in the form
-   control - required for the useFieldArray
-   handleSubmit: deals with the form submitting
-   errors: validation errors
-   defaultValues: initial values (empty product)
-
-   Step 4: Handling of the Field Array
-
-   const { fields, append, remove } = useFieldArray({
-      control,
-      name: "products"
-   })
-
-   fields: Array with the registered fields
-   append({name: "", price: ""}): Adding a new product to the list
-   remove(index): Removes a product based on the index
-
-   Step 5: Form Rendering
-
-      <form
-         onSubmit={handleSubmit(console.log)}
-         className="w-full max-w-lg bg-white p-6 rounded-xl shadow-md space-y-4"
-      > 
-
-   * CRITICAL PART *
-
-   We iterate over the fields array to show the products dynamically
-
-   {fields.map((field, index) => (
-         div key={field.id} className="flex gap-4 items-center border-b pb-4">
-   ))}
-
-   each field has a unique id key to avoid any problem
-
-   inside the loop we will have the inputs with name and price
-
-   <input {...register(`product.${index}.name)}
-      placeholder="Nome do produto"
-      className="w-full p-2 border rounded-lg focus:ring focus:ring-blue-300"
-   />
-
-   if there is an error we show the message
-
-   {errors.products?.[index]?.name && (
-      <p className="text-red-500 text-sm">
-         {errors.products[index].name.message}
-      </p>
-   )}
-
-   the remove, removes the index.
-
-   Step 6: Action buttons
-
-      1. button add
-
-      onClick will simply append a new empty product onClick
-
-      2. form send
-         simply send
-
    
-   In summary the main benefits of this approach is that it has optimized performance, less manual code, and robust validation
+  The problem we may face with dynamic forms, usually lies on the need to manage an array of fields using useState, or
+  create a function to add/remove items, or ensuring each field will have a unique identifier, and others. But with
+  useFieldArray from rhf, we are able to do this with validations and lots of re-renders
 
+  1. How does `useFieldArray` solves this?
+
+  `useFieldArray` allow us to manipulate field arrays inside forms in a very efficient way, without the need to manually
+  create a useState, so this is how it works.
+
+  Example: Form where the user can add and remove products
+
+    import { useFormn, useFieldArray } from 'react-hook-form'
+
+    export default function myForm() {
+      const { register, control, handleSubmit } = useForm({
+        defaultValues: { products: [{name: "", price: ""}] }
+      })
+
+      const { fields, append, remove } = useFieldArray({
+        control,
+        name: "products"
+      })
+
+      const onSubmit = (data) => console.log(data);
+
+      return (
+        <form onSubmit={handleSubmit(onSubmit)}>
+          {fields.map((field, index) => (
+            <div key={field.id}>
+              <input
+                {...register(`products.${index}.name`)}
+                placeholder="Nome do produto"
+              />
+              <input
+                {...register(`products.${index}.price`)}
+                placeholder="Preço"
+                type="number"
+              />
+              <button type="button" onClick={() => remove(index)}>Remover</button>
+            </div>
+          ))}
+
+          <button type="button" onClick={() => append({ name: "", price: "" })}>
+            Adicionar Produto
+          </button>
+          <button type="submit">Enviar</button>
+        </form>
+      );
+    }
+  }
+
+  3. What's happening here?
+
+  . Fields
+
+  - Array containing all the itens inside the products field. Each item automatically receives a field.id, ensuring that
+  the reactivity will work well
+
+  . append({name: "", price: ""})
+
+  - This function adds a new field to the array, when the user adds a product, a new set of inputs will show
+
+  . remove(index)
+
+  - Removes a specific field of the array
+
+  . control
+
+  - control is necessary so that rhf can correctly manage the dynamic list, it's an object
+
+    
+
+  
 
 */
 
