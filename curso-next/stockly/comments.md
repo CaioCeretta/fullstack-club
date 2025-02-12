@@ -972,18 +972,152 @@ using Middleware, RSC and useSession()
 
 ## Shadcn Dialog & React Hook Form & Zod
 
-In the dialog component, one error that we may face during the next development is, that the Dialog needs a DialogTrigger
-that will fire for opening the dialog, but if we do something as
+   ### ShadcnDialog
 
-<DialogTrigger>
-   <button> Open the Dialog </button>
-</DialogTrigger>
+   In the dialog component, one error that we may face during the next development is, that the Dialog needs a DialogTrigger
+   that will fire for opening the dialog, but if we do something as
 
-DialogTrigger is a component that, at the end of the day, is "just" a button, so when clicking on this trigger, we'll see
-a hydration error. This happens when we have something like a button inside antoher button, which is an invalid HTML. As
-a result, the server sends this incorrect HTML, and the client needs to fix it, leading to a mismatch between what is
-rendered for the user and what the server originally sent.
+   <DialogTrigger>
+      <button> Open the Dialog </button>
+   </DialogTrigger>
 
-To fix this, we need to add the `asChild` property to the `DialogTrigger` component. By doing this, we indicate that the
-trigger will now render its child element directly. Essentially, the functionality of this component is passed down to
-its child, eliminating the outer button and preventing the hydration error.
+   DialogTrigger is a component that, at the end of the day, is "just" a button, so when clicking on this trigger, we'll see
+   a hydration error. This happens when we have something like a button inside antoher button, which is an invalid HTML. As
+   a result, the server sends this incorrect HTML, and the client needs to fix it, leading to a mismatch between what is
+   rendered for the user and what the server originally sent.
+
+   To fix this, we need to add the `asChild` property to the `DialogTrigger` component. By doing this, we indicate that the
+   trigger will now render its child element directly. Essentially, the functionality of this component is passed down to
+   its child, eliminating the outer button and preventing the hydration error.
+
+   ### Zod
+
+   Zod is a validation library and it can work together with the React Hook Form.
+
+   We start by importing { z } from zod, and after this z, we can create many functions with it
+
+   We can start by creating a zod schema, by creating something like
+
+   const formSchema = z.schema({
+      name: z.string()
+      price: z.number().min(1, {
+         message: 'The minimum value is 1'
+      })
+   })
+
+   After creating the schema, and by also importing the zodResolver from '@hookform/resolvers/zod', we will be able to
+   "entangle" the zod resolver to our form instance, from react-hook-form, so after using that resolver on it, whenever we
+   are going to create a new input, it will now know all the available inputs, and if we try to use any inputs that are not
+   part of our zodSchema, it will show us an error
+
+   ### React Hook Form
+
+      We could manage a form with just useState and onChange handlers, but a 3rd party library such as RHF does all the "heavy
+   lifting" for us, so we don't have to manually track values, handle validations, and deal with unnecessary re-renders
+
+      So while improving the productivity, whereas we don't need to control the form for every field, using useState, and a
+   separate function for validation, and another one to handle the submit, with it, we can just `register`our inputs and it
+   tracks everything for us.
+      
+      And react's state updates will cause re-renders, which can be a pain in large forms, but because RHF use s uncontrolled
+   inputs (via refs), meaning React doesn't re-render on every keystroke. Our form will stay 'snappy'.
+
+      RHF has a built-in suppport for validation with libraries, such as Zod, or native HTML, which means that manually coding
+   validation means writing tons of if checks, and with this, validation is declarative and centralized. It's just a schema
+   clean and simple. Instead of writing a function to validate an e-mail, whf will just know how to handle these erros, with
+   something as
+
+      const schema = z.object({
+         email: z.string().email('Invalid Email')
+      })
+
+      It has an 'Automatic Form State Management', so normally we would track isSubmitting, isDirty, errors manually, and with
+   useForm: const { formState: { isSubmitting, isDirty, errors } } = useForm();
+
+   ### Easy Integration with Custom components
+
+      RHF makes easy to integrate custom components into our forms without much extra setup. If we have complex inputs like
+      date pickers, dropdowns, or custom checkboxes, we can use the Controller component to bind them to form state
+
+      Instead of manually managing the state of each field, the Controller component handles the interaction between our
+      component and rhf's form management
+
+      for example
+
+      ```ts
+         import { Controller, useForm } from 'react-hook-form';
+
+         function CustomInput({ control }) {
+            return(
+               <Controller
+                  control={control}
+                  name="username"
+                  render={({field}) => <input {...field}>}
+               />
+            );
+         }
+      ```
+
+      Controller is a rhf compoent used to integrate `uncontrolled components (such as custom components or components
+      from UI libraries)` with rhf's form managing. When we need to use a component that does not manages its internal
+      state using a native form, such as an input, the controller is the tool that conects this component to the RHF,
+      allowing it to participate on the validation and the form state
+
+      code breakdown
+
+         1 - Custom Component
+
+            . CustomInput component receives the control as a prop, this control is passed from the parent component, from
+            where the useForm() was called
+            . Inside of it, Controller is used to conect the custom component, (simple input in this case) to the rhf's
+            managing system
+         
+         2. Controller
+
+            . control={control} hwere we are passing the control, which came from useForm, to the Controller, this is needed
+            for the Controller to know the state of the form it must control
+            . name="username: name of the input field that Controller will register in the form state and how we'll access
+            it from the data when submitted
+            . render=(({field}) => <input {...field} />): Here we are using the render prop of the controller to render
+            the input, function render receives an object field, which contain necessary properties like onChange, onBlur,
+            etc.
+
+      - And when should we use it?
+
+         If we were using only one basic html input, we could use only register from seForm, but when the input is a custom
+         component, such as a DatePicker, Select or anything from an external library, Controller is REQUIRED to ensure
+         the value of this field will be correctly managed by RHF
+
+
+
+   
+
+   ### Dynamic Forms Explanation
+
+      It also works well with Dynamic Forms. Adding/removing fields dynamically with manual state management is quite troublesome
+   but with RHF it is easier, so if we have something as
+
+      const { fields. append remove} = useFieldArray({name: "items"})
+
+      useFieldArray is one of the best resources from rhf, because it's pretty useful when we need to add or remove fields
+   dynamically.
+
+      If we were to use controlled forms with a useState, we would have to generate a fieldArray with a useState([]), then
+   create a function to add/remoe items, then ensuring that each field has a unique identifier and then synchronize the values
+   correctly with onChange, and this would be really laborious. 
+
+      `useFieldArray` allow us to manipulate field arrays inside the form without the need of a useState
+
+      For instance: 
+
+      Example Code will be on the Dynamic Form component
+
+
+
+
+
+
+
+
+
+
