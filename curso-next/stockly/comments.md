@@ -1113,6 +1113,39 @@ using Middleware, RSC and useSession()
       Example Code will be on the Dynamic Form component
 
 
+   ### Our example
+
+      On our example, on rhf, the inputs were coded like this
+
+      <FormField
+         control={form.control}
+         name="name"
+         render={({field}) => (
+            <FormItem>
+               <FormLabel>Product Name</FormLabel>
+               <FormControl>
+               <Input placeholder="Enter product name" {...field} />
+               </FormControl>
+               <FormMessage />
+            </FormItem>
+         )}
+      />
+
+      this happens because this coded with the FormField from shadcn, field passed inside render already contains the properties
+      from register, so the <Input> is still used as an control field, and this allows us to use shadcn/ui in a more "integrated"
+      manner.
+
+      The benefits of FormField includes:
+         . Best integration with react-hook-form: it already takes care of field state binding
+         . More patternized componentization: it helps us keeping a consistent styling on big forms
+         . Integrated validation and error messages: Such as the FormMessage, that shows errors automatically
+
+      
+
+
+
+
+
 
 
 
