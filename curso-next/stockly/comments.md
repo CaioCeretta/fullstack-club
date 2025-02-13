@@ -990,6 +990,11 @@ To fix this, we need to add the `asChild` property to the `DialogTrigger` compon
 trigger will now render its child element directly. Essentially, the functionality of this component is passed down to
 its child, eliminating the outer button and preventing the hydration error.
 
+To keep track if the dialog is open or not, we are going to create a state of isDialogOpen, then on the Dialog it will
+receive an attribute open, being equal to this state, and another attribute of openChange, being equal to the setter of
+this state. Now, on our onSubmit function, after the tasks are completed, we can set it as false and the dialog will
+close as soon as it finishes
+
 ### Zod
 
 Zod is a validation library and it can work together with the React Hook Form.
@@ -1186,15 +1191,11 @@ correctly with onChange, and this would be really laborious.
 
       To prevent this, we can modify the onChange handler, like this
 
-      onChange={(event) => {
-         const value = event.target.value;
-         const parsedValue = value ? Number(value).soString() : "";
-         field.onChange(parsedValue)
-      }}
-
-      what this does, is that if there is a value on the input, it will convert to number and back to string, so if
-      it is empty, it remains "" to avoid issues with required fields. Otherwhise, it convertes the value to a number and
-      then back to a string, which will remove the leading zeros
+          onChange={(event) => {
+            const value = event.target.value
+            const parsedValue = value ? Number(value) : 0 // Aqui, converte para número
+            field.onChange(parsedValue) // Passa o número diretamente
+          }}
 
 ## Server Actions
 
