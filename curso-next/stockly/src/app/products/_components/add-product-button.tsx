@@ -15,7 +15,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/app/_components/ui/dialog'
-import { PlusIcon } from 'lucide-react'
+import { Loader2Icon, PlusIcon } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import {
   Form,
@@ -26,6 +26,8 @@ import {
   FormMessage,
 } from '@/app/_components/ui/form'
 import { Input } from '@/app/_components/ui/input'
+import { createProduct } from '@/app/_actions/product/create-product'
+import { useState } from 'react'
 
 const addProductFormSchema = z.object({
   name: z
@@ -43,6 +45,8 @@ const addProductFormSchema = z.object({
 type AddProductType = z.infer<typeof addProductFormSchema>
 
 const AddProductButton = () => {
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false)
+
   const form = useForm<AddProductType>({
     shouldUnregister: true,
     resolver: zodResolver(addProductFormSchema),
@@ -53,12 +57,40 @@ const AddProductButton = () => {
     },
   })
 
-  function onSubmit(data: AddProductType) {
-    console.log(data)
+  async function onSubmit(data: AddProductType) {
+    try {
+      /*await createProduct({
+        name: data.name,
+        price: data.price,
+        stock: data.stock,
+      }) OR simply
+      */
+      console.log(isDialogOpen)
+      await createProduct(data)
+      /*
+      The reason why the second approach work, where we don't need to specify the object keys, is because of the implicit
+      destructuring, because object data already has the necessary structure for the createProduct function, because when
+      we pass data directly
+
+      await createProduct(data), if the function createProduct, expects an object with the same structure of data, (that is
+      name, price and stock) as properties of the object, we can simply pass the whole object
+
+      on the first example, where we use destructuring on it, we are basically creatubg a new object and extracing the
+      priperties from data to it. This is useful if we want to ensure that only some of the properties of the original
+      object are being passed to the function or we want to make a transformation on it
+
+      But both approaches we are passing an object with the needed properties, when we pass data directly, we are passing
+      the whole object, which is enough for the function.
+      
+      */
+      setIsDialogOpen(false)
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   return (
-    <Dialog>
+    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger asChild>
         <Button className="gap-2">
           <PlusIcon size={20} />
@@ -121,9 +153,7 @@ const AddProductButton = () => {
                       {...field}
                       onChange={(event) => {
                         const value = event.target.value
-                        const parsedValue = value
-                          ? Number(value).toString()
-                          : ''
+                        const parsedValue = value ? Number(value) : 0
 
                         field.onChange(parsedValue)
                       }}
@@ -135,7 +165,12 @@ const AddProductButton = () => {
             />
 
             <DialogFooter>
-              <Button type="submit">Save</Button>
+              <Button disabled={form.formState.isSubmitting} type="submit">
+                {form.formState.isSubmitting && (
+                  <Loader2Icon size={16} className="animate-spin" />
+                )}
+                Save
+              </Button>
               <DialogClose asChild>
                 <Button variant="secondary" type="reset">
                   Cancel
