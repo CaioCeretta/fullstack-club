@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from '@prisma/client'
 
 /*
   Explanation of what this file is doing
@@ -58,7 +58,7 @@ import { PrismaClient } from "@prisma/client";
 
 declare global {
   // eslint-disable-next-line no-var
-  var cachedPrisma: ReturnType<typeof createPrismaClient>;
+  var cachedPrisma: ReturnType<typeof createPrismaClient>
 }
 
 const createPrismaClient = () => {
@@ -69,16 +69,16 @@ const createPrismaClient = () => {
           needs: { stock: true },
           compute(product) {
             if (product.stock <= 0) {
-              return "OUT_OF_STOCK";
+              return 'OUT_OF_STOCK'
             } else {
-              return "IN_STOCK";
+              return 'IN_STOCK'
             }
           },
         },
       },
     },
-  });
-};
+  })
+}
 
 /*  
   Explanation of the status column
@@ -96,15 +96,15 @@ const createPrismaClient = () => {
   each product, see its stock, and return the value
 */
 
-let prisma: ReturnType<typeof createPrismaClient>;
-if (process.env.NODE_ENV === "production") {
-  prisma = createPrismaClient();
+let prisma: ReturnType<typeof createPrismaClient>
+if (process.env.NODE_ENV === 'production') {
+  prisma = createPrismaClient()
 } else {
   if (!global.cachedPrisma) {
-    global.cachedPrisma = createPrismaClient();
+    global.cachedPrisma = createPrismaClient()
   }
 
-  prisma = global.cachedPrisma;
+  prisma = global.cachedPrisma
 }
 
-export const db = prisma;
+export const db = prisma
