@@ -972,69 +972,74 @@ using Middleware, RSC and useSession()
 
 ## Shadcn Dialog & React Hook Form & Zod
 
-   ### ShadcnDialog
+### ShadcnDialog
 
-   In the dialog component, one error that we may face during the next development is, that the Dialog needs a DialogTrigger
-   that will fire for opening the dialog, but if we do something as
+In the dialog component, one error that we may face during the next development is, that the Dialog needs a DialogTrigger
+that will fire for opening the dialog, but if we do something as
 
    <DialogTrigger>
       <button> Open the Dialog </button>
    </DialogTrigger>
 
-   DialogTrigger is a component that, at the end of the day, is "just" a button, so when clicking on this trigger, we'll see
-   a hydration error. This happens when we have something like a button inside antoher button, which is an invalid HTML. As
-   a result, the server sends this incorrect HTML, and the client needs to fix it, leading to a mismatch between what is
-   rendered for the user and what the server originally sent.
+DialogTrigger is a component that, at the end of the day, is "just" a button, so when clicking on this trigger, we'll see
+a hydration error. This happens when we have something like a button inside antoher button, which is an invalid HTML. As
+a result, the server sends this incorrect HTML, and the client needs to fix it, leading to a mismatch between what is
+rendered for the user and what the server originally sent.
 
-   To fix this, we need to add the `asChild` property to the `DialogTrigger` component. By doing this, we indicate that the
-   trigger will now render its child element directly. Essentially, the functionality of this component is passed down to
-   its child, eliminating the outer button and preventing the hydration error.
+To fix this, we need to add the `asChild` property to the `DialogTrigger` component. By doing this, we indicate that the
+trigger will now render its child element directly. Essentially, the functionality of this component is passed down to
+its child, eliminating the outer button and preventing the hydration error.
 
-   ### Zod
+### Zod
 
-   Zod is a validation library and it can work together with the React Hook Form.
+Zod is a validation library and it can work together with the React Hook Form.
 
-   We start by importing { z } from zod, and after this z, we can create many functions with it
+We start by importing { z } from zod, and after this z, we can create many functions with it
 
-   We can start by creating a zod schema, by creating something like
+We can start by creating a zod schema, by creating something like
 
-   const formSchema = z.schema({
-      name: z.string()
-      price: z.number().min(1, {
-         message: 'The minimum value is 1'
-      })
-   })
+const formSchema = z.schema({
+name: z.string()
+price: z.number().min(1, {
+message: 'The minimum value is 1'
+})
+})
 
-   After creating the schema, and by also importing the zodResolver from '@hookform/resolvers/zod', we will be able to
-   "entangle" the zod resolver to our form instance, from react-hook-form, so after using that resolver on it, whenever we
-   are going to create a new input, it will now know all the available inputs, and if we try to use any inputs that are not
-   part of our zodSchema, it will show us an error
+After creating the schema, and by also importing the zodResolver from '@hookform/resolvers/zod', we will be able to
+"entangle" the zod resolver to our form instance, from react-hook-form, so after using that resolver on it, whenever we
+are going to create a new input, it will now know all the available inputs, and if we try to use any inputs that are not
+part of our zodSchema, it will show us an error
 
-   ### React Hook Form
+### React Hook Form
 
       We could manage a form with just useState and onChange handlers, but a 3rd party library such as RHF does all the "heavy
-   lifting" for us, so we don't have to manually track values, handle validations, and deal with unnecessary re-renders
+
+lifting" for us, so we don't have to manually track values, handle validations, and deal with unnecessary re-renders
 
       So while improving the productivity, whereas we don't need to control the form for every field, using useState, and a
-   separate function for validation, and another one to handle the submit, with it, we can just `register`our inputs and it
-   tracks everything for us.
-      
+
+separate function for validation, and another one to handle the submit, with it, we can just `register`our inputs and it
+tracks everything for us.
+
       And react's state updates will cause re-renders, which can be a pain in large forms, but because RHF use s uncontrolled
-   inputs (via refs), meaning React doesn't re-render on every keystroke. Our form will stay 'snappy'.
+
+inputs (via refs), meaning React doesn't re-render on every keystroke. Our form will stay 'snappy'.
 
       RHF has a built-in suppport for validation with libraries, such as Zod, or native HTML, which means that manually coding
-   validation means writing tons of if checks, and with this, validation is declarative and centralized. It's just a schema
-   clean and simple. Instead of writing a function to validate an e-mail, whf will just know how to handle these erros, with
-   something as
+
+validation means writing tons of if checks, and with this, validation is declarative and centralized. It's just a schema
+clean and simple. Instead of writing a function to validate an e-mail, whf will just know how to handle these erros, with
+something as
 
       const schema = z.object({
          email: z.string().email('Invalid Email')
       })
 
       It has an 'Automatic Form State Management', so normally we would track isSubmitting, isDirty, errors manually, and with
-   useForm: const { formState: { isSubmitting, isDirty, errors } } = useForm();
 
-   ### Easy Integration with Custom components
+useForm: const { formState: { isSubmitting, isDirty, errors } } = useForm();
+
+### Easy Integration with Custom components
 
       RHF makes easy to integrate custom components into our forms without much extra setup. If we have complex inputs like
       date pickers, dropdowns, or custom checkboxes, we can use the Controller component to bind them to form state
@@ -1071,7 +1076,7 @@ using Middleware, RSC and useSession()
             where the useForm() was called
             . Inside of it, Controller is used to conect the custom component, (simple input in this case) to the rhf's
             managing system
-         
+
          2. Controller
 
             . control={control} hwere we are passing the control, which came from useForm, to the Controller, this is needed
@@ -1088,32 +1093,30 @@ using Middleware, RSC and useSession()
          component, such as a DatePicker, Select or anything from an external library, Controller is REQUIRED to ensure
          the value of this field will be correctly managed by RHF
 
-
-
-   
-
-   ### Dynamic Forms Explanation
+### Dynamic Forms Explanation
 
       It also works well with Dynamic Forms. Adding/removing fields dynamically with manual state management is quite troublesome
-   but with RHF it is easier, so if we have something as
+
+but with RHF it is easier, so if we have something as
 
       const { fields. append remove} = useFieldArray({name: "items"})
 
       useFieldArray is one of the best resources from rhf, because it's pretty useful when we need to add or remove fields
-   dynamically.
+
+dynamically.
 
       If we were to use controlled forms with a useState, we would have to generate a fieldArray with a useState([]), then
-   create a function to add/remoe items, then ensuring that each field has a unique identifier and then synchronize the values
-   correctly with onChange, and this would be really laborious. 
+
+create a function to add/remoe items, then ensuring that each field has a unique identifier and then synchronize the values
+correctly with onChange, and this would be really laborious.
 
       `useFieldArray` allow us to manipulate field arrays inside the form without the need of a useState
 
-      For instance: 
+      For instance:
 
       Example Code will be on the Dynamic Form component
 
-
-   ### Our example
+### Our example
 
       On our example, on rhf, the inputs were coded like this
 
@@ -1140,17 +1143,84 @@ using Middleware, RSC and useSession()
          . More patternized componentization: it helps us keeping a consistent styling on big forms
          . Integrated validation and error messages: Such as the FormMessage, that shows errors automatically
 
-      
+      The reason why it has integration with typescript, lies on the <Form> component that receives the form object that
+      useForm gives us.
 
+      To be able to fill the form, but unregister the data used, we added on the options of the useForm a property named
+      shouldUnregister: true,
 
+      To format the price input, the installed a npm library called react-number-format, and as the input, instead of using
+      a <input type="number"> we used the NumericFormat from this library where we add our prefixes and separators as props
+      to the component
 
+      By default, the react-number-format and the FormField whenever we don't pass the type as a number, it will always
+      interpret it as a string
 
+      so in order two fix we'll have two different approaches
 
+      for the NumericFormat, we add the attributes
+      onValueChange={(value) =>
+         field.onChange(value.floatValue)
+      }
+      onChange={() => {}}
 
+      the need for this onChange, is because onValueChange he gives us all the values including the numeric value, so we
+      are calling the onChange from react-hook-form passing the numeric value and this will make rhf to save the numeric
+      value as the value of the input, and the onChange is needed afterwards, because the default onChange from the formfield
+      will pass the value as a string
 
+      and for the FormField we can
 
+      stock: z.coerce.number().positive().int({message: 'Stock must be positive'}).min(0, { message: "Stock is required" }),
 
+      OR
 
+      add a onChange into the input field  onChange={(value) => {field.onChange(Number(value.target.value))}}
 
+      because rhf's onChange needs to be called correctly, so that's why we use the fields.onChange() and not just
+      onChange
 
+      one issue we may face on this, is that, for example, the defaultValue is 0, and the input field treats the number
+      as a string, and when we type, for example 123, it will remain 123 until parsed. Since we're using onChange to convert
+      it into a NUmber, the value inside useForm will be correct, but the input display still allows leading zeros
 
+      To prevent this, we can modify the onChange handler, like this
+
+      onChange={(event) => {
+         const value = event.target.value;
+         const parsedValue = value ? Number(value).soString() : "";
+         field.onChange(parsedValue)
+      }}
+
+      what this does, is that if there is a value on the input, it will convert to number and back to string, so if
+      it is empty, it remains "" to avoid issues with required fields. Otherwhise, it convertes the value to a number and
+      then back to a string, which will remove the leading zeros
+
+## Server Actions
+
+Server actions are asynchronous functions that are executed on the server.They can be called in Server and Client
+components to deal with form submissions and datra mutations in Next.JS Applications.
+
+In our example, we are going to create the product with the form, and run a code on the server to create the product.
+
+So we created a folder actions/product/create-product.ts a file where we will create our server action, on top of everything
+we must pass a "use server", to determine it will only be executed on the server
+
+Even though it may seem so, Next.js is not completely server by default, only inside the app/ folder, so whenever we create
+a folder/file anywhere on the app, outside of the app folder, we must ensure that it is a server component
+
+We may add server actions inside the app folder, but it would still be recommended that we ensure the "use server" at the
+beggining. When we create a server action sinde of app/, next.js already understands that the function will be executed
+on the server. However, we can still explicitly mark this function with use server so next will know that it should run
+on the server.
+
+Next.js does not automatically assumes that action functions must be executed on the server, specially if they involve
+APIs calls, db data handling, or other sensitive operation. The "use server" tag makes it clear for Next.js that this
+function must be tratedd on the server, preventing it from being leaked to the client.
+
+The difference from server components to server actions, is that server components inside app/ are automatically executed
+on the server, whereas server actions, even within the app, they are not automatically trated as server-side. They need
+"use server" to ensure that the execution only occurs in the backend.
+
+In summary we need to understand that server components inside app/ are server by default, but server actions, need
+"use server" to ensure they will be executed on the server
