@@ -1,5 +1,5 @@
-import { LayoutGridIcon, PackageIcon } from "lucide-react";
-import SidebarButton from "./sidebar-button";
+import { LayoutGridIcon, PackageIcon } from 'lucide-react'
+import SidebarButton from './sidebar-button'
 
 const SideBar = () => {
   return (
@@ -22,7 +22,7 @@ const SideBar = () => {
         <SidebarButton href="#">Sales</SidebarButton>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default SideBar;
+export default SideBar

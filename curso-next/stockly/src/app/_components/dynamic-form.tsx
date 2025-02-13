@@ -1,8 +1,8 @@
 'use client'
 
-import { useForm, useFieldArray } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm, useFieldArray } from 'react-hook-form'
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
 
 /*
    
@@ -82,47 +82,51 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 */
 
-
 const schema = z.object({
   products: z.array(
     z.object({
-      name: z.string().min(2, "Nome muito curto"),
-      price: z.string().regex(/^\d+$/, "Preço deve ser um número"),
-    })
+      name: z.string().min(2, 'Nome muito curto'),
+      price: z.string().regex(/^\d+$/, 'Preço deve ser um número'),
+    }),
   ),
-});
+})
 
 export default function MyForm() {
-  const { register, control, handleSubmit, formState: { errors } } = useForm({
+  const {
+    register,
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
     resolver: zodResolver(schema),
-    defaultValues: { products: [{ name: "", price: "" }] },
-  });
+    defaultValues: { products: [{ name: '', price: '' }] },
+  })
 
   const { fields, append, remove } = useFieldArray({
     control,
-    name: "products",
-  });
+    name: 'products',
+  })
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100 p-4">
+    <div className="flex min-h-screen items-center justify-center bg-gray-100 p-4">
       <form
         onSubmit={handleSubmit(console.log)}
-        className="w-full max-w-lg bg-white p-6 rounded-xl shadow-md space-y-4"
+        className="w-full max-w-lg space-y-4 rounded-xl bg-white p-6 shadow-md"
       >
-        <h2 className="text-2xl font-semibold text-gray-700 text-center">
+        <h2 className="text-center text-2xl font-semibold text-gray-700">
           Lista de Produtos
         </h2>
 
         {fields.map((field, index) => (
-          <div key={field.id} className="flex gap-4 items-center border-b pb-4">
+          <div key={field.id} className="flex items-center gap-4 border-b pb-4">
             <div className="flex-1">
               <input
                 {...register(`products.${index}.name`)}
                 placeholder="Nome do produto"
-                className="w-full p-2 border rounded-lg focus:ring focus:ring-blue-300"
+                className="w-full rounded-lg border p-2 focus:ring focus:ring-blue-300"
               />
               {errors.products?.[index]?.name && (
-                <p className="text-red-500 text-sm">
+                <p className="text-sm text-red-500">
                   {errors.products[index].name.message}
                 </p>
               )}
@@ -132,10 +136,10 @@ export default function MyForm() {
               <input
                 {...register(`products.${index}.price`)}
                 placeholder="Preço"
-                className="w-full p-2 border rounded-lg focus:ring focus:ring-blue-300"
+                className="w-full rounded-lg border p-2 focus:ring focus:ring-blue-300"
               />
               {errors.products?.[index]?.price && (
-                <p className="text-red-500 text-sm">
+                <p className="text-sm text-red-500">
                   {errors.products[index].price.message}
                 </p>
               )}
@@ -144,7 +148,7 @@ export default function MyForm() {
             <button
               type="button"
               onClick={() => remove(index)}
-              className="bg-red-500 text-white p-2 rounded-lg hover:bg-red-600 transition"
+              className="rounded-lg bg-red-500 p-2 text-white transition hover:bg-red-600"
             >
               ✕
             </button>
@@ -154,20 +158,20 @@ export default function MyForm() {
         <div className="flex justify-between">
           <button
             type="button"
-            onClick={() => append({ name: "", price: "" })}
-            className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+            onClick={() => append({ name: '', price: '' })}
+            className="rounded-lg bg-blue-500 px-4 py-2 text-white transition hover:bg-blue-600"
           >
             + Adicionar Produto
           </button>
 
           <button
             type="submit"
-            className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition"
+            className="rounded-lg bg-green-500 px-4 py-2 text-white transition hover:bg-green-600"
           >
             Enviar
           </button>
         </div>
       </form>
     </div>
-  );
+  )
 }

@@ -1,8 +1,8 @@
 // import { getProducts } from "@/_data/dal/product/get-products";
-import { Button } from "@/app/_components/ui/button";
-import { PlusIcon } from "lucide-react";
-import { DataTable } from "../_components/ui/data-table";
-import { productTableColumns } from "./_components/table-columns";
+import { Button } from '@/app/_components/ui/button'
+import { PlusIcon } from 'lucide-react'
+import { DataTable } from '../_components/ui/data-table'
+import { productTableColumns } from './_components/table-columns'
 // import type { Product } from "@prisma/client";
 
 /* 
@@ -15,21 +15,21 @@ const prismaClient = new PrismaClient(); */
 
 const ProductsPage = async () => {
   const baseUrl =
-    typeof window !== "undefined"
+    typeof window !== 'undefined'
       ? window.location.origin
-      : process.env.NEXT_PUBLIC_SITE_URL;
+      : process.env.NEXT_PUBLIC_SITE_URL
 
   const response = await fetch(`${baseUrl}/api/products`, {
     next: {
       revalidate: 5,
     },
-  });
+  })
 
   if (!response.ok) {
-    throw new Error(`Error: ${response.status} ${response.statusText}`);
+    throw new Error(`Error: ${response.status} ${response.statusText}`)
   }
 
-  const { products, randomNumber } = await response.json();
+  const { products, randomNumber } = await response.json()
 
   // const products: Product[] = data;
 
@@ -58,11 +58,11 @@ const ProductsPage = async () => {
 
   */
 
-  const responseNumber = await fetch(`${baseUrl}/api/number`);
+  const responseNumber = await fetch(`${baseUrl}/api/number`)
 
-  const dataNumber = await responseNumber.json();
+  const dataNumber = await responseNumber.json()
 
-  const { randomNumber: randomNumber2 } = dataNumber;
+  const { randomNumber: randomNumber2 } = dataNumber
 
   return (
     <div className="ml-8 mt-8 w-full space-y-8 bg-white p-8 py-8">
@@ -121,7 +121,7 @@ const ProductsPage = async () => {
         data={JSON.parse(JSON.stringify(products))}
       />
     </div>
-  );
-};
+  )
+}
 
-export default ProductsPage;
+export default ProductsPage

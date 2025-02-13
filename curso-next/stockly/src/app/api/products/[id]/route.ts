@@ -1,26 +1,26 @@
-import { db } from "@/_lib/prisma";
-import { NextResponse, type NextRequest } from "next/server";
+import { db } from '@/_lib/prisma'
+import { NextResponse, type NextRequest } from 'next/server'
 
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } },
 ) {
-  const productId = params.id;
+  const productId = params.id
 
   const product = await db.product.findUnique({
     where: {
       id: productId,
     },
-  });
+  })
 
   if (!product) {
     return NextResponse.json(
       { message: `Product with the id ${productId} was not found` },
       { status: 404 },
-    );
+    )
   }
 
-  return NextResponse.json({ product }, { status: 200 });
+  return NextResponse.json({ product }, { status: 200 })
 }
 
 export async function DELETE(
@@ -31,7 +31,7 @@ export async function DELETE(
     where: {
       id: params.id,
     },
-  });
+  })
 
-  return NextResponse.json({}, { status: 200 });
+  return NextResponse.json({}, { status: 200 })
 }

@@ -1,7 +1,7 @@
-import { cachedGetProducts } from "@/_data/dal/product/get-products";
+import { cachedGetProducts } from '@/_data/dal/product/get-products'
 
 const ProductList = async () => {
-  const products = await cachedGetProducts();
+  const products = await cachedGetProducts()
 
   return (
     <ul>
@@ -9,7 +9,7 @@ const ProductList = async () => {
         <li key={product.id}>{product.name}</li>
       ))}
     </ul>
-  );
-};
+  )
+}
 
-export default ProductList;
+export default ProductList

@@ -1,7 +1,7 @@
-import { cachedGetProducts } from "@/_data/dal/product/get-products";
-import { DataTable } from "../_components/ui/data-table";
-import AddProductButton from "./_components/add-product-button";
-import { productTableColumns } from "./_components/table-columns";
+import { cachedGetProducts } from '@/_data/dal/product/get-products'
+import { DataTable } from '../_components/ui/data-table'
+import AddProductButton from './_components/add-product-button'
+import { productTableColumns } from './_components/table-columns'
 
 /* 
   By creating here like this, everytime the application is rebuilded, we are going to generate a new db connection, because
@@ -9,14 +9,18 @@ import { productTableColumns } from "./_components/table-columns";
   going to do the connection and call it inside where we'll use
 
 
+
+
 const prismaClient = new PrismaClient(); */
 
+
+
 const ProductsPage = async () => {
-  const products = await cachedGetProducts();
+  const products = await cachedGetProducts()
   const productsWithStatus = products.map((product) => ({
     ...product,
-    status: product.stock > 0 ? "IN_STOCK" : "OUT_OF_STOCK",
-  }));
+    status: product.stock > 0 ? 'IN_STOCK' : 'OUT_OF_STOCK',
+  }))
 
   return (
     <div className="ml-8 mt-8 w-full space-y-8 bg-white p-8 py-8">
@@ -67,7 +71,7 @@ const ProductsPage = async () => {
         data={JSON.parse(JSON.stringify(productsWithStatus))}
       />
     </div>
-  );
-};
+  )
+}
 
-export default ProductsPage;
+export default ProductsPage

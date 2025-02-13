@@ -1,21 +1,21 @@
-import { db } from "@/_lib/prisma";
-import type { Product } from "@prisma/client";
-import { NextRequest, NextResponse } from "next/server";
+import { db } from '@/_lib/prisma'
+import type { Product } from '@prisma/client'
+import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET() {
-  const products: Product[] = await db.product.findMany();
+  const products: Product[] = await db.product.findMany()
 
-  const randomNumber = Math.random();
+  const randomNumber = Math.random()
 
-  return NextResponse.json({ products, randomNumber }, { status: 200 });
+  return NextResponse.json({ products, randomNumber }, { status: 200 })
 }
 
 export async function POST(req: NextRequest) {
-  const body = await req.json();
+  const body = await req.json()
 
-  const name = body.name;
-  const price = body.price;
-  const stock = body.stock;
+  const name = body.name
+  const price = body.price
+  const stock = body.stock
 
   await db.product.create({
     data: {
@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
       price,
       stock,
     },
-  });
+  })
 
-  return NextResponse.json({ message: "Success", data: body }, { status: 200 });
+  return NextResponse.json({ message: 'Success', data: body }, { status: 200 })
 }
