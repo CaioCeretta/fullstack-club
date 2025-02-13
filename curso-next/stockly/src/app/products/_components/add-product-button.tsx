@@ -3,11 +3,14 @@
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+import { NumericFormat } from 'react-number-format'
 import { Button } from "@/app/_components/ui/button";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -24,19 +27,20 @@ const addProductFormSchema = z.object({
       message: "The name of product is required",
     })
     .trim(),
-  price: z.number().min(0.01, {
+  price: z.coerce.number().min(0.01, {
     message: "Product price is required",
   }),
-  stock: z.number().int().min(0, { message: "Stock is required" }),
+  stock: z.number().min(0, { message: "Stock is required" }),
 });
 
 type AddProductType = z.infer<typeof addProductFormSchema>;
 
 const AddProductButton = () => {
   const form = useForm<AddProductType>({
+    shouldUnregister: true,
     resolver: zodResolver(addProductFormSchema),
     defaultValues: {
-      name: "string",
+      name: "",
       price: 1,
       stock: 0,
     },
@@ -69,11 +73,33 @@ const AddProductButton = () => {
               name="name"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>Product Name</FormLabel>
+                  <FormLabel>Name</FormLabel>
                   <FormControl>
                     <Input placeholder="Enter product name" {...field} />
                   </FormControl>
                   <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="price"
+              render={({field}) => (
+                <FormItem>
+                  <FormLabel>Price</FormLabel>
+                  <NumericFormat
+                    thousandSeparator=","
+                    decimalSeparator="."
+                    fixedDecimalScale
+                    decimalScale={2}
+                    prefix="$ "
+                    allowNegative={false}
+                    customInput={Input}
+                    onValueChange={(value) => field.onChange(value.floatValue)}
+                    {...field}
+                    onChange={() => {}}
+                  />
+
                 </FormItem>
               )}
             />
@@ -84,15 +110,29 @@ const AddProductButton = () => {
                 <FormItem>
                   <FormLabel>Available Stock</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter product stock" {...field} />
+                  <Input
+                    placeholder="Enter product stock"
+                    type="number"
+                    {...field}
+                    onChange={(event) => {
+                      const value = event.target.value;
+                      const parsedValue = value ? Number(value).toString() : "";
+
+                      field.onChange(parsedValue)
+                    }}
+                  />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
-              
             />
 
-            </FormField>
+            <DialogFooter>
+              <Button type="submit">Save</Button>
+              <DialogClose asChild>
+                <Button variant="secondary" type="reset">Cancel</Button>
+              </DialogClose>
+            </DialogFooter>
           </form>
         </Form>
       </DialogContent>
