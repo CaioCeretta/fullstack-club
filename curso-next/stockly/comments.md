@@ -105,7 +105,7 @@ like a placeholder that can be filled by other element or component, this is use
 internal elements of components without altering its internal structure.
 
 Slots are useful when, for example, we create a reusable component, such as the button, and sometimes we wish to render
-something different than a default <button>, and we might want that this button act like an achor <a>, so we would like
+something different than a default <button>, and we might want that this button act like an achor <a>, so we should
 the button to be part of other component that already defines its own parent, which means, that for example
 
 Imagine we have a parent component that already decides which will be the basis component, be it anchor, div, etc. when
@@ -1224,4 +1224,84 @@ on the server, whereas server actions, even within the app, they are not automat
 "use server" to ensure that the execution only occurs in the backend.
 
 In summary we need to understand that server components inside app/ are server by default, but server actions, need
-"use server" to ensure they will be executed on the server
+"use server" to ensure they will be executed on the server.
+
+## server-only X use-server
+
+`server-only` ensures that a function can only be imported and executed in a server component, or a server action, It
+prevents accidental imports into Client Components, making it ideal for functions that handle sensitive data, such as
+retrieving user data.
+
+If we want to call a function from the client, such as `getProduct`, which retrieves data from the database, we can do so,
+but we must ensure that it does nbot return any sensitive data
+
+However, if we want to call, from the client, a getProduct function that retrieves the data from the database, we can
+call it, but we need to take care of not returning any sensitive data.
+
+The pattern recommended by Next.js is:
+
+. Data retrieval functions should be part of the DAL and should be marked as server-only to ensure they are never executed
+on the client
+
+. Functions that modify data, (such as creating, updating, or deleting) can be server actions, allowing them to be called
+directly from the client while keeping execution on the server. (But the mutation can also be made by API routes, it
+is not exclusive to server actions)
+
+### Server-Action Revalidation and Behavior
+
+We could notice, that whenever we send a post request via a server action, the new product is added, but it won't reflect
+on the page until a refresh.
+
+To fix this, in our createProduct action, we must call the function revalidatePath from 'next/cache', after the product
+creation finishes.The revalidatePath it receives, as argument, the path we want to revalidate, which in this case, is the
+products page so it will be revalidatePath("/products")
+
+If we ommit the revalidatePath, when we go into the network tab, we will see that the request hasn't had a response, but
+as soon as we revalidate, the response is going to be the new generated page, a bit different from the usual html, but it
+is a code that next.js understands and converts it to a jsx, meaning that we are only going to have a single request to
+the server.
+
+By opening the network tab in the developer tools, we can see that the first POST request to create a product is sent to
+/products, which is the server action. However, after the next render, it behaves like an HTTP route.
+
+If a server action, requires it to be executed if a user is logged in, we need, inside that server action, to verify if
+the user is logged in. The reason is, because this is an http route, we can simply call that route as cURL from our terminal,
+and this is a security breach.
+
+So it is important to understand that a server action is a function that is exported as a http route, and depending on it,
+we must make sure that the user is logged in.
+
+Since we can call the url as a cURL on our terminal, we would likely want to create a validation on the action, not only
+on the client page. One way to handle this is by replicating the createProductSchema using zod
+
+Now, we type the function parameters using the same type as CreateProductType (e.g. name, stock, price), which we are
+already doing
+
+the difference is that instead of destructuring
+
+await.products.create({
+data: {
+name,
+price,
+stock
+}
+})
+
+we simply pass the data arguments as a CreateProductType object. This implicitly
+ensure that the expected arguments, include those three properties.
+
+So when we call:
+create({
+data
+})
+
+we are already enforcing that structure
+
+## Exporting schemas and types
+
+When we have a use server file, the ideal for us is to only export functions that we want to use, because by Exporting
+interfaces, types, and other variables is not the best option, because next will always handle what we export from these
+files as server resources.
+Because of this, the indicated approach is to, inside the actions folder, to create a folder for each action, where the index.ts is going to be the action and
+a schema.ts file, where we will export our types and schemas, since it is no longer
+a server component
