@@ -26,30 +26,19 @@ import {
   FormMessage,
 } from '@/app/_components/ui/form'
 import { Input } from '@/app/_components/ui/input'
-import { createProduct } from '@/app/_actions/product/create-product'
+import {
+  createProduct,
+  createProductSchema,
+  type CreateProductType,
+} from '@/app/_actions/product/create-product'
 import { useState } from 'react'
-
-const addProductFormSchema = z.object({
-  name: z
-    .string()
-    .min(1, {
-      message: 'The name of product is required',
-    })
-    .trim(),
-  price: z.coerce.number().min(0.01, {
-    message: 'Product price is required',
-  }),
-  stock: z.number().min(0, { message: 'Stock is required' }),
-})
-
-type AddProductType = z.infer<typeof addProductFormSchema>
 
 const AddProductButton = () => {
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false)
 
-  const form = useForm<AddProductType>({
+  const form = useForm<CreateProductType>({
     shouldUnregister: true,
-    resolver: zodResolver(addProductFormSchema),
+    resolver: zodResolver(createProductSchema),
     defaultValues: {
       name: '',
       price: 1,
@@ -57,7 +46,7 @@ const AddProductButton = () => {
     },
   })
 
-  async function onSubmit(data: AddProductType) {
+  async function onSubmit(data: CreateProductType) {
     try {
       /*await createProduct({
         name: data.name,
