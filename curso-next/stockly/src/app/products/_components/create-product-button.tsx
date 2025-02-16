@@ -1,6 +1,5 @@
 'use client'
 
-import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import { NumericFormat } from 'react-number-format'
@@ -26,14 +25,15 @@ import {
   FormMessage,
 } from '@/app/_components/ui/form'
 import { Input } from '@/app/_components/ui/input'
+
+import { useState } from 'react'
 import {
-  createProduct,
   createProductSchema,
   type CreateProductType,
-} from '@/app/_actions/product/create-product'
-import { useState } from 'react'
+} from '@/app/_actions/product/create-product/schema'
+import { createProduct } from '@/app/_actions/product/create-product'
 
-const AddProductButton = () => {
+const CreateProductButton = () => {
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false)
 
   const form = useForm<CreateProductType>({
@@ -173,4 +173,4 @@ const AddProductButton = () => {
   )
 }
 
-export default AddProductButton
+export default CreateProductButton
