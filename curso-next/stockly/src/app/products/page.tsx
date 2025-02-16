@@ -1,6 +1,6 @@
 import { cachedGetProducts } from '@/_data/dal/product/get-products'
 import { DataTable } from '../_components/ui/data-table'
-import AddProductButton from './_components/add-product-button'
+import AddProductButton from './_components/create-product-button'
 import { productTableColumns } from './_components/table-columns'
 
 /* 
@@ -12,8 +12,6 @@ import { productTableColumns } from './_components/table-columns'
 
 
 const prismaClient = new PrismaClient(); */
-
-
 
 const ProductsPage = async () => {
   const products = await cachedGetProducts()
