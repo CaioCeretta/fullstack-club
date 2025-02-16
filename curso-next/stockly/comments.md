@@ -1305,3 +1305,25 @@ files as server resources.
 Because of this, the indicated approach is to, inside the actions folder, to create a folder for each action, where the index.ts is going to be the action and
 a schema.ts file, where we will export our types and schemas, since it is no longer
 a server component
+
+## Import x Import Type
+
+### Normal Import ( import { Nome } from 'module' )
+
+. Imports both values (functions, classes, objects, etc.) and types
+. Can be used for something of the generated JAVASCRIPT
+
+### Imports with Type (import { type Nome } from 'module')
+
+. Imports only the types and its removed on the ganerated javascript
+. Improves the performance by avoiding unnecessary imports
+. Avoids warnings of not used imports
+
+⚠ Cannot be used to import values, only types
+
+### When to use?
+
+✔ Use `import { type Nome }` if we are only importing the type
+✔ Use import { Nome } if it's a value or we need both the type and the value
+✔ If we need both, its ok to mix it:
+import { createSchema, type CreateProductType } from './schema';
