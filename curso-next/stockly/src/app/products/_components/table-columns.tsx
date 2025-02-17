@@ -1,13 +1,10 @@
 'use client'
 
 import { Badge } from '@/app/_components/ui/badge'
-import { Button } from '@/app/_components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/app/_components/ui/dropdown-menu'
 import type { Product as PrismaProduct } from '@prisma/client'
