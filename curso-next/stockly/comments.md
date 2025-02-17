@@ -970,6 +970,64 @@ one to revalidate only specific parts of a page in ISR
 . In apps that use authentication, one can define granular permissions, restricting access to specific parts of the app
 using Middleware, RSC and useSession()
 
+## Shadcn DataTable
+
+1. Column Definition
+
+The table columns are defined as an objects array, where each object represents a specific column
+
+Example:
+
+      import { ColumnDef } from '@tanstack/react-table
+
+      type Product = {
+         id: string
+         name: string
+         price: number
+      }
+
+      export const columns: ColumnDef<Product>[] = [
+         {
+            accessorKey: "name",
+            header: "Product Name"
+         },
+         {
+            accessorKey: "price",
+            header: "Price",
+            cell: ({row}) => <span>$ {row.getValue("price)}</span>
+         }
+      ]
+
+      accessorKey: Name of the key on the data object
+      header: Column Title
+      cell: Function to render the content of the cell
+
+### Cell Explanation
+
+Row come from the destructuring of the object passed to the cell. It receives as a parameter, the cellContext, which
+has several useful properties such as:
+
+      `cellContext.row`: Represents the current row
+      `cellContext.getValue()`: Obtain the value of the cell to the corresponding acessorKey
+      `cellContext.column`: Represents the column of the cell
+
+with no destructuring:
+cell: (cellContext) => cellContext.row.getValue("price")
+
+destructure explained
+cell: ({ row }) => <span>$ {row.getValue("price")}</span> is equivalent to
+
+      cell(cellContext) => {
+         const row = cellContext.row;
+         return <span>$ {row.getValue("price)} </span>
+      }
+
+      row the whole line of the table
+      row.getValue("price") returns the price value of that row
+      "price" must correspond to the accessorKey defined in the column configuration.
+
+      row.row.original are the raw data from the row before it is processed or formatted by the table.
+
 ## Shadcn Dialog & React Hook Form & Zod
 
 ### ShadcnDialog
