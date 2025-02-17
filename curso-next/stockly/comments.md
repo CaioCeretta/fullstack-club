@@ -1327,3 +1327,56 @@ a server component
 ✔ Use import { Nome } if it's a value or we need both the type and the value
 ✔ If we need both, its ok to mix it:
 import { createSchema, type CreateProductType } from './schema';
+
+## revalidatePath & revalidateTag
+
+on our getProducts function, we can also revalidate our getProducts using ISG in a server action.
+
+Similar to the function where we used the unstable cache, its syntax is
+
+unstableCache(functionName, ['key-name'], {
+tag: ['keyName']
+})
+
+even though we usually use the second parameter for the key to invalidate, in this case, what we'll use to invalidate is
+the tag, calling the revalidateTag with it
+
+To exemplify this we are creating a getCachedRandomNumber, which will await a Promise of 1 second to resolve, then invoke
+a Math.random(), and its tag will be get-random-number with a automatic revalidation of 10.
+
+We now call this getCachedGetRandomNumber in the page and it will work, it will show the number and change it after 10
+seconds.
+
+Both the new call and the getCachedProducts, are now on the body of the component function, but when we add a new product
+we just want to revalidate the products list, and not the randomNumber together with it. Because let's say that instead
+the call to a simple Math.random(), is a more costly call for our app performance.
+
+We now have two functions, one from our dal, that is dealing with the products fetching, caching and revalidation, and
+in the actions file we have the function to add a product. Let's now add the function to revalidate path of /products,
+after every product is added and on the dal functions (getProducts and getRandomNumber), the revalidation to 60 seconds.
+
+Even though both our functions have a revalidation of 60 seconds, because of the revalidatePath from the addProduct, now
+both calls are being executed right away.
+
+This happens because revalidatePath will revalidate everything that is on that page, including the calls to external functions.
+
+However, if instead of revalidating the path, we revalidate the tags we defined on our cached functions, it will now only
+revalidate what we want, in this case, the get-products.
+
+RevalidateTag is useful when we have more than one method that revalidates on the same component, but we don't want both
+to be revalidated at the same time when some specific call is invoked
+
+We can also revalidate a fetch request, example:
+
+const response = await fetch('http://localhost:3000/api/products', {
+next: {
+revalidate: 60,
+tags: ['get-products-fetch'],
+},
+})
+
+const products: Product[] = await response.json()
+
+and the same thing for the randomNumber.
+
+This is just another approach we could take
