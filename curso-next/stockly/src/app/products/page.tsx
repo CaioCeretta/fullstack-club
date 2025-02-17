@@ -1,4 +1,7 @@
-import { cachedGetProducts } from '@/_data/dal/product/get-products'
+import {
+  cachedGetProducts,
+  cachedGetRandomNumber,
+} from '@/_data/dal/product/get-products'
 import { DataTable } from '../_components/ui/data-table'
 import AddProductButton from './_components/create-product-button'
 import { productTableColumns } from './_components/table-columns'
@@ -15,6 +18,8 @@ const prismaClient = new PrismaClient(); */
 
 const ProductsPage = async () => {
   const products = await cachedGetProducts()
+  const randomNumber = await cachedGetRandomNumber()
+
   const productsWithStatus = products.map((product) => ({
     ...product,
     status: product.stock > 0 ? 'IN_STOCK' : 'OUT_OF_STOCK',
@@ -62,6 +67,8 @@ const ProductsPage = async () => {
           <h2 className="text-xl font-semibold">Products</h2>
         </div>
         <AddProductButton />
+
+        {randomNumber}
       </div>
 
       <DataTable
