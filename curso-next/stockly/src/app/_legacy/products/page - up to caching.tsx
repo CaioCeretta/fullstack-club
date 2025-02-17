@@ -1,8 +1,8 @@
 // import { getProducts } from "@/_data/dal/product/get-products";
 import { Button } from '@/app/_components/ui/button'
 import { PlusIcon } from 'lucide-react'
-import { DataTable } from '../_components/ui/data-table'
-import { productTableColumns } from './_components/table-columns'
+import { DataTable } from '@/app/_components/ui/data-table'
+import { productTableColumns } from '@/app/products/_components/table-columns'
 // import type { Product } from "@prisma/client";
 
 /* 
