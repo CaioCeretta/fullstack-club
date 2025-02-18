@@ -7,6 +7,7 @@ import localFont from 'next/font/local' */
 import { Inter } from 'next/font/google'
 import './globals.css'
 import SideBar from './_components/sidebar'
+import { Toaster } from 'sonner'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -38,6 +39,7 @@ export default function RootLayout({
           <SideBar />
           {children}
         </div>
+        <Toaster />
       </body>
     </html>
   )
