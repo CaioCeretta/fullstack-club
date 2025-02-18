@@ -8,6 +8,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/app/_components/ui/alert-dialog'
+import { toast } from 'sonner'
 
 interface DeleteProductDialogContentProps {
   productId: string
@@ -20,6 +21,8 @@ const DeleteProductDialogContent = ({
     //The try catch is used because we are going to be dealing with a http request and we need to "treat" it
     try {
       await deleteProduct({ id: productId })
+
+      toast.success('Product was successfully deleted')
     } catch (err) {
       console.error(err)
     }
