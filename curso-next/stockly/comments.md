@@ -1441,6 +1441,8 @@ This is just another approach we could take
 
 ## Alert Dialog Shadcn Explanation
 
+### Delete
+
 If we were using the AlertDialog on a usual function component, one better approach would be creating a state to store if
 the alertDialog is open or closed, because the DropdownMenu automatically closes on clicking on any item inside of it,
 including the AlertDialogTrigger. This makes the AlertDialog to open and immediattely closed when the menu fades.
@@ -1451,3 +1453,16 @@ AlertDialogContent must be outside of the context (Dropdown Menu)
 
 Now, we are going to put the `AlertDialogContent` in to another file, just the trigger will remain on there because it
 is needed for it to function.
+
+### Upsert Dialog
+
+Edit will have a similar approach from the create new product button, the only difference is that the inputs are going to
+initialize populated.
+
+To prevent the repetition of components, we'll add another component named upsert-product-dialog.
+
+We'll now move all the dialog content to the upsert dialog, only keeping on the create-button the state to handle the open
+state, the trigger, and now, because the content will be reused, another component was created for it.
+
+Now, even though we separated the form from the dialog, one thing we was doing, is whenever we finished the add/update
+the dialog would close, so we need to pass the dialog state as a property
