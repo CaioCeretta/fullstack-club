@@ -1,5 +1,9 @@
 'use client'
 
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+} from '@/app/_components/ui/alert-dialog'
 import { Badge } from '@/app/_components/ui/badge'
 import {
   DropdownMenu,
@@ -16,6 +20,7 @@ import {
   MoreHorizontalIcon,
   TrashIcon,
 } from 'lucide-react'
+import DeleteProductDialogContent from './delete-product-dialog'
 
 export interface Product extends PrismaProduct {
   status: string
@@ -70,28 +75,35 @@ export const productTableColumns: ColumnDef<Product>[] = [
       const product = row.original
 
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <MoreHorizontalIcon size={16} />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem
-              className="gap-1.5"
-              onClick={() => navigator.clipboard.writeText(product.id)}
-            >
-              <ClipboardCopyIcon size={16} />
-              Copy Id
-            </DropdownMenuItem>
-            <DropdownMenuItem className="gap-1.5">
-              <EditIcon size={16} />
-              Edit
-            </DropdownMenuItem>
-            <DropdownMenuItem className="gap-1.5">
-              <TrashIcon size={16} />
-              Delete
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <AlertDialog>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <MoreHorizontalIcon size={16} />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem
+                className="gap-1.5"
+                onClick={() => navigator.clipboard.writeText(product.id)}
+              >
+                <ClipboardCopyIcon size={16} />
+                Copy Id
+              </DropdownMenuItem>
+              <DropdownMenuItem className="gap-1.5">
+                <EditIcon size={16} />
+                Edit
+              </DropdownMenuItem>
+              <AlertDialogTrigger asChild>
+                <DropdownMenuItem
+                  onSelect={(e) => e.preventDefault()} // Impede que o menu feche antes do AlertDialog abrir
+                >
+                  <TrashIcon size={16} />
+                  Delete
+                </DropdownMenuItem>
+              </AlertDialogTrigger>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <DeleteProductDialogContent productId={product.id} />
+        </AlertDialog>
       )
     },
   },
