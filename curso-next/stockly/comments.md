@@ -1438,3 +1438,16 @@ const products: Product[] = await response.json()
 and the same thing for the randomNumber.
 
 This is just another approach we could take
+
+## Alert Dialog Shadcn Explanation
+
+If we were using the AlertDialog on a usual function component, one better approach would be creating a state to store if
+the alertDialog is open or closed, because the DropdownMenu automatically closes on clicking on any item inside of it,
+including the AlertDialogTrigger. This makes the AlertDialog to open and immediattely closed when the menu fades.
+
+but here, to fix this, we will wrap the whole DropdownMenu in a Dialog and a AlertDialog to prevent this, we are going
+to wrap the whole DropDown into the AlertDialog, and the DialogTrigger is going to be the whole MenuItem, and the
+AlertDialogContent must be outside of the context (Dropdown Menu)
+
+Now, we are going to put the `AlertDialogContent` in to another file, just the trigger will remain on there because it
+is needed for it to function.
