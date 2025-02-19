@@ -1499,4 +1499,10 @@ import { v4 as uuidv4 } from 'uuid'
 
 await upsertProduct({ ...data, id: productValues?.id ?? uuidv4() })
 
-like this
+To define our dialog inside the table cell, we used state for the cell, and it worked as expected. However, this is not
+accurate, because cell is not a react component, but a simple function. So, even though it works, it does not follow the
+react hook rules and may cause unexpected behavior.
+
+## Number formatting on the cell
+
+Here, on the cell of the price object, we'll simply return the Intl.NumberFormat passing the product row price
