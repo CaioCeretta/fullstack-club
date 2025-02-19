@@ -1465,4 +1465,38 @@ We'll now move all the dialog content to the upsert dialog, only keeping on the 
 state, the trigger, and now, because the content will be reused, another component was created for it.
 
 Now, even though we separated the form from the dialog, one thing we was doing, is whenever we finished the add/update
-the dialog would close, so we need to pass the dialog state as a property
+the dialog would close, so we need to pass the dialog state as a property, however, we don't want to add this functionality
+on all times, so we'll make it optional
+
+In order for the edit dialog to work, we'll create a new dialog inside the table columns, what was only the AlertDialog,
+it will now wrap a shadcn dialog for the dialog to show, just as the create product button.
+
+For it to continue working on the create product, we'll still pass the default values, as optional, but there will be a
+option for you to pass the product values already inserted in case is an edit.
+
+When we are passing the object for the productValues, if we try passing the price that comes from the db, ts will say
+that decimal is not assignable to number, because we used it in prisma, so we'll just need to cast it as a Number()
+
+Next step was changing everything to upsert, rather than update or create, because with prisma.upsert, if the id we are
+passing does not exist on the db, it creates a new product, and if it already exists it updates, then we renamed every
+place to upsert. And one important thing to be done, is that the id we are checking may not be sent, so we need to check
+if the id exists and add a coalescence operator.
+
+There are two approaches to fix this:
+
+1.  await upsertProduct(
+    productValues?.id ? { ...data, id: productValues.id } : data
+    )
+
+this way it will check if there is an id, if yes, we'll destructure like this, because the ProductType doesn't have the id.
+
+2.
+
+Changing the db.product.upsert, doing the check on the db.upsert where, in prisma, if where is empty, it will create a new item without trying to fetch an inexistent one, or using the uuid library
+which then we could call
+
+import { v4 as uuidv4 } from 'uuid'
+
+await upsertProduct({ ...data, id: productValues?.id ?? uuidv4() })
+
+like this
