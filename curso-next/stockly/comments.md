@@ -1503,6 +1503,62 @@ To define our dialog inside the table cell, we used state for the cell, and it w
 accurate, because cell is not a react component, but a simple function. So, even though it works, it does not follow the
 react hook rules and may cause unexpected behavior.
 
-## Number formatting on the cell
+## Number formatting on the cell and passing a decimal to a number
 
-Here, on the cell of the price object, we'll simply return the Intl.NumberFormat passing the product row price
+Here, on the cell of the price object, we'll simply return the Intl.NumberFormat passing the product row price, but now
+if we try to pass the product to the new upsert component, we'll get an error, because we are typing the products as the
+UpsertProductSchema, which has the price as a number, but it is receiving the price as a Decimal, to solve this, we have
+some options.
+
+1. Convert `Decimal` to `Number` before passing the data
+
+We can convert the type before passing the data to TableDropdownMenu, so in the code where we pass the product, we can do
+the conversion, such as
+
+<TableDropdownMenu product={...product, price: Number(product.price)}>
+
+2. Alter product typing on the table
+
+If productTableColumns, is based on Product, and Product extends PrismaProduct, so price will be Decimal. If we want to avoid
+this conversion eeverytime we're using product, we can modify its typing byda
+
+export interface Product extends Omit<PrismaProduct, 'price'> {
+price: number
+status: string
+}
+
+this will force price to be a number. the Omit is removing price of the typing, so whenever we extend this type with Product,
+the new price property doesn't not conflicts with the original onde from PrismaProduct
+
+3. Forcing the conversion by mapping the data table
+
+If products data como from a prisma query, we can convert price to number at the transformation moment
+
+const product: Product[] = prismaProducts.map((product) => ({
+...product,
+price: Number(product.price),
+stock: product.stock > 0 ? 'IN_STOCK' : 'OUT_OF_STOCK'
+}))
+
+Which of these is the best option?
+
+if the table is only exhibiting the products for reading, 1 it's the quickest
+if we want to ensure price will always be a number inside the code, options 2 or 3 because they eliminate the necessity
+of repetitive conversions
+
+There is also another option, on the dal, where we retrieve and export the products, instead of doing
+
+export const getProducts = async (): Promise<Product[]> => {
+console.log('Fetching products')
+return await db.product.findMany({})
+}
+
+we could
+
+const prismaProducts = await db.product.findMany({})
+
+return prismaProducts.map((product) => ({
+...product,
+price: Number(product.price),
+status: product.stock > 0 ? 'IN_STOCK' : 'OUT_OF_STOCK'
+}))
