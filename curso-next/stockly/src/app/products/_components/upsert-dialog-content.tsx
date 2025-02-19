@@ -1,10 +1,10 @@
 'use client'
 
-import { createProduct } from '@/app/_actions/product/create-product'
+import { upsertProduct } from '@/app/_actions/product/upsert-product'
 import {
-  createProductSchema,
-  type CreateProductType,
-} from '@/app/_actions/product/create-product/schema'
+  upsertProductSchema,
+  UpsertProductType,
+} from '@/app/_actions/product/upsert-product/schema'
 import { Button } from '@/app/_components/ui/button'
 import {
   DialogClose,
@@ -28,28 +28,33 @@ import { Loader2Icon } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { NumericFormat } from 'react-number-format'
 
-interface UpsertProductDialogContentProps {
-  onDialogClose: () => void
+interface UpsertDialogContentProps {
+  productValues?: UpsertProductType
+  onDialogClose?: () => void
 }
 
-const UpsertProductDialogContent = ({
+const UpsertDialogContent = ({
+  productValues,
   onDialogClose,
-}: UpsertProductDialogContentProps) => {
-  const form = useForm<CreateProductType>({
+}: UpsertDialogContentProps) => {
+  const form = useForm<UpsertProductType>({
     shouldUnregister: true,
-    resolver: zodResolver(createProductSchema),
-    defaultValues: {
+    resolver: zodResolver(upsertProductSchema),
+    defaultValues: productValues ?? {
       name: '',
       price: 1,
       stock: 0,
     },
   })
 
-  async function onSubmit(data: CreateProductType) {
-    try {
-      await createProduct(data)
+  const isEditing = !!productValues
 
-      onDialogClose()
+  async function onSubmit(data: UpsertProductType) {
+    try {
+      await upsertProduct(
+        productValues?.id ? { ...data, id: productValues.id } : data,
+      )
+      onDialogClose?.()
     } catch (error) {
       console.error(error)
     }
@@ -58,7 +63,9 @@ const UpsertProductDialogContent = ({
   return (
     <DialogContent>
       <DialogHeader>
-        <DialogTitle>Create Product</DialogTitle>
+        <DialogTitle>
+          {isEditing ? 'Edit Product' : 'Upsert Product'}
+        </DialogTitle>
         <DialogDescription>
           Please enter the information below
         </DialogDescription>
@@ -128,7 +135,7 @@ const UpsertProductDialogContent = ({
               {form.formState.isSubmitting && (
                 <Loader2Icon size={16} className="animate-spin" />
               )}
-              Save
+              {isEditing ? 'Confirm Changes' : 'Save'}
             </Button>
             <DialogClose asChild>
               <Button variant="secondary" type="reset">
@@ -142,4 +149,4 @@ const UpsertProductDialogContent = ({
   )
 }
 
-export default UpsertProductDialogContent
+export default UpsertDialogContent
