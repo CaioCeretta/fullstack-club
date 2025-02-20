@@ -1,4 +1,4 @@
-import { LayoutGridIcon, PackageIcon } from 'lucide-react'
+import { LayoutGridIcon, PackageIcon, ShoppingBasket } from 'lucide-react'
 import SidebarButton from './sidebar-button'
 
 const SideBar = () => {
@@ -19,7 +19,10 @@ const SideBar = () => {
           <PackageIcon size={20} />
           Products
         </SidebarButton>
-        <SidebarButton href="#">Sales</SidebarButton>
+        <SidebarButton href="/sales">
+          <ShoppingBasket size={20} />
+          Sales
+        </SidebarButton>
       </div>
     </div>
   )
