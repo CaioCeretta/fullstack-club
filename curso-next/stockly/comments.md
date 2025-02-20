@@ -1577,5 +1577,24 @@ and keyboard navigations for handling large lists of options.
 
 In this case, we are going to use it to show the list of products
 
-First of all, for fetching all the products, on the sales component, where we'll have the sheet component, we'll fetch
-all the products on the sales server component, and pass it to the sheet component
+First of all, for fetching all the products in the sales component, where we'll have the Sheet component, we could fetch
+all the products in the sales server component and pass them to the sheet component. However, there is a potential issue:
+If the user don't click the "New Sale" button or open the select dropdown to display the products, this query would be
+unnecessary.
+
+On the other hand, if we perform the query inside a useEffect, fetching data from the API in the `UpsertSheetContent`,
+the user will experience a delay before seeing the options, and the fetch will be triggered everytime the sheet is opened.
+
+Because everything is a "trade-off" the decision was made to execute that fetch on the Sales page, as it will run only once.
+After all, this will be a quick fetch, and even if the product list were very large, it wouldn't be a problem since our code
+runs on the server. Moreover, the products are not modified frequently, as our app is more focused on sales
+management rather than products management.
+
+Since the `upsertSheetContent` is a client component, by doing a fetch on a useEffect, this will work as it would to a
+conventional react component, that interation with the API will depend on the js hydration, thus, if the products would
+constantly change, it would make sense on fetching it regularly.
+
+There would also be the case that we would only do the fetch if the product list is empty, but we would end up in the problem
+of updating the listk as needed.
+
+But because that is not the case, we'll make that call only once.
