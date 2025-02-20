@@ -1562,3 +1562,20 @@ return prismaProducts.map((product) => ({
 price: Number(product.price),
 status: product.stock > 0 ? 'IN_STOCK' : 'OUT_OF_STOCK'
 }))
+
+## Sales Page
+
+For the sales page, we'll follow the same structure of the products one. For the side bar when we click on new sale
+we'll use the sheet component from shadcn. The sheet works pretty much like the dialog, it also has the trigger and its
+content. The overall structure is pretty much the same, the only difference is that we are going to use Combobox for the
+product listing.
+
+## Shadcn Combobox
+
+ShadCN ComboBox is a customizable, accessible, dropdown component for React, it provides features like search, multi-select,
+and keyboard navigations for handling large lists of options.
+
+In this case, we are going to use it to show the list of products
+
+First of all, for fetching all the products, on the sales component, where we'll have the sheet component, we'll fetch
+all the products on the sales server component, and pass it to the sheet component
