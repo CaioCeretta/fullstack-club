@@ -65,7 +65,7 @@ export const productTableColumns: ColumnDef<Product>[] = [
     header: 'Actions',
     cell: (row) => {
       const product = row.row.original
-      console.log(typeof product.price)
+
       return <TableDropdownMenu product={product} />
     },
   },
