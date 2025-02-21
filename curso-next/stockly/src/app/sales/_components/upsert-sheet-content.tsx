@@ -31,7 +31,7 @@ import { formatCurrency } from '@/helpers/currency'
 import { zodResolver } from '@hookform/resolvers/zod'
 import type { Product } from '@prisma/client'
 import { PlusIcon } from 'lucide-react'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -106,6 +106,12 @@ const UpsertSheetContent = ({
       quantity: 1,
     },
   })
+
+  const productsTotal = useMemo(() => {
+    return selectedProducts.reduce((acc, val) => {
+      return acc + val.price * val.quantity
+    }, 0)
+  }, [selectedProducts])
 
   return (
     <SheetContent className="">
@@ -183,7 +189,7 @@ const UpsertSheetContent = ({
         <TableFooter>
           <TableRow>
             <TableCell colSpan={3}>Total</TableCell>
-            <TableCell>{formatCurrency(30)}</TableCell>
+            <TableCell>{formatCurrency(productsTotal)}</TableCell>
           </TableRow>
         </TableFooter>
       </Table>
