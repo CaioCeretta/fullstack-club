@@ -1575,7 +1575,14 @@ product listing.
 ShadCN ComboBox is a customizable, accessible, dropdown component for React, it provides features like search, multi-select,
 and keyboard navigations for handling large lists of options.
 
-In this case, we are going to use it to show the list of products
+In this case, we are going to use it to show the list of products, but one thing to be aware of, is that the Combobox props
+receives the options, but this option is typed with an interface with the value and the label, so we can't simply pass our
+products as the options for this combobox, so we'll have to map and create an object as options expects, which is a list
+of objects with value and label, for this, it's recommended to do this on the sales page component, because the code is
+executed on the server, and this data treatment will happen only once, not everytime we open the sheet, so this kind of
+data treament is better to be done on the server side, because then we won't burden the client with all this processing.
+
+## When and where to use fetches
 
 First of all, for fetching all the products in the sales component, where we'll have the Sheet component, we could fetch
 all the products in the sales server component and pass them to the sheet component. However, there is a potential issue:
