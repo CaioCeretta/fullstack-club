@@ -1,6 +1,6 @@
 'use client'
 
-import { Combobox } from '@/app/_components/ui/combobox'
+import { Combobox, type ComboboxOption } from '@/app/_components/ui/combobox'
 import {
   Form,
   FormControl,
@@ -17,6 +17,7 @@ import {
   SheetTitle,
 } from '@/app/_components/ui/sheet'
 import { zodResolver } from '@hookform/resolvers/zod'
+import type { Product } from '@prisma/client'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -27,7 +28,11 @@ const upsertSheetFormSchema = z.object({
 
 type UpsertSheetFormType = z.infer<typeof upsertSheetFormSchema>
 
-const UpsertSheetContent = () => {
+interface UpsertSheetContentProps {
+  productsOptions: ComboboxOption[]
+}
+
+const UpsertSheetContent = ({ productsOptions }: UpsertSheetContentProps) => {
   const form = useForm<UpsertSheetFormType>({
     resolver: zodResolver(upsertSheetFormSchema),
     defaultValues: {
@@ -40,7 +45,6 @@ const UpsertSheetContent = () => {
     <SheetContent>
       <SheetHeader>
         <SheetTitle>New Sale</SheetTitle>
-
         <SheetDescription>
           Insert below the informations about the sale
         </SheetDescription>
@@ -55,7 +59,11 @@ const UpsertSheetContent = () => {
               <FormItem className="w-full">
                 <FormLabel>Product</FormLabel>
                 <FormControl>
-                  <Combobox {...field} placeholder="Select a product" />
+                  <Combobox
+                    {...field}
+                    options={productsOptions}
+                    placeholder="Select a product"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
