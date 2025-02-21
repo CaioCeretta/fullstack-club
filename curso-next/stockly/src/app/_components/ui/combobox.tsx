@@ -45,8 +45,8 @@ export function Combobox({
           className="w-[200px] justify-between"
         >
           {value
-            ? frameworks.find((framework) => framework.value === value)?.label
-            : 'Select framework...'}
+            ? options.find((option) => option.value === value)?.label
+            : 'Select Product...'}
           <ChevronsUpDown className="opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -56,20 +56,20 @@ export function Combobox({
           <CommandList>
             <CommandEmpty>No framework found.</CommandEmpty>
             <CommandGroup>
-              {frameworks.map((framework) => (
+              {options.map((product) => (
                 <CommandItem
-                  key={framework.value}
-                  value={framework.value}
+                  key={product.value}
+                  value={product.value}
                   onSelect={(currentValue) => {
                     setValue(currentValue === value ? '' : currentValue)
                     setOpen(false)
                   }}
                 >
-                  {framework.label}
+                  {product.label}
                   <Check
                     className={cn(
                       'ml-auto',
-                      value === framework.value ? 'opacity-100' : 'opacity-0',
+                      value === product.value ? 'opacity-100' : 'opacity-0',
                     )}
                   />
                 </CommandItem>
