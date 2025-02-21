@@ -1656,9 +1656,8 @@ their IDS
 
 5. If the comparison above returns true, the product is stored in the existingProduct constant.
 
-We then update the state using a function that takes currentProducts, maps over it, checks whether the product.id matches
-the one we just compared, and returns an updated object where the product's quantity is increased by the new quantity.
-If the product ID does not match, we simply return the existing product unchanged.
+6. We then update the state using a function that takes currentProducts, maps over it, checks whether the product.id matches
+   the one we just compared, and returns an updated object where the product's quantity is increased by the new quantity.
 
-1. If no products matched the condition in step 4, we return the previous list with all its values, adding the new product
+7. If the product ID does not match, we simply return the previous list with all its values, adding the new product
    as an object
