@@ -1570,18 +1570,6 @@ we'll use the sheet component from shadcn. The sheet works pretty much like the 
 content. The overall structure is pretty much the same, the only difference is that we are going to use Combobox for the
 product listing.
 
-## Shadcn Combobox
-
-ShadCN ComboBox is a customizable, accessible, dropdown component for React, it provides features like search, multi-select,
-and keyboard navigations for handling large lists of options.
-
-In this case, we are going to use it to show the list of products, but one thing to be aware of, is that the Combobox props
-receives the options, but this option is typed with an interface with the value and the label, so we can't simply pass our
-products as the options for this combobox, so we'll have to map and create an object as options expects, which is a list
-of objects with value and label, for this, it's recommended to do this on the sales page component, because the code is
-executed on the server, and this data treatment will happen only once, not everytime we open the sheet, so this kind of
-data treament is better to be done on the server side, because then we won't burden the client with all this processing.
-
 ## When and where to use fetches
 
 First of all, for fetching all the products in the sales component, where we'll have the Sheet component, we could fetch
@@ -1601,7 +1589,76 @@ Since the `upsertSheetContent` is a client component, by doing a fetch on a useE
 conventional react component, that interation with the API will depend on the js hydration, thus, if the products would
 constantly change, it would make sense on fetching it regularly.
 
-There would also be the case that we would only do the fetch if the product list is empty, but we would end up in the problem
-of updating the listk as needed.
+There would also be the case that we would only do the fetch if the product list is empty, but we would end up in the problem of updating the list as needed.
 
 But because that is not the case, we'll make that call only once.
+
+## Shadcn Combobox
+
+ShadCN ComboBox is a customizable, accessible, dropdown component for React, it provides features like search, multi-select,
+and keyboard navigations for handling large lists of options.
+
+In this case, we are going to use it to show the list of products, but one thing to be aware of, is that the Combobox props
+receives the options, but this option is typed with an interface with the value and the label, so we can't simply pass our
+products as the options for this combobox, so we'll have to map and create an object as options expects, which is a list
+of objects with value and label, for this, it's recommended to do this on the sales page component, because the code is
+executed on the server, and this data treatment will happen only once, not everytime we open the sheet, so this kind of
+data treament is better to be done on the server side, because then we won't burden the client with all this processing.
+
+## Adding product when combobox item is clicked
+
+First of all, for the quantity, inside the form, it won't work if we pass a number because HTML will treat the input as
+a string, as we have previously seen, so for this, in the schema, we'll add a z.coerce.number().int().positive() to make
+the form understand that quantity is a number.
+
+Now, for showing the selected products below, we'll create a state of selectedProducts, where those selectedProducts are
+going to have a custom state, similar to the product one.
+
+Now, this UpsertSheetContent, will receive all the products that will populate the list, and when we choose one from the
+sheet to place the order, we will find the product based on that list, and this way we can add it to the selectedProducts
+state with all the properties we need to display.
+
+Afterward, below the form, we can simply display the list of the products mapping the state. To do so, we'll add a table
+for this.
+
+To increase the sheet width, on the SheetContent component, we add a max-width with exclamation mark, otherwise, it wouldn't
+change. This may be caused there can be more specific rules, such as an inline or a class with higher priority, which could
+prevent our styling.
+
+### Product quantity logic
+
+Every time we deal with carts, there is one important logic we'll end up facing, that is, if we add more than one of the
+same product, we need to sum its quantity rather than creating a new one on the list.
+
+Therefore, to do this, we used the following logic:
+
+1. When we submit the form, we access to its data based on the inputs we registered, these inputs are the ones defined
+   in the schema, meaning that if we use data as parameter in the onSubmit function, data will hold an object containing
+   all the registered input values.
+
+2. We compare if the productId chosen by the combobox, exists in the products array received as a parameter, for this, we'll
+   execute a products.find, iterating over the products array and check if the data.productId is equal to any product.id, if
+   yes, we'll store the product on a variable called selectedProduct, meaning that now selectedProduct holds all the properties
+   of the product interface
+
+3. If the product does not exist in the list, we simply return and exit
+
+4. Next, we update the `selectedProducts` state by checking whether the product is already in using
+   the list with the following code:
+
+   const existingProduct = currentProducts.find(
+   (product) => product.id === selectedProduct.id
+   )
+
+Here `selectedProduct` is the constant we previously stored the product information. This function checks whether
+currentProducts (current state) contains the same product by iterating over the already-added products and comparing
+their IDS
+
+5. If the comparison above returns true, the product is stored in the existingProduct constant.
+
+We then update the state using a function that takes currentProducts, maps over it, checks whether the product.id matches
+the one we just compared, and returns an updated object where the product's quantity is increased by the new quantity.
+If the product ID does not match, we simply return the existing product unchanged.
+
+1. If no products matched the condition in step 4, we return the previous list with all its values, adding the new product
+   as an object
