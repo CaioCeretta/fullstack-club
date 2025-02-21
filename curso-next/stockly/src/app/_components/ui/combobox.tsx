@@ -27,12 +27,7 @@ interface ComboboxProps {
   placeholder?: string
 }
 
-export function Combobox({
-  options,
-  value,
-  onChange,
-  placeholder,
-}: ComboboxProps) {
+export function Combobox({ options, value, onChange }: ComboboxProps) {
   const [open, setOpen] = React.useState(false)
 
   return (
@@ -61,7 +56,7 @@ export function Combobox({
                   key={product.value}
                   value={product.value}
                   onSelect={(currentValue) => {
-                    setValue(currentValue === value ? '' : currentValue)
+                    onChange(currentValue === value ? '' : currentValue)
                     setOpen(false)
                   }}
                 >

@@ -8,7 +8,7 @@ const SalesPage = async () => {
   const products = await getProducts()
 
   const productsOptions: ComboboxOption[] = products.map((product) => ({
-    value: product.name,
+    value: product.id,
     label: product.name,
   }))
 
@@ -25,7 +25,10 @@ const SalesPage = async () => {
           <SheetTrigger asChild>
             <Button>New Sale</Button>
           </SheetTrigger>
-          <UpsertSheetContent productsOptions={productsOptions} />
+          <UpsertSheetContent
+            productsOptions={productsOptions}
+            products={products}
+          />
         </Sheet>
       </div>
     </div>
