@@ -1661,3 +1661,6 @@ their IDS
 
 7. If the product ID does not match, we simply return the previous list with all its values, adding the new product
    as an object
+
+And the productsTotal will be the value stored from a reduce function, a useMemo() function will be used for this function
+because we don't want the function to be executed if selectedProducts doesn't change
