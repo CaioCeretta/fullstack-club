@@ -22,11 +22,13 @@ import UpsertDialogContent from './upsert-dialog-content'
 import type { UpsertProductType } from '@/app/_actions/product/upsert-product/schema'
 import { useState } from 'react'
 
-interface TableDropdownMenuProps {
+interface ProductTableDropdownMenuProps {
   product: UpsertProductType
 }
 
-export const TableDropdownMenu = ({ product }: TableDropdownMenuProps) => {
+export const ProductTableDropdownMenu = ({
+  product,
+}: ProductTableDropdownMenuProps) => {
   const [editDialogIsOpen, setEditDialogIsOpen] = useState(false)
 
   return (

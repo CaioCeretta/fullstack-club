@@ -34,6 +34,7 @@ import { PlusIcon } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
+import { SalesTableDropdownMenu } from './table-dropdown-menu'
 
 const upsertSheetFormSchema = z.object({
   productId: z.string().uuid({ message: 'Product is required' }),
@@ -113,8 +114,18 @@ const UpsertSheetContent = ({
     }, 0)
   }, [selectedProducts])
 
+  const onRemoval = (productId: string) => {
+    setSelectedProducts((currentProducts) => {
+      const newProducts = currentProducts.filter(
+        (product) => product.id !== productId,
+      )
+
+      return newProducts
+    })
+  }
+
   return (
-    <SheetContent className="">
+    <SheetContent className="!max-w-[500px]">
       <SheetHeader>
         <SheetTitle>New Sale</SheetTitle>
         <SheetDescription>
@@ -170,6 +181,7 @@ const UpsertSheetContent = ({
             <TableHead>Unit Price</TableHead>
             <TableHead>Quantity</TableHead>
             <TableHead>Total</TableHead>
+            <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -183,6 +195,12 @@ const UpsertSheetContent = ({
                   selectedProduct.quantity * selectedProduct.price,
                 )}
               </TableCell>
+              <TableCell>
+                <SalesTableDropdownMenu
+                  onRemoval={onRemoval}
+                  product={selectedProduct}
+                />
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -190,6 +208,7 @@ const UpsertSheetContent = ({
           <TableRow>
             <TableCell colSpan={3}>Total</TableCell>
             <TableCell>{formatCurrency(productsTotal)}</TableCell>
+            <TableCell></TableCell>
           </TableRow>
         </TableFooter>
       </Table>

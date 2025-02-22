@@ -4,7 +4,7 @@ import { Badge } from '@/app/_components/ui/badge'
 import type { Product as PrismaProduct } from '@prisma/client'
 import { ColumnDef } from '@tanstack/react-table'
 import { CircleIcon } from 'lucide-react'
-import { TableDropdownMenu } from './table-dropdown-menu'
+import { ProductTableDropdownMenu } from './table-dropdown-menu'
 
 export interface Product extends Omit<PrismaProduct, 'price'> {
   status: string
@@ -66,7 +66,7 @@ export const productTableColumns: ColumnDef<Product>[] = [
     cell: (row) => {
       const product = row.row.original
 
-      return <TableDropdownMenu product={product} />
+      return <ProductTableDropdownMenu product={product} />
     },
   },
 ]
