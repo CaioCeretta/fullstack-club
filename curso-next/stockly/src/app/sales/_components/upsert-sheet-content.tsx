@@ -74,8 +74,28 @@ const UpsertSheetContent = ({
       const existingProduct = currentProducts.find(
         (product) => product.id === selectedProduct.id,
       )
+      if (data.quantity > selectedProduct.stock) {
+        form.setError('quantity', {
+          message: 'Quantity unavailable in stock',
+        })
+
+        return currentProducts
+      }
 
       if (existingProduct) {
+        const productIsOutOfStock =
+          existingProduct.quantity + data.quantity > selectedProduct.stock
+
+        if (productIsOutOfStock) {
+          form.setError('quantity', {
+            message: 'Quantity unavailable in stock',
+          })
+
+          return currentProducts
+        }
+
+        form.reset()
+
         return currentProducts.map((product) => {
           if (product.id === selectedProduct.id) {
             return {
@@ -87,6 +107,8 @@ const UpsertSheetContent = ({
         })
       }
 
+      form.reset()
+
       return [
         ...currentProducts,
         {
@@ -96,8 +118,6 @@ const UpsertSheetContent = ({
         },
       ]
     })
-
-    form.reset()
   }
 
   const form = useForm<UpsertSheetFormType>({
