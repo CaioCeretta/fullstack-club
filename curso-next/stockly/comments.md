@@ -1664,3 +1664,11 @@ their IDS
 
 And the productsTotal will be the value stored from a reduce function, a useMemo() function will be used for this function
 because we don't want the function to be executed if selectedProducts doesn't change
+
+One thing we need to be aware of, in the clean code principles, if we have a table-dropdown-menu, in a products or sales
+folder, we don't need to name it with it, but when we create the component, is important for it to be the more descritive,
+because it means that it will be easier to import, so the component will be named ProductTableDropdownMenu.
+
+There are two main reasons for creating a component, one that the code will be reused in more components and two that the
+component is getting to extense and we want to break it in parts, and here, the dropdown component will be created because
+of the second one.
