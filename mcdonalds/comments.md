@@ -27,7 +27,7 @@ To use it on our code we change the eslint.config.js and that this rules for the
     	},
     },
 
-## Option chosen by user
+## Option chosen by user 1/2
 
 In the code, we are dealing with restaurants and we have the consumption methods a user can choose, if it is takeaway or
 to eat in the restaurant, and we added fields on the database to save this order method, because we must have this order
@@ -114,4 +114,26 @@ interface RestaurantCategoriesProps {
 }
 ```
 
-Prisma offers us that TableGetPayload and in the generic we pass the tables it includes.
+Prisma offers us that TableGetPayload and in the generic we pass the tables it includes. Since our interface expects to
+receive the categories and the products, by removing this includes on the findMany, it will now show an error
+
+## Option chosen by user 2/2
+
+For storing the restaurant category in this case, we can simply store it in state, However, there's a problem: When we
+change pages or reload the page, we'll have to select the category again. 
+
+To avoid this, we can also store it in the url. This ensures that the selected category persists even after a page reload
+or navigation. However, another issue arise: If thhe application is designed to reload the entire page whenever we change
+the category, a new request to the database will be triggered.
+
+Navigation is handled via Server Components and Client Components. If we store the category in the URL and use shallow
+routing (e.g. router.push) with { scroll: false }, we can update the URL without triggering a full page reload or a new server
+request. This way we can benefit of the URL persistence without unnecessary API calls.
+
+In the end, everything is a trade-off. The instructor prefers storing the category in state to avoid full-page reloads.
+However in Next.js App Router setup, a combined approach works best
+
+	. store the selected category in the URL for persistence
+	. use local state to manage ui updates without unnecessary re-fetching
+	. optimize cache with strategies like ReactQuery, useMemo, or Next.js caching mechanisms to prevent reduntant database
+	requests.
