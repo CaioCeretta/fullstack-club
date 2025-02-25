@@ -114,8 +114,11 @@ interface RestaurantCategoriesProps {
 }
 ```
 
+
+
 Prisma offers us that TableGetPayload and in the generic we pass the tables it includes. Since our interface expects to
 receive the categories and the products, by removing this includes on the findMany, it will now show an error
+
 
 ## Option chosen by user 2/2
 
@@ -137,3 +140,23 @@ However in Next.js App Router setup, a combined approach works best
 	. use local state to manage ui updates without unnecessary re-fetching
 	. optimize cache with strategies like ReactQuery, useMemo, or Next.js caching mechanisms to prevent reduntant database
 	requests.
+
+## Function calls
+
+variant={getCategoryButtonVariant(category)}
+
+We are passing an argument to this function call, so why we don't need to create an anonymous function for it?
+
+This happens because the function is already being called directly at render time, so we don't need to wrap it in an anonymous
+function. Since it is executed immediately, it's return value (a string such as "default" or "secondary") is directly passed
+as the variant prop.
+
+If we wrapped it in an anonymous function, we would be passing getCategoryButtonVariant as prop, instead of its returned
+value.
+
+This would onlyu make sense if variant expected a function rather than a direct value, which is not the case.
+
+The variant prop expects a string, such as "default" or "secondary" and the function already returns this value.
+
+If it were something like onClick, which expects a function to be called afterwards, then we would need to pass an anonymous
+function. This ensures that the execution only happens when the button is clicked, rather than immediately during rendering
