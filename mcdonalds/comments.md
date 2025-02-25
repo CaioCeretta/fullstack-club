@@ -79,3 +79,39 @@ We also have another solution to deal in this cases:
 
     	the w-20 defines the fixed width in 80px, aspect square will maintain the height same as the width (1:1), and relative
     	is required because <Image fill /> requires a positioned container
+
+## Prisma include
+
+If we are going to fetch something, that has a foreign key to another table, an this other table, have a foreign key to
+other table, we can do something like
+
+```ts
+const restaurant = await db.restaurant.findUnique({
+  where: { slug },
+  include: {
+    menuCategories: {
+      include: { products: true },
+    },
+  },
+});
+```
+
+this way when we fetch the restaurant based on the slug, we are also going to fetch the menuCategories related to this
+restaurant and the products related to the category, now, if we pass down this restaurant as a property to a child we
+type the interface as
+
+```ts
+interface RestaurantCategoriesProps {
+  restaurant: Prisma.RestaurantGetPayload<{
+    include: {
+      menuCategories: {
+        include: {
+          products: true;
+        };
+      };
+    };
+  }>;
+}
+```
+
+Prisma offers us that TableGetPayload and in the generic we pass the tables it includes.
