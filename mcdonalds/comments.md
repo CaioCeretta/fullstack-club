@@ -160,3 +160,11 @@ The variant prop expects a string, such as "default" or "secondary" and the func
 
 If it were something like onClick, which expects a function to be called afterwards, then we would need to pass an anonymous
 function. This ensures that the execution only happens when the button is clicked, rather than immediately during rendering
+
+## Product Page
+
+Product page will be a dynamic route inside the [slug] dynamic route, so it will receive two parameters in order for this
+page be viewed, [slug]/[productId]. Since [slug] is on the route of the app, every dynamic route, accessed after the
+domain is going to target the [slug] folder and every page accessed after it, will have access to the slug.
+
+For us to retrieve the parameters on the url, is by using the useParam hook or receiving it as a prop.
