@@ -53,7 +53,7 @@ const RestaurantCategories = ({ restaurant }: RestaurantCategoriesProps) => {
         </div>
         <div className="mt-3 flex items-center gap-1 text-xs text-green-500">
           <ClockIcon size={12} />
-          <p>Aberto!</p>
+          <p>Open!</p>
         </div>
       </div>
 
