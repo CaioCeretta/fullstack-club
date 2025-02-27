@@ -3,6 +3,7 @@ import { notFound } from "next/navigation"
 
 import { db } from "@/lib/prisma"
 
+import ProductDetails from "./_components/product-details"
 import ProductHeader from "./_components/products-header"
 
 
@@ -15,15 +16,33 @@ interface ProductPageProps {
 
 const ProductPage = async ({params}: ProductPageProps) => {
 
-  const { slug, productId }  = await params
+  const { productId }  = await params
 
   console.log(productId)
 
+  /* const restaurant = await db.restaurant.findUnique({
+    where: {
+      slug
+    }
+  })
+
+  instead of doing another call to the db, we can simply say on the product query, that is going to include the restaurant
+  which it is linked to
+ */
   const product = await db.product.findUnique({
     where: {
       id: productId
     },
-  })
+    include: {
+      restaurant: {
+        select: {
+          name: true,
+          avatarImageUrl: true
+      }
+    }
+        }
+  }
+)
 
   if(!product) {
     return notFound()
@@ -35,8 +54,7 @@ const ProductPage = async ({params}: ProductPageProps) => {
     <>
       <ProductHeader product={product} />
       <h1>Product Page</h1>
-      {slug}
-      {productId}
+      <ProductDetails product={product}/>
     </>
   );
 }
