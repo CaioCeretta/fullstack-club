@@ -5,6 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 
+import { formatCurrency } from "@/utils/format";
+
 interface CategoriesProductsProps {
   products: Product[]
 }
@@ -24,10 +26,7 @@ const CategoriesProducts = ({products}: CategoriesProductsProps) => {
             {/* Line clamp 2 means that the maximum number of lines will be 2, if it exceeds 2 lines, it will add an
             ellipsis */}
             <p className="pt-3 text-sm font-semibold"> 
-              {Intl.NumberFormat("pt-BR", {
-                style: "currency",
-                currency: "BRL"
-              }).format(product.price)}
+              {formatCurrency(product.price)}
             </p>
           </div>
           {/* Right */}
