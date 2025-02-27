@@ -168,3 +168,41 @@ page be viewed, [slug]/[productId]. Since [slug] is on the route of the app, eve
 domain is going to target the [slug] folder and every page accessed after it, will have access to the slug.
 
 For us to retrieve the parameters on the url, is by using the useParam hook or receiving it as a prop.
+
+This component is going to be a server component that has two other child components, which are server components that
+handle dynamic operations
+
+## Product Details Page
+
+On here, whenever we choose a product from a restaurant, we'll use a icon on the side to show which restaurant we're talking
+about. However in this case we're we are dealing with small icons and not big displaying images, we are not going to create
+an external relative div, set its width, then place an image inside with the fill property, here we'll simply use next image
+width and height property for the dimensions.
+
+We choose the other approach mainly in cases where we want the image to occupy 100% of the height and width of the container
+or when we have images several different images that are going to be rendered by the component and we want them to always
+have the same dimensions.
+
+By using next image, with width and height, there is a possibility that it changes the image dimensions.
+
+One is able to get the restaurants linked with the product by using the same approach as the one before, with
+
+Prisma.ProductsGetPayload<{ include: { restaurant: true }}>
+
+If only some columns are needed on an include, we can use the select, that is a property of the include, so it would be
+for example
+
+```ts
+Prisma.ProductsGetPayload<{
+   include: {
+     restaurant: {
+        select: {
+          name: true
+        }
+      } 
+    }
+  }>
+
+  and on the fetch 
+```
+
