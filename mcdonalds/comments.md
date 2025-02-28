@@ -114,16 +114,13 @@ interface RestaurantCategoriesProps {
 }
 ```
 
-
-
 Prisma offers us that TableGetPayload and in the generic we pass the tables it includes. Since our interface expects to
 receive the categories and the products, by removing this includes on the findMany, it will now show an error
-
 
 ## Option chosen by user 2/2
 
 For storing the restaurant category in this case, we can simply store it in state, However, there's a problem: When we
-change pages or reload the page, we'll have to select the category again. 
+change pages or reload the page, we'll have to select the category again.
 
 To avoid this, we can also store it in the url. This ensures that the selected category persists even after a page reload
 or navigation. However, another issue arise: If thhe application is designed to reload the entire page whenever we change
@@ -136,10 +133,10 @@ request. This way we can benefit of the URL persistence without unnecessary API 
 In the end, everything is a trade-off. The instructor prefers storing the category in state to avoid full-page reloads.
 However in Next.js App Router setup, a combined approach works best
 
-	. store the selected category in the URL for persistence
-	. use local state to manage ui updates without unnecessary re-fetching
-	. optimize cache with strategies like ReactQuery, useMemo, or Next.js caching mechanisms to prevent reduntant database
-	requests.
+    . store the selected category in the URL for persistence
+    . use local state to manage ui updates without unnecessary re-fetching
+    . optimize cache with strategies like ReactQuery, useMemo, or Next.js caching mechanisms to prevent reduntant database
+    requests.
 
 ## Function calls
 
@@ -199,10 +196,18 @@ Prisma.ProductsGetPayload<{
         select: {
           name: true
         }
-      } 
+      }
     }
   }>
 
-  and on the fetch 
+  and on the fetch
 ```
 
+## Placing the button on the bottom of the component
+
+1. Change globals.css and apply a h-full to the html selector
+2. Change the productsPage, which wraps the details and the header, to have a flex h-full flex-col
+3. Change the outer div of the product details to have a flex-auto, which is similar to flex-1, except that the flex-shrink
+   added by flex-1 is 0% instead of 1
+4. Change the product details component, by wrapping the whole code, except for the button, into a flex-auto, pushing the
+   button downwards
