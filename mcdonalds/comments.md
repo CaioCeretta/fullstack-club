@@ -261,3 +261,60 @@ addProduct: (\_product) => {},
 
 the use of \_product indicates that the parameter exists, but won't be used (common practice when the parameter is required
 for the interface, but won't be used in that specific implementation)
+
+## Properties being passed to a function with more information then needed
+
+```ts
+
+  // Cart Context
+
+  export interface CartProduct
+  extends Pick<Product, "name" | "price" | "imageUrl"> {
+  qty: number;
+}
+
+  export interface ICartContext {
+  products: CartProduct[];
+  isOpen: boolean;
+  toggleCart: () => void;
+  addProduct: (product: CartProduct) => void;
+
+
+  addProduct({ ...product, qty: quantity  });
+
+// Product Details Component
+
+export interface ProductDetailsProps {
+  product: Prisma.ProductGetPayload<{
+    include: {
+      restaurant: {
+        select: {
+          name: true;
+          avatarImageUrl: true;
+          slug: true;
+        };
+      };
+    };
+  }>;
+}
+
+```
+
+What's happening here, when we call the AddProduct, the product cart expects to receive some properties from the product
+and the qty, but the product we are passing when calling the AddProduct function, has all the properties from product and
+some of the restaurant, so why does it work?
+
+Typescript is allowing this assignment because the spread operator ({...product, qty: quantity}) results in an object that
+contains all the properties of product, while adding the quantity property.
+
+However, the addProduct only expects an object of type CartProduct, which must have at least the properties name, price,
+imageUrl and qty.
+
+Even though the object contains extra properties, typescript does not prevent passing the objects with additional properties
+as long as they include at least the required ones. This behavior is known as "excess property allowance in assignments",
+as long as the object is created dynamically with ...product.
+
+Without the spreading it would not work because product does not have quantity.
+
+By making addProduct({ ...product, qty: quantity }), typescript will now allow because the new object has all the minimum
+properties required by CartProduct and ignores the extras.
