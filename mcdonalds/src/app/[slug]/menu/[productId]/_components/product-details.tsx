@@ -3,6 +3,7 @@
 import type { Prisma } from "@prisma/client";
 import { ChefHatIcon, ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import Image from "next/image";
+import { notFound, useParams } from "next/navigation";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -15,6 +16,7 @@ export interface ProductDetailsProps {
         select: {
           name: true;
           avatarImageUrl: true;
+          slug: true;
         };
       };
     };
@@ -23,6 +25,10 @@ export interface ProductDetailsProps {
 
 export const ProductDetails = ({ product }: ProductDetailsProps) => {
   const [quantity, setQuantity] = useState(1);
+
+  const params = useParams();
+
+  const slug = params.slug;
 
   function handleIncreaseQuantity() {
     setQuantity((prev) => {
@@ -40,6 +46,15 @@ export const ProductDetails = ({ product }: ProductDetailsProps) => {
       }
       return prev - 1;
     });
+  }
+
+  if (!product) {
+    return notFound();
+  }
+
+  if (product.restaurant.slug !== slug) {
+    console.log("jasjdioasjd");
+    return notFound();
   }
 
   return (
