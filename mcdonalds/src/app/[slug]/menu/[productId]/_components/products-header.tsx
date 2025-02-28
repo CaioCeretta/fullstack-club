@@ -17,11 +17,11 @@ const ProductHeader = ({ product }: ProductHeaderProps) => {
 
   const handleBackClick = useCallback(() => {
     router.back();
-  }, []);
+  }, [router]);
 
   return (
     <div>
-      <div className="relative flex aspect-square h-96 w-full items-center">
+      <div className="relative flex aspect-square h-96 min-h-[25rem] w-full items-center">
         <Image
           src={product.imageUrl}
           alt={product.name}
