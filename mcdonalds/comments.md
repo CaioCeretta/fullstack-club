@@ -222,3 +222,42 @@ hidden to it
 In this example, the context is a client component, and it wraps a server component such as the restaurant page.
 Since server components can be passed as children to client components, they can still be rendered inside client-side
 provider. This allows us to manage a global state on the client while still leveraging the benefits of server components
+
+## Cart context initial value empty parameters
+
+```ts
+export interface ICartContext {
+  products: CartProduct[];
+  isOpen: boolean;
+  toggleCart: () => void;
+  addProduct: (product: CartProduct) => void;
+}
+
+export const CartContext = createContext<ICartContext>({
+  products: [],
+  isOpen: false,
+  toggleCart: () => {
+    throw new Error("toggleCart was called out of the CartProvider");
+  },
+  addProduct: () => {},
+});
+```
+
+In typescript, when we define a function this way on the CartContext, e.g. addProduct: () => {};
+
+we are not explicitly stating that it receives a product. However, this works because TypeScript already knows, from the
+ICartContext needs to have the following signature
+
+addProduct: (product: CartProduct) => void;
+
+Therefore, even if the initial implementation of addProduct, is simply as () => {}, ts already infers that this function
+needs to accept an argument for it to be compatible with the interface. This happens because TS allows functions to have
+non used parameters without generating an error
+
+In other words, internally ts knows that addProduct has the correct signature, but simply do not use the argument. If we
+want to let this even more explicit, we can write it as
+
+addProduct: (\_product) => {},
+
+the use of \_product indicates that the parameter exists, but won't be used (common practice when the parameter is required
+for the interface, but won't be used in that specific implementation)
