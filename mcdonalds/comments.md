@@ -216,3 +216,9 @@ Prisma.ProductsGetPayload<{
 
 We can achieve this simply by using shadcn scroll view, and on the div of the ingredients and about, add an overflow
 hidden to it
+
+## Server components can be rendered inside client components
+
+In this example, the context is a client component, and it wraps a server component such as the restaurant page.
+Since server components can be passed as children to client components, they can still be rendered inside client-side
+provider. This allows us to manage a global state on the client while still leveraging the benefits of server components
