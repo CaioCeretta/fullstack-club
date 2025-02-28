@@ -211,3 +211,8 @@ Prisma.ProductsGetPayload<{
    added by flex-1 is 0% instead of 1
 4. Change the product details component, by wrapping the whole code, except for the button, into a flex-auto, pushing the
    button downwards
+
+## In case content too big, make only the details scrollable, with the page layout remaining the same
+
+We can achieve this simply by using shadcn scroll view, and on the div of the ingredients and about, add an overflow
+hidden to it
