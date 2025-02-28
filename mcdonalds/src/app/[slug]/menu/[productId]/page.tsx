@@ -1,24 +1,19 @@
+import { notFound } from "next/navigation";
 
-import { notFound } from "next/navigation"
+import { db } from "@/lib/prisma";
 
-import { db } from "@/lib/prisma"
+import ProductDetails from "./_components/product-details";
+import ProductHeader from "./_components/products-header";
 
-import ProductDetails from "./_components/product-details"
-import ProductHeader from "./_components/products-header"
-
-
-interface ProductPageProps { 
+interface ProductPageProps {
   params: {
-    productId: string,
-    slug: string
-  }
+    productId: string;
+    slug: string;
+  };
 }
 
-const ProductPage = async ({params}: ProductPageProps) => {
-
-  const { productId }  = await params
-
-  console.log(productId)
+const ProductPage = async ({ params }: ProductPageProps) => {
+  const { productId } = await params;
 
   /* const restaurant = await db.restaurant.findUnique({
     where: {
@@ -31,32 +26,28 @@ const ProductPage = async ({params}: ProductPageProps) => {
  */
   const product = await db.product.findUnique({
     where: {
-      id: productId
+      id: productId,
     },
     include: {
       restaurant: {
         select: {
           name: true,
-          avatarImageUrl: true
-      }
-    }
-        }
+          avatarImageUrl: true,
+        },
+      },
+    },
+  });
+
+  if (!product) {
+    return notFound();
   }
-)
-
-  if(!product) {
-    return notFound()
-  }
-
-
 
   return (
-    <>
+    <div className="flex h-screen flex-col">
       <ProductHeader product={product} />
-      <h1>Product Page</h1>
-      <ProductDetails product={product}/>
-    </>
+      <ProductDetails product={product} />
+    </div>
   );
-}
- 
+};
+
 export default ProductPage;
