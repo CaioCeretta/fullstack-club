@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import type { Product } from "@prisma/client";
 import { ChevronLeftIcon, ScrollTextIcon } from "lucide-react";
@@ -9,20 +9,25 @@ import { useCallback } from "react";
 import { Button } from "@/components/ui/button";
 
 interface ProductHeaderProps {
-  product: Pick<Product, 'name' | 'imageUrl'>
+  product: Pick<Product, "name" | "imageUrl">;
 }
 
-const ProductHeader = ({product}: ProductHeaderProps) => {
-  const router = useRouter()
+const ProductHeader = ({ product }: ProductHeaderProps) => {
+  const router = useRouter();
 
-  const handleBackClick =  useCallback(() => {
-    router.back()
-  }, [])
+  const handleBackClick = useCallback(() => {
+    router.back();
+  }, []);
 
   return (
     <div>
-      <div className="h-96 relative aspect-square">
-        <Image src={product.imageUrl} alt={product.name} fill className="object-contain"/>
+      <div className="relative flex aspect-square h-96 w-full items-center">
+        <Image
+          src={product.imageUrl}
+          alt={product.name}
+          fill
+          className="object-contain"
+        />
       </div>
       <Button
         variant="secondary"
@@ -39,9 +44,8 @@ const ProductHeader = ({product}: ProductHeaderProps) => {
       >
         <ScrollTextIcon />
       </Button>
-      {product.name}
     </div>
   );
-}
- 
+};
+
 export default ProductHeader;

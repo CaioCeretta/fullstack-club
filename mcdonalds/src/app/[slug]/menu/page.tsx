@@ -23,7 +23,6 @@ const RestaurantMenuPage = async ({
   const { slug } = params;
   const { consumptionMethod } = searchParams;
 
-
   const restaurant = await db.restaurant.findUnique({
     where: { slug },
     include: {
