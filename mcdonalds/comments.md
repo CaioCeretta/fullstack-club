@@ -318,3 +318,26 @@ Without the spreading it would not work because product does not have quantity.
 
 By making addProduct({ ...product, qty: quantity }), typescript will now allow because the new object has all the minimum
 properties required by CartProduct and ignores the extras.
+
+## Adding products to cart
+
+The logic here is the same as the one used in every cart, when we add a new product it will be added to the products state,
+now we are going to iterate these products.
+
+we check first, if the product we're trying to add, if it's already on the cart, if yes, it will
+
+Step by Step
+
+1. Use the state setter to the set the new products object, here we'll use a const named prevProducts to store the state
+   previous products
+2. create a constant of existing products, holding the value of a prevProducts.find, and seeing if any product id matches
+   the id of an existing cart product
+3. If yes, it will return another iteration over the prevProducts, and if the prevProduct id is the same as the product
+   we are trying to add, it will create an object that will spread all of the attributes, but summing the qty to the one
+   being passed
+4. If not, it will simply return the product
+5. Outside of the if, return an array containing the prevProducts and the new product being added
+
+On the way coded,we utilized map to preserve the immutability, which is that we NEVER SHOULD directly modify a state, because
+it can lead to problems on components update and lost of performance. So instead, we always create a new version of the
+state, updating only the necessary code
