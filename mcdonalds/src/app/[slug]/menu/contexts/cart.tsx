@@ -33,7 +33,21 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const addProduct = (product: CartProduct) => {
-    setProducts((prev) => [...prev, product]);
+    setProducts((prevProducts) => {
+      const existingProduct = prevProducts.find(
+        (prevProduct) => prevProduct.id === product.id,
+      );
+
+      if (existingProduct) {
+        return prevProducts.map((prevProduct) =>
+          prevProduct.id === product.id
+            ? { ...prevProduct, qty: prevProduct.qty + product.qty }
+            : prevProduct,
+        );
+      }
+
+      return [...prevProducts, product];
+    });
   };
 
   return (
