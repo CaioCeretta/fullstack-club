@@ -10,7 +10,7 @@ After the installation, we create a new script in our package.json, here we'll n
 
 Now, by running "npx prisma db seed", this is the script it will look for
 
-## Patternize imports
+## Standardize imports
 
 eslint-plugin-simple-import-sort@12.1.1 <- This library is used for us to create a pattern on the imports, such as the
 libraries imports come first, then the files, etc.
@@ -26,6 +26,24 @@ To use it on our code we change the eslint.config.js and that this rules for the
     		'simple-import-sort/exports': 'error',
     	},
     },
+
+## Server components params and searchParams need to be awaited on Next.js 13+
+
+On the dynamic route (e.g. app/[slug]/menu) by trying to assign the params and the searchParams to a variable, next "said"
+it should be awaited before using its properties.
+
+This happens because of the way Next.JS deals with dynamic routes and the use of params and searchParams on async functions
+specially in routes within app folder.
+
+In Next.js 13+ with the new routing API, when we work with dynamic routes such as this one, both the params and the searchParams
+need to be treated in an asynchronous manner to ensure Next.js is able to access the data correctly.
+
+This error happens because next says that we must await the values of params and searchParams. This happens because, in
+the architecture of Next.JS with the app folder, these objects are returned with Promises instead of simple objects.
+
+In other words, params and searchParams are async objects that need to be "unpacked" with await before being accessed.
+Therefore, dynamic routes in Next.js with the app folder structure, bring this new approach for accessing URL parameters
+and query strings asynchronously
 
 ## Option chosen by user 1/2
 
