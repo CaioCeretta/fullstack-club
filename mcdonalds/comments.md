@@ -43,7 +43,7 @@ the architecture of Next.JS with the app folder, these objects are returned with
 
 In other words, params and searchParams are async objects that need to be "unpacked" with await before being accessed.
 Therefore, dynamic routes in Next.js with the app folder structure, bring this new approach for accessing URL parameters
-and query strings asynchronously
+and query strings asynchronously, and if it isn't an async component, we wouldn't need the awaits and it would also work.
 
 ## Option chosen by user 1/2
 
