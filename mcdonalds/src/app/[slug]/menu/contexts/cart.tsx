@@ -3,7 +3,8 @@
 import type { Product } from "@prisma/client";
 import { createContext, type ReactNode, useCallback, useState } from "react";
 
-export interface CartProduct extends Product {
+export interface CartProduct
+  extends Pick<Product, "id" | "name" | "price" | "imageUrl"> {
   qty: number;
 }
 
@@ -11,6 +12,7 @@ export interface ICartContext {
   products: CartProduct[];
   isOpen: boolean;
   toggleCart: () => void;
+  addProduct: (product: CartProduct) => void;
 }
 
 export const CartContext = createContext<ICartContext>({
@@ -19,6 +21,7 @@ export const CartContext = createContext<ICartContext>({
   toggleCart: () => {
     throw new Error("toggleCart was called out of the CartProvider");
   },
+  addProduct: () => {},
 });
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
@@ -29,12 +32,17 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     setIsOpen((prev) => !prev);
   }, []);
 
+  const addProduct = (product: CartProduct) => {
+    setProducts((prev) => [...prev, product]);
+  };
+
   return (
     <CartContext.Provider
       value={{
         isOpen: isOpen,
         products,
         toggleCart,
+        addProduct,
       }}
     >
       {children}

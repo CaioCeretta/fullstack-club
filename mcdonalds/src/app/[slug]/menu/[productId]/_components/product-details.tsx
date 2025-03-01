@@ -30,7 +30,7 @@ export interface ProductDetailsProps {
 export const ProductDetails = ({ product }: ProductDetailsProps) => {
   const [quantity, setQuantity] = useState(1);
 
-  const { products, toggleCart } = useContext(CartContext);
+  const { addProduct, toggleCart } = useContext(CartContext);
 
   const params = useParams();
 
@@ -63,6 +63,7 @@ export const ProductDetails = ({ product }: ProductDetailsProps) => {
   }
 
   const handleAddToCart = () => {
+    addProduct({ ...product, qty: quantity });
     toggleCart();
   };
 

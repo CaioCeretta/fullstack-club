@@ -20,6 +20,11 @@ export const CartSheet = () => {
           <SheetTitle>Products Cart</SheetTitle>
           <SheetDescription>Test</SheetDescription>
         </SheetHeader>
+        {products.map((product) => (
+          <h1 key={product.id}>
+            {product.name} - {product.qty}
+          </h1>
+        ))}
       </SheetContent>
     </Sheet>
   );
