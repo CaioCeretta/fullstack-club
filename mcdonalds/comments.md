@@ -241,6 +241,13 @@ In this example, the context is a client component, and it wraps a server compon
 Since server components can be passed as children to client components, they can still be rendered inside client-side
 provider. This allows us to manage a global state on the client while still leveraging the benefits of server components
 
+## Cart context
+
+We've created the cart context inside the [slug]/menu folder instead of in a more generic place, such as data/contexts/cart.tsx
+
+The reason for it was, the cart context, even though it is a global state manager, it will only be accessed and used inside
+of the products and cart components, and no other place. So it's completely fair to make it more "exclusive".
+
 ## Cart context initial value empty parameters
 
 ```ts
@@ -359,3 +366,29 @@ Step by Step
 On the way coded,we utilized map to preserve the immutability, which is that we NEVER SHOULD directly modify a state, because
 it can lead to problems on components update and lost of performance. So instead, we always create a new version of the
 state, updating only the necessary code
+
+## Cart Item Component
+
+In the way done until now, the sidebar, with the products, displays only the products name, price and quantity, and this
+component will be used to make it more beautiful to the user.
+
+on the cart product item, we will simply create a div, that is flex, on one extremity it will be the name, price and
+quantity, on top of the other, and the delete button on the other extremity.
+
+Problems we faced:
+
+1. Some products names were too close to the delete button
+
+   to fix this, on the p element that rendered the name, a max-w-[90%], just so the p tag don't take the whole available
+   width. The line will break, if we want to avoid this, we have two options
+
+   1. truncate text-ellipsis
+      . Works only in one line, the overflowing text will be cropped and the ... will automatically show if there is no
+      . available width. However it depends of overflow-hidden to work correctly
+
+   2. line-clamp-1
+      . Will also cut the text in one line, but uses display: -webkit-box and -webkit-line-clamp.
+      . It depends on this display property, so it can not work well in all browsers
+      . line-clamp-1 doesn't FORCE the text to stay in one line, if no max-width is set, it can expand.
+
+Because there is a max-width on the element, i'll choose for the line-clamp-1
