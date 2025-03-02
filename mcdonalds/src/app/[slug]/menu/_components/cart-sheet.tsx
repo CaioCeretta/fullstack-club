@@ -3,12 +3,12 @@ import { useContext } from "react";
 import {
   Sheet,
   SheetContent,
-  SheetDescription,
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
 
 import { CartContext } from "../contexts/cart";
+import CartItem from "./cart-product-item";
 
 export const CartSheet = () => {
   const { products, isOpen, toggleCart } = useContext(CartContext);
@@ -17,14 +17,13 @@ export const CartSheet = () => {
     <Sheet open={isOpen} onOpenChange={toggleCart}>
       <SheetContent className="bg-white">
         <SheetHeader>
-          <SheetTitle>Products Cart</SheetTitle>
-          <SheetDescription>Test</SheetDescription>
+          <SheetTitle className="text-left">Cart</SheetTitle>
         </SheetHeader>
-        {products.map((product) => (
-          <h1 key={product.id}>
-            {product.name} - {product.qty}
-          </h1>
-        ))}
+        <div className="p y-5">
+          {products.map((product) => (
+            <CartItem product={product} key={product.id} />
+          ))}
+        </div>
       </SheetContent>
     </Sheet>
   );
