@@ -5,12 +5,14 @@ import { createContext, type ReactNode, useCallback, useState } from "react";
 
 export interface CartProduct
   extends Pick<Product, "id" | "name" | "price" | "imageUrl"> {
-  qty: number;
+  quantity: number;
 }
 
 export interface ICartContext {
   products: CartProduct[];
   isOpen: boolean;
+  handleIncreaseQuantity: (productId: string) => void;
+  handleDecreaseQuantity: (productId: string) => void;
   toggleCart: () => void;
   addProduct: (product: CartProduct) => void;
 }
@@ -21,6 +23,8 @@ export const CartContext = createContext<ICartContext>({
   toggleCart: () => {
     throw new Error("toggleCart was called out of the CartProvider");
   },
+  handleDecreaseQuantity: () => {},
+  handleIncreaseQuantity: () => {},
   addProduct: () => {},
 });
 
@@ -41,7 +45,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       if (existingProduct) {
         return prevProducts.map((prevProduct) =>
           prevProduct.id === product.id
-            ? { ...prevProduct, qty: prevProduct.qty + product.qty }
+            ? {
+                ...prevProduct,
+                quantity: prevProduct.quantity + product.quantity,
+              }
             : prevProduct,
         );
       }
@@ -50,12 +57,40 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
+  function handleIncreaseQuantity(productId: string) {
+    setProducts((prevProducts) =>
+      prevProducts.map((prevProduct) =>
+        prevProduct.id === productId
+          ? {
+              ...prevProduct,
+              quantity: Math.min(prevProduct.quantity + 1, 99),
+            }
+          : prevProduct,
+      ),
+    );
+  }
+
+  function handleDecreaseQuantity(productId: string) {
+    setProducts((prevProducts) =>
+      prevProducts.map((prevProduct) =>
+        prevProduct.id === productId
+          ? {
+              ...prevProduct,
+              quantity: Math.max(prevProduct.quantity - 1, 0),
+            }
+          : prevProduct,
+      ),
+    );
+  }
+
   return (
     <CartContext.Provider
       value={{
         isOpen: isOpen,
         products,
         toggleCart,
+        handleDecreaseQuantity,
+        handleIncreaseQuantity,
         addProduct,
       }}
     >

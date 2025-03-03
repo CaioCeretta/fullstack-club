@@ -28,31 +28,13 @@ export interface ProductDetailsProps {
 }
 
 export const ProductDetails = ({ product }: ProductDetailsProps) => {
-  const [quantity, setQuantity] = useState(1);
-
   const { addProduct, toggleCart } = useContext(CartContext);
+
+  const [quantity, setQuantity] = useState(1);
 
   const params = useParams();
 
   const slug = params.slug;
-
-  function handleIncreaseQuantity() {
-    setQuantity((prev) => {
-      if (prev === 99) {
-        return prev;
-      }
-      return prev + 1;
-    });
-  }
-
-  function handleDecreaseQuantity() {
-    setQuantity((prev) => {
-      if (prev === 0) {
-        return prev;
-      }
-      return prev - 1;
-    });
-  }
 
   if (!product) {
     return notFound();
@@ -63,7 +45,7 @@ export const ProductDetails = ({ product }: ProductDetailsProps) => {
   }
 
   const handleAddToCart = () => {
-    addProduct({ ...product, qty: quantity });
+    addProduct({ ...product, quantity: quantity });
     toggleCart();
   };
 
@@ -95,7 +77,7 @@ export const ProductDetails = ({ product }: ProductDetailsProps) => {
               <Button
                 variant={"outline"}
                 className="h-8 w-8 rounded-xl"
-                onClick={handleDecreaseQuantity}
+                onClick={() => setQuantity((prev) => Math.max(prev - 1, 0))}
               >
                 <ChevronLeftIcon />
               </Button>
@@ -105,7 +87,7 @@ export const ProductDetails = ({ product }: ProductDetailsProps) => {
               <Button
                 variant={"destructive"}
                 className="h-8 w-8 rounded-xl"
-                onClick={handleIncreaseQuantity}
+                onClick={() => setQuantity((prev) => Math.min(prev + 1, 99))}
               >
                 <ChevronRightIcon />
               </Button>
