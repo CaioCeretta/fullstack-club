@@ -382,13 +382,107 @@ Problems we faced:
    to fix this, on the p element that rendered the name, a max-w-[90%], just so the p tag don't take the whole available
    width. The line will break, if we want to avoid this, we have two options
 
-   1. truncate text-ellipsis
-      . Works only in one line, the overflowing text will be cropped and the ... will automatically show if there is no
-      . available width. However it depends of overflow-hidden to work correctly
+   - truncate text-ellipsis
+   - Works only in one line, the overflowing text will be cropped and the ... will automatically show if there is no
+   - available width. However it depends of overflow-hidden to work correctly
 
-   2. line-clamp-1
-      . Will also cut the text in one line, but uses display: -webkit-box and -webkit-line-clamp.
-      . It depends on this display property, so it can not work well in all browsers
-      . line-clamp-1 doesn't FORCE the text to stay in one line, if no max-width is set, it can expand.
+   . line-clamp-1
+
+   - Will also cut the text in one line, but uses display: -webkit-box and -webkit-line-clamp.
+   - It depends on this display property, so it can not work well in all browsers
+   - line-clamp-1 doesn't FORCE the text to stay in one line, if no max-width is set, it can expand.
 
 Because there is a max-width on the element, i'll choose for the line-clamp-1
+
+2. Handling the addition and the subtraction quantity
+
+We were handling this only on the products page. Since more than one component will need this functionality, we'll start
+handling it on the context.
+
+## Array functions, when to use {} and return
+
+Here we had the following use case:
+
+I was using the setter of a state with {} and with returns, but i asked chatGPT for it to help me, because i thought there
+were too many returns, and it gave me the following explanation.
+
+The {} happens because of the syntax of arrow functions inside of JS/TS.
+
+The setter function with returns is
+
+```ts
+function handleIncreaseQuantity(productId: string) {
+  setProducts((prevProducts) =>
+    prevProducts.map((prevProduct) => {
+      if (prevProduct.id === productId) {
+        return {
+          ...prevProduct,
+          quantity: Math.min(prevProduct.quantity + 1, 99),
+        };
+      } else {
+        return prevProduct;
+      }
+    }),
+  );
+}
+```
+
+here use the {} because there are several instructions inside of the map, since we are using {}, we need to explicitly
+return to inform what the function returns.
+
+however, there is a simpler way to do the same.
+
+If the function returns immediately a value, without no extra information, we can omit the {} and the return
+
+The setter without {} and return.
+
+```ts
+setProducts((prevProducts) =>
+  prevProducts.map((prevProduct) =>
+    prevProduct.id === productId
+      ? { ...prevProduct, quantity: Math.min(prevProduct.quantity + 1, 99) }
+      : prevProduct,
+  ),
+);
+```
+
+This works, because when an arrow function has only one expression, JS understands that the expression is the return.
+
+In this case, map needs a function that returns a new value for each item in the array, and we're directly returning the
+object {...prevProduct, quantity: ...} or prevProduct without {}
+
+In a quick comparison
+
+. Code with {} and return
+
+- Uses {} when there's more than one line of code
+- requires explicit return
+- slightly more verbose
+
+- simple example
+
+  const double = (n) => {
+  return n \* 2
+  }
+
+. Code without {} and return
+
+- Doesn't use {} if the function returns a single expression
+- implicit return
+- more concise and direct
+
+- simple example
+
+const double = (n) => n \* 2
+
+Back to our example, even though the setProducts take more than one line, everything is one single expression
+
+a expression in javascript is any piece of code that produce a valor, therefore, const resultado = 2 + 3 is an expression.
+
+And taking a look at our code of setProducts, we are able to see that is just a big expression being passed to setProducts.
+
+The reason is that the prevProducts.map is an expression which returns an array, and this is an expression. Because the body
+of the map function does not use {}, each call to prevProduct => ... also directly returns a value
+
+An example of a code that is not a single expression would be if on the map, we assigned the value to a new constant, and
+returned it on the set, so because we are creating a variable and then calling a return, it will now need {}
