@@ -399,6 +399,18 @@ Because there is a max-width on the element, i'll choose for the line-clamp-1
 We were handling this only on the products page. Since more than one component will need this functionality, we'll start
 handling it on the context.
 
+On the product details page, it will remain the same, because that quantity we initially add on a product, is not yet
+part of the state. However the new function to deal with the increase and decrease on the sheet, is going to be on the
+context, this will basically remain the same but iterating over the products state array.
+
+3. Pushing down the finish order button
+
+For this we separated in two divs, one with the product item and the other one with the button and the total and made
+the cart items div to take all the available height, and the div that wraps both of these divs contain a h-full, meaning
+that it would take the rest of the available height, a flex and flex-col.
+
+h-full inside flex works by taking the whole available space, respecting the space already taken (e.g. by the header)
+
 ## Array functions, when to use {} and return
 
 Here we had the following use case:
