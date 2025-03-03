@@ -11,6 +11,7 @@ export interface CartProduct
 export interface ICartContext {
   products: CartProduct[];
   isOpen: boolean;
+  total: number;
   handleIncreaseQuantity: (productId: string) => void;
   handleDecreaseQuantity: (productId: string) => void;
   toggleCart: () => void;
@@ -21,6 +22,7 @@ export interface ICartContext {
 export const CartContext = createContext<ICartContext>({
   products: [],
   isOpen: false,
+  total: 0,
   toggleCart: () => {
     throw new Error("toggleCart was called out of the CartProvider");
   },
@@ -33,6 +35,11 @@ export const CartContext = createContext<ICartContext>({
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [products, setProducts] = useState<CartProduct[]>([]);
   const [isOpen, setIsOpen] = useState<boolean>(false);
+
+  const total = products.reduce(
+    (acc, val) => acc + val.price * val.quantity,
+    0,
+  );
 
   const toggleCart = useCallback(() => {
     setIsOpen((prev) => !prev);
@@ -96,6 +103,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       value={{
         isOpen: isOpen,
         products,
+        total,
         toggleCart,
         handleDecreaseQuantity,
         handleIncreaseQuantity,
