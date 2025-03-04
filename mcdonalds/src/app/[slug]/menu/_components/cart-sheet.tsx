@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -12,9 +12,12 @@ import { formatCurrency } from "@/utils/format";
 
 import { CartContext } from "../contexts/cart";
 import CartItem from "./cart-product-item";
+import { FinishOrderDialog } from "./finish-order-dialog";
 
 export const CartSheet = () => {
   const { products, isOpen, total, toggleCart } = useContext(CartContext);
+  const [finishOrderDialogIsOpen, setFinishOrderDialogIsOpen] =
+    useState<boolean>(false);
 
   return (
     <Sheet open={isOpen} onOpenChange={toggleCart}>
@@ -36,7 +39,16 @@ export const CartSheet = () => {
               </div>
             </CardContent>
           </Card>
-          <Button className="w-full rounded-full">Finish Order</Button>
+          <Button
+            className="w-full rounded-full"
+            onClick={() => setFinishOrderDialogIsOpen(true)}
+          >
+            Finish Order
+          </Button>
+          <FinishOrderDialog
+            open={finishOrderDialogIsOpen}
+            onOpenChange={setFinishOrderDialogIsOpen}
+          />
         </div>
       </SheetContent>
     </Sheet>
