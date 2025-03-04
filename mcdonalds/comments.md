@@ -498,3 +498,62 @@ of the map function does not use {}, each call to prevProduct => ... also direct
 
 An example of a code that is not a single expression would be if on the map, we assigned the value to a new constant, and
 returned it on the set, so because we are creating a variable and then calling a return, it will now need {}
+
+## Shadcn Drawer
+
+Drawer is a UI component used to show content on a sliding panel, it can slide horizontally or vertically, it's commonly used as navigation menus or configuration panels.
+
+On our case, it will be used as a sliding component for the order confirmation, inside of it, we'll have both the header
+and a form for the user to insert their information.
+
+The form is made with shadcn form, and in order for it to work, we use a <FormProvider> and a <form>, we spread the form
+constant, created by the useForm function in the <FormProvider>, and the <form> will have the onSubmit from useForm.
+
+FormProvider is passing the rhf context to the form and all the fields inside of it. Form will be a UI component, dealing
+with the appearance and structure of the Form, whilst FormProvider handles the formLogic (state, validation, etc.)
+
+another option would be of using <Form><form> is incorrect, because nesting of form elements is generally unnecessary and
+can cause issues with submission, handling, formState and event propagation.
+
+## Issue about the drawer content not being unregistered on cancel
+
+One change we've made, is that we wanted unRegister the drawer whenever we click on the cancel button, we wouldn't be able
+to do so
+
+Because the finish order button, triggered the opening of the drawer for the user to type the name and CPF. However, if the
+user closed the drawer and reopened it, the data of the form would still be stored in react state
+
+FinishOrderButton was moved inside of the sheet and a isOpen state was created to control
+the opening and closing of the drawer
+
+In order to fix this issue, these steps were followed:
+
+. FinishOrderButton was moved back to the sheet
+. A isOpenState was created to control the opening and closing of the drawer
+. The dialog interface begin receiving the isOpen and setIsOpen
+. shouldUnregister: true was used on the form to ensure that the fields of the form to be unregistered when the drawer was
+closed
+
+In Summary:
+
+- Before the change
+
+. FinishOrderDialog remained mounted (didn't unmount on closing the drawer)
+. useForm stored the state of inputs even if the drawer closes
+. This happened because the FinishOrderDialog continued existing in the component
+tree, only with open={false} but the form remained mounted and preserved the values
+
+- After the change
+
+. Now, FinishOrderDialog is only rendered when the dialog open state is true
+. When the user closes the drawer, that state changes to false and the FinishOrderDialog is unmounted
+. As the useForm is inside the FinishOrderDialog, he fades out with the component, resetting the values
+. shouldUnregister: true reinforces that, ensuring that the fields are completely removed
+
+This means that before the form always existed, even if it was hidden, so the values persisted. Now, by unmounting and recreate
+the component, the form starts from zero every time the user opens the drawer.
+
+Other observation:
+
+The finish order dialog was being rendered outside of the sheet so it always existed on the component tree.
+So when the user closed the drawer, it only was hidden (open=false), but the form inside was being kept in memory.
