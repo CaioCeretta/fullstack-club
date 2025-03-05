@@ -1,7 +1,7 @@
 import Image from "next/image";
 
 import { Card } from "@/components/ui/card";
-import { getRestaurantBySlug } from "@/data/get-restaurant-by-slug";
+import { getRestaurantBySlug } from "@/data/queries/get-restaurant-by-slug";
 
 import ConsumptionMethodOption from "./_components/consumptionMethodOption";
 
