@@ -70,6 +70,8 @@ model Order {
   status             OrderStatus
   restaurantId       String
   restaurant         Restaurant        @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  customerName       String
+  customerCpf        String
   consumption_method ConsumptionMethod
   orderProducts      OrderProduct[]
   createdAt          DateTime          @default(now())
