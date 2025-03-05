@@ -557,3 +557,82 @@ Other observation:
 
 The finish order dialog was being rendered outside of the sheet so it always existed on the component tree.
 So when the user closed the drawer, it only was hidden (open=false), but the form inside was being kept in memory.
+
+## Add new order to the db
+
+We created an interface to the server action, that will be the data sent to the server action of adding new order to the
+db
+
+interface CreateOrderInput {
+customerName: string;
+customerCpf: string;
+products: Array<{
+id: string;
+price: string;
+quantity: number;
+}>;
+consumptionMethod: ConsumptionMethod;
+restaurantId: string;
+}
+
+the problem with this first approach is that when we are dealing with a db that deals with prices, we never want to receive
+it like this. We have to remember, a server action in the end, it becomes an API route, it's an abstraction that Next.js
+makes.
+
+Let's think of a big e-commerce, with many products, if we receive the price of each one of them in the front end, this
+would open for several vulnerabilities. Therefore, we'll not receive the price on this interface, receive just the id of
+the product, and inside of the server action, and then we'll get the price of the product.
+
+The code is equal to the ones i'm used to do, with the difference that is that since the order products is an array, the
+code is:
+
+```ts
+await db.order.create({
+  data: {
+    customerName: input.customerName,
+    customerCpf: input.customerCpf,
+    consumption_method: input.consumptionMethod,
+    status: "PENDING",
+    orderProducts: {
+      createMany: {
+        data: productsWithPricesAndNumbers,
+      },
+    },
+    total: productsWithPricesAndNumbers.reduce(
+      (acc, prod) => acc + prod.price * prod.quantity,
+      0,
+    ),
+    restaurantId: input.restaurantId,
+  },
+});
+```
+
+where this productsWithPrices is:
+
+```ts
+const productsWithPricesAndNumbers = input.products.map((product) => ({
+  productId: product.id,
+  quantity: product.quantity,
+  price: productsWithPrices.find((p) => p.id === product.id)!.price,
+}));
+```
+
+We needed the restaurant, so to find that restaurant id, we are expecting the call to the server action to pass the restaurant
+slug, then, it will find the restaurant that matches this slug, and the restaurantId of the order will be the fetched
+restaurant.id.
+
+## useTransition
+
+On the dialog where we call this function we introduced a new feature which is react hook useTransition, that is a hook used
+to manage asynchronous state transitions and avoid blockings on the user interface. It allows us to mark state updates as
+"transitional" or of lower priority, ensuring that the UI will keep responsive while the updates occur
+
+useTransition returns us an array with two values
+
+1. isPending: A boolean that indicates if the transition is still running
+2. startTransition: A function that allows us to mark an update as one with lower priority
+
+in our example, we wrapped the whole createOrder inside a startTransition, so we can manage the loading state until the
+creation finishes
+
+## Order Page
