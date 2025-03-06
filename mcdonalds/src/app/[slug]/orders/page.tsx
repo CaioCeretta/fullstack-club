@@ -44,7 +44,6 @@ export const OrdersPage = async ({ searchParams }: OrdersPageProps) => {
 
   return (
     <>
-      <h1 className="mx-5">Orders Page</h1>
       <OrderList orders={orders} />
     </>
   );
