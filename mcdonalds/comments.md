@@ -718,3 +718,11 @@ order.status === OrderStatus.FINISHED
 )}
 
 In the clsx, the first set of classes are the default styling, while the second set are the conditional classes.
+
+## Final touches
+
+1. Fixing the create order action, by adding the CPF on the redirect
+2. Added an order by to the orders query
+3. When creating an order, at the bottom of the page, added a div to keep track of the order total and products qty
+4. Button to view cart on the new div (I had a problem with this one that i'll later revisit this code... )
+5. On the constant, create a constant of cart product total quantity, with a reduce

@@ -19,6 +19,10 @@ export const CartSheet = () => {
   const [finishOrderDialogIsOpen, setFinishOrderDialogIsOpen] =
     useState<boolean>(false);
 
+  {
+    console.log("Cart isOpen:", isOpen);
+  }
+
   return (
     <Sheet open={isOpen} onOpenChange={toggleCart}>
       <SheetContent className="bg-white">

@@ -1,7 +1,7 @@
 "use client";
 
 import type { Product } from "@prisma/client";
-import { createContext, type ReactNode, useCallback, useState } from "react";
+import { createContext, type ReactNode, useState } from "react";
 
 export interface CartProduct
   extends Pick<Product, "id" | "name" | "price" | "imageUrl"> {
@@ -12,6 +12,7 @@ export interface ICartContext {
   products: CartProduct[];
   isOpen: boolean;
   total: number;
+  totalQuantity: number;
   handleIncreaseQuantity: (productId: string) => void;
   handleDecreaseQuantity: (productId: string) => void;
   toggleCart: () => void;
@@ -23,6 +24,7 @@ export const CartContext = createContext<ICartContext>({
   products: [],
   isOpen: false,
   total: 0,
+  totalQuantity: 0,
   toggleCart: () => {
     throw new Error("toggleCart was called out of the CartProvider");
   },
@@ -41,9 +43,18 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     0,
   );
 
-  const toggleCart = useCallback(() => {
-    setIsOpen((prev) => !prev);
-  }, []);
+  const totalQuantity = products.reduce((acc, val) => {
+    return acc + val.quantity;
+  }, 0);
+
+  function toggleCart() {
+    setIsOpen((prev) => {
+      console.log("Previous State: ", prev);
+      const newState = !prev;
+      console.log("New State: ", newState);
+      return newState;
+    });
+  }
 
   const addProduct = (product: CartProduct) => {
     setProducts((prevProducts) => {
@@ -104,6 +115,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         isOpen: isOpen,
         products,
         total,
+        totalQuantity,
         toggleCart,
         handleDecreaseQuantity,
         handleIncreaseQuantity,
