@@ -452,7 +452,10 @@ The setter without {} and return.
 setProducts((prevProducts) =>
   prevProducts.map((prevProduct) =>
     prevProduct.id === productId
-      ? { ...prevProduct, quantity: Math.min(prevProduct.quantity + 1, 99) }
+      ? {
+          ...prevProduct,
+          quantity: Math.min(prevProduct.quantity + 1, 99),
+        }
       : prevProduct,
   ),
 );
@@ -636,3 +639,80 @@ in our example, we wrapped the whole createOrder inside a startTransition, so we
 creation finishes
 
 ## Order Page
+
+In the order page, for the person to view his orders need to inform their cpf to track them. However, if no CPF is inserted
+on the route param, a dialog will appear for the user to type in the CPF. and once it is entered,to avoid a new refresh,
+we'll simply move the user to the same page that it is in, but now, with the CPF as a route param.
+
+To get the current url it is simply the pathname, that comes from the usePathname hook of next/navigation, then, with this
+CPF, we'll trigger a fetch to all the orders that were made by this person and call the orders list component
+
+## Orders List
+
+The orders list receives as a parameter, all the orders made by him.
+
+Since we are dealing with the fetch of orders that needs to include the restaurant name and avatar, on the order typing
+inside order-item, we'll say that order is of type
+
+```ts
+const orders = await db.order.findMany({
+  where: {
+    customerCpf: cpf,
+  },
+  include: {
+    restaurant: {
+      select: {
+        name: true,
+        avatarImageUrl: true,
+      },
+    },
+    orderProducts: {
+      include: {
+        product: true,
+      },
+    },
+  },
+});
+
+interface OrdersItemProps {
+  order: Prisma.OrderGetPayload<{
+    include: {
+      restaurant: {
+        select: {
+          name: true;
+          avatarImageUrl: true;
+        };
+      };
+    };
+  }>;
+}
+```
+
+The query for orders, is getting all the orders, as well as the restaurants and the products of that order, but one thing
+to keep in mind, orderProducts is a table, which has a column product, which indicates which product on the product table
+we are talking about, and by default, the order product only has the price and not the name of the product, so this is how
+we are going to be able to fetch it
+
+In the interface code we are using Prisma from @prisma/client and telling it's of type OrderGetPayload and as generic, the
+same values we are receiving on the original query. This is used when we are using, not only the type of order, but also
+its restaurant, that is a foreign key.
+
+One change we had to made is because of prettier, not dealing so well with template literals, in terms of breaking lines
+we had two options, one is of where we want the line to break, we add close the quotes add a plus sign, and break the line
+or the option we chose that is by using the clsx library
+
+clsx is a small utility library used to conditionally join CSS classes names in JS. It helps building dynamic className
+strings based on certain conditions.
+It works by evaluating its arguments, which can be string, objects or arrays, and then only including the classes names that
+evaluate to true or are present
+We used this library because it fixed the prettier line breaks on save, as well as handling the conditionals, at the end
+it was:
+
+className={clsx(
+"w-fit rounded-full px-2 py-1 text-xs font-semibold text-muted-foreground",
+order.status === OrderStatus.FINISHED
+? "bg-green-400 text-gray-50"
+: "bg-gray-300",
+)}
+
+In the clsx, the first set of classes are the default styling, while the second set are the conditional classes.
