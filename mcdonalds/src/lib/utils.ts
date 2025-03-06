@@ -1,3 +1,4 @@
+import { OrderStatus } from "@prisma/client";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -34,4 +35,23 @@ export const isValidCpf = (cpf: string): boolean => {
     firstDigit === parseInt(cleanedCpf[9]) &&
     secondDigit === parseInt(cleanedCpf[10])
   );
+};
+
+export const removeCpfPunctuation = (cpf: string) => {
+  /* remove anything that is not a number*/
+  return cpf.replace(/\D/g, "");
+};
+
+export const getStatusLabel = (orderStatus: OrderStatus) => {
+  switch (orderStatus) {
+    case "FINISHED":
+      return "Finished";
+      break;
+    case "PENDING":
+      return "Pending";
+      break;
+    case "PREPARING":
+      return "Preparing";
+      break;
+  }
 };

@@ -697,6 +697,8 @@ In the interface code we are using Prisma from @prisma/client and telling it's o
 same values we are receiving on the original query. This is used when we are using, not only the type of order, but also
 its restaurant, that is a foreign key.
 
+## Clsx utility
+
 One change we had to made is because of prettier, not dealing so well with template literals, in terms of breaking lines
 we had two options, one is of where we want the line to break, we add close the quotes add a plus sign, and break the line
 or the option we chose that is by using the clsx library

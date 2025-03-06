@@ -3,6 +3,7 @@ import type { ConsumptionMethod } from "@prisma/client";
 import { redirect } from "next/navigation";
 
 import { db } from "@/lib/prisma";
+import { removeCpfPunctuation } from "@/lib/utils";
 
 interface CreateOrderInput {
   customerName: string;
@@ -43,7 +44,7 @@ export const createOrder = async (input: CreateOrderInput) => {
   await db.order.create({
     data: {
       customerName: input.customerName,
-      customerCpf: input.customerCpf,
+      customerCpf: removeCpfPunctuation(input.customerCpf),
       consumption_method: input.consumptionMethod,
       status: "PENDING",
       orderProducts: {

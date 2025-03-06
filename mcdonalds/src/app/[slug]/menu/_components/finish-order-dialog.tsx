@@ -141,7 +141,7 @@ export const FinishOrderDialog = ({
                     <FormMessage />
                   </FormItem>
                 )}
-              ></FormField>
+              />
               <DrawerFooter>
                 <Button
                   type="submit"
