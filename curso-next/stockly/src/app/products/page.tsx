@@ -4,7 +4,7 @@ import AddProductButton from './_components/create-product-button'
 import { productTableColumns } from './_components/table-columns'
 
 /* 
-  By creating here like this, everytime the application is rebuilded, we are going to generate a new db connection, because
+  By creating here like this, every time the application is rebuilt, we are going to generate a new db connection, because
   each PrismaClient is a connection with our db, so to avoid this, inside the folder lib and the file prisma.ts, we're
   going to do the connection and call it inside where we'll use
 
