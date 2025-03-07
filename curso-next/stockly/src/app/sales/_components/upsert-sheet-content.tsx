@@ -149,7 +149,7 @@ const UpsertSheetContent = ({
       <SheetHeader>
         <SheetTitle>New Sale</SheetTitle>
         <SheetDescription>
-          Insert below the informations about the sale
+          Insert below the information about the sale
         </SheetDescription>
       </SheetHeader>
 
