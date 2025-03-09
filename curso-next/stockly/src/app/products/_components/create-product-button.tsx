@@ -6,7 +6,7 @@ import { PlusIcon } from 'lucide-react'
 import { useState } from 'react'
 import UpsertProductDialogContent from './upsert-dialog-content'
 
-const CreateProductButton = () => {
+const AddProductButton = () => {
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false)
 
   function onDialogClose() {
@@ -27,4 +27,4 @@ const CreateProductButton = () => {
   )
 }
 
-export default CreateProductButton
+export default AddProductButton

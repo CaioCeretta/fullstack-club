@@ -53,7 +53,7 @@ export const productTableColumns: ColumnDef<Product>[] = [
         >
           <CircleIcon
             size={14}
-            className={`${label === 'In Stock' ? 'fill-lime-950-foreground' : 'fill-destructive-foreground'} }`}
+            className={`${label === 'In Stock' ? 'fill-line-950-foreground' : 'fill-destructive-foreground'} }`}
           />
           {label}
         </Badge>

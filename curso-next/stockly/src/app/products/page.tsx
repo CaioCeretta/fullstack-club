@@ -29,7 +29,7 @@ const ProductsPage = async () => {
       The reason why we have this div saying that the width is full, despite this being the default behavior of a div in
       the HTML, is because there are these cases
 
-      1. Non-block parentes or with restricted width
+      1. Non-block parents or with restricted width
 
         - If this div is inside a container with the display:flex, inline-block or grid, its width may not be automatically
         equal to 100% of the available width
