@@ -1680,9 +1680,16 @@ And the productsTotal will be the value stored from a reduce function, a useMemo
 because we don't want the function to be executed if selectedProducts doesn't change
 
 One thing we need to be aware of, in the clean code principles, if we have a table-dropdown-menu, in a products or sales
-folder, we don't need to name it with it, but when we create the component, is important for it to be the more descritive,
+folder, we don't need to name it with it, but when we create the component, is important for it to be the more descriptive,
 because it means that it will be easier to import, so the component will be named ProductTableDropdownMenu.
 
 There are two main reasons for creating a component, one that the code will be reused in more components and two that the
-component is getting to extense and we want to break it in parts, and here, the dropdown component will be created because
+component is getting to extensive and we want to break it in parts, and here, the dropdown component will be created because
 of the second one.
+
+## Order Creation Server Action
+
+One important issue to be aware of is passing the price to a server action. As we saw, since every server action becomes a
+route handler in next js, a potential vulnerability arises: the same route could be called from a terminal, allowing a
+non matching price to be sent for the product. To mitigate this, we'll pass only the product id to the route handler, and
+fetch its price based on the database table
