@@ -120,14 +120,6 @@ const UpsertSheetContent = ({
     })
   }
 
-  const form = useForm<UpsertSheetFormType>({
-    resolver: zodResolver(upsertSheetFormSchema),
-    defaultValues: {
-      productId: '',
-      quantity: 1,
-    },
-  })
-
   const productsTotal = useMemo(() => {
     return selectedProducts.reduce((acc, val) => {
       return acc + val.price * val.quantity
@@ -143,6 +135,13 @@ const UpsertSheetContent = ({
       return newProducts
     })
   }
+  const form = useForm<UpsertSheetFormType>({
+    resolver: zodResolver(upsertSheetFormSchema),
+    defaultValues: {
+      productId: '',
+      quantity: 1,
+    },
+  })
 
   return (
     <SheetContent className="!max-w-[500px]">

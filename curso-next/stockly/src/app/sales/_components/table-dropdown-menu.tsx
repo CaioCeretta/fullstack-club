@@ -32,7 +32,7 @@ export const SalesTableDropdownMenu = ({
           Copy Id
         </DropdownMenuItem>
         <DropdownMenuItem
-          onSelect={(e) => e.preventDefault()} // Impede que o menu feche antes do AlertDialog abrir
+          onSelect={(e) => e.preventDefault()} // prevents the menu from closing before the alert dialog opens
           onClick={() => onRemoval(product.id)}
         >
           <TrashIcon size={16} />
