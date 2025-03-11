@@ -1730,3 +1730,43 @@ So basically, the createSaleButton will handle the sheet state, send all the inf
 will be equal to the sheetIsOpen set, the onOpenChange will be equal to sheetIsOpen, and the sheet will receive a new property
 of onSubmitSuccess that will be a function to set the sheet open state as false, and in the end, call this function when
 the form submits
+
+## ACID Transactions
+
+ACID transactions are operations in our db that ensure reliability and consistency, even in the face of errors, power
+failures, or other problems. The acronym stands for atomicity, consistency, isolation and durability.
+
+In terms of security, a relational DB is better than a non relational one, such as MongoDB, because MongoDB, for example,
+has been trying to take a piece of this security that a relational one has by implementing reliable and consistent transactions,
+and try to bring these for the non-relational ecosystem, but it is not yet as functional as desired.
+
+### What is a transaction?
+
+Let's take our use case as an example:
+
+      When we create a sale, we are basically:
+         1. Creating the sale
+         2. For each product, we are creating a saleProduct in our db
+         3. Updating the product stock
+
+      But what will happen if we create the sale, create the sale product, but the final query that updates the stock
+      fails?
+
+      In this case, we would have our sale product, but we wouldn't have updated the stock, or, if for any reason, the
+      sale and the sale product creation fails, but, the stock is updated?
+
+      Even though we are awaiting these things to resolve to continue to the next step, this things can eventually happen
+      to us. Therefore, we'll notice that those transactions are not fully reliable. When we want to ensure that many ope
+      rations are executed in conjunction and we'll only implement all if they are successfully executed, we will use
+      transactions for this. If anything goes wrong inside a transaction, everything will be reverted.
+
+      To do so, we'll wrap all the db calls in that create sale action, with a $db.transaction(async (trx) => {
+         /* code */
+      })
+
+      and everywhere we call the db, we'll reference it with the trx argument, which refers to a transactions object that
+      allows multiple db operations in an "atomic way". The function trx is essential to ensure that, in scenarios where
+      we execute many operations, that these operations are treated in a consistent way and followed by a collective commit
+      or rollback.
+
+
