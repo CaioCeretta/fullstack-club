@@ -151,6 +151,7 @@ const UpsertSheetContent = ({
       })
 
       toast.success('Sale completed successfully')
+      form.reset()
       onSubmitSuccess()
     } catch (error) {
       console.log(error)
