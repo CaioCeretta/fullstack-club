@@ -1,15 +1,13 @@
 import { getProducts } from '@/_data/dal/product/get-products'
-import { Button } from '../_components/ui/button'
-import { Sheet, SheetTrigger } from '../_components/ui/sheet'
-import UpsertSheetContent from './_components/upsert-sheet-content'
+import CreateSaleButton from './_components/create-sale-button'
 import type { ComboboxOption } from '../_components/ui/combobox'
 
 const SalesPage = async () => {
   const products = await getProducts()
 
   const productsOptions: ComboboxOption[] = products.map((product) => ({
-    value: product.id,
     label: product.name,
+    value: product.id,
   }))
 
   return (
@@ -21,15 +19,10 @@ const SalesPage = async () => {
           </span>
           <h2 className="text-xl font-semibold">Sales</h2>
         </div>
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button>New Sale</Button>
-          </SheetTrigger>
-          <UpsertSheetContent
-            productsOptions={productsOptions}
-            products={products}
-          />
-        </Sheet>
+        <CreateSaleButton
+          products={products}
+          productsOptions={productsOptions}
+        />
       </div>
     </div>
   )
