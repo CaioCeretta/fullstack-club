@@ -1693,3 +1693,40 @@ One important issue to be aware of is passing the price to a server action. As w
 route handler in next js, a potential vulnerability arises: the same route could be called from a terminal, allowing a
 non matching price to be sent for the product. To mitigate this, we'll pass only the product id to the route handler, and
 fetch its price based on the database table
+
+## How await deals with returned promise.
+
+By doing:
+
+const unitPrice = (
+await db.product.findUnique({
+where: {
+id: product.id,
+},
+})
+)?.price
+
+await will resolve the Promise returned by the call, resulting in an object or null, by omitting the parentheses, the await
+will only be applied to the fetch, but not to the result when trying to access the price.
+
+The general rule is that every time we need to access a resolved value by awaiting, we use parentheses to ensure that the
+await is resolved and only then, the access to the property will be available.
+
+In summary, with no parentheses the await resolves the promise, but if .price tries to be accessed before the resolution
+it will return an error, and with parentheses, the await resolves first and then the .price is correctly accessed
+
+## Handle Sheet Open State
+
+To be able to handle the sheet open state, we need to let its parent to hold the state, so whenever the sheet is submitted,
+we can fire a close for that sheet, and this is what we'll do on the order creation sheet. In order to do so, because the
+parent SalesPage is a server component, we'll create a client component to deal with these states. We now change the sheet
+trigger from the child to te parent. Now this component holds the state and the trigger.
+
+For this component, we'll do a small prop drilling, where we'll pass the same arguments that we were passing when the sheet
+was on the sales page, but now, this create-sale-button will also receive the same props the upsert sheet was receiving
+and pass it down to populate the sheet, as well as the open state.
+
+So basically, the createSaleButton will handle the sheet state, send all the information to populate it, the open property
+will be equal to the sheetIsOpen set, the onOpenChange will be equal to sheetIsOpen, and the sheet will receive a new property
+of onSubmitSuccess that will be a function to set the sheet open state as false, and in the end, call this function when
+the form submits
