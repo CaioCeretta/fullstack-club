@@ -87,17 +87,19 @@ const UpsertSheetContent = ({
         return currentProducts
       }
 
+      form.reset()
+
       if (existingProduct) {
-        const productIsOutOfStock =
-          existingProduct.quantity + data.quantity > selectedProduct.stock
+        // const productIsOutOfStock =
+        //   existingProduct.quantity + data.quantity > selectedProduct.stock
 
-        if (productIsOutOfStock) {
-          form.setError('quantity', {
-            message: 'Quantity unavailable in stock',
-          })
+        // if (productIsOutOfStock) {
+        //   form.setError('quantity', {
+        //     message: 'Quantity unavailable in stock',
+        //   })
 
-          return currentProducts
-        }
+        //   return currentProducts
+        // }
 
         form.reset()
 
@@ -151,10 +153,10 @@ const UpsertSheetContent = ({
       })
 
       toast.success('Sale completed successfully')
-      form.reset()
+
       onSubmitSuccess()
     } catch (error) {
-      console.log(error)
+      toast.error('Error in the sale creation')
     }
   }
 

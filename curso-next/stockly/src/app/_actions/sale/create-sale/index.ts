@@ -15,7 +15,7 @@ export const createSale = async (data: CreateSaleType) => {
     })
 
     for (const product of data.products) {
-      const dbProduct = await db.product.findUnique({
+      const dbProduct = await trx.product.findUnique({
         where: {
           id: product.id,
         },
