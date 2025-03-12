@@ -1811,4 +1811,5 @@ from the server action and check result.success on the client.
 
 If we need to catch unexpected errors (e.g. database failures), we can use try/catch on the client, but in this case, the
 server action must throw an error (throw new Error(...))
+
 For forms and user interactions, the first approach is usually better.
