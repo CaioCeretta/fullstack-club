@@ -1769,4 +1769,46 @@ Let's take our use case as an example:
       we execute many operations, that these operations are treated in a consistent way and followed by a collective commit
       or rollback.
 
+## Error Handling
 
+In Server Actions, you can't directly return an HTTP error response like in traditional API routes (res.status(400).json(...)). Instead, when you throw an error, the response is always an object containing the error message.
+
+When we throw an error message inside a server action, doing something like
+
+if(!email) {
+throw new Error('Email is required').
+}
+
+in the client, if we call this function without a try/catch, it will break and we won't have control over the error message.
+
+The right way, is for us to return an object with the error, by doing
+
+```ts
+export async function submitForm(formData: FormData) {
+  try {
+    const email = formData.get('email')
+    if (!email) {
+      throw new Error('Email is required')
+    }
+    return { success: true }
+  } catch (error) {
+    return { success: false, message: error.message }
+  }
+}
+```
+
+the error thrown inside a server action does not automatically appear on the client. It only shows in the server terminal
+or the host logs. However, by returning the object with success and message. wwe have two options
+
+1. (Recommended) Assigning the result of the server action call to a variable, check if success is true or false, and
+   display the message on the screen or in a toast message
+
+2. Using try/catch on the client (if the server action throws an error). In this case, the server action throws an error,
+   and the client catches it using try/catch. If the function fails, execution moves to the catch block
+
+In conclusion, if we want a more predictable control over the errors, we should return { success: false, message: '...}
+from the server action and check result.success on the client.
+
+If we need to catch unexpected errors (e.g. database failures), we can use try/catch on the client, but in this case, the
+server action must throw an error (throw new Error(...))
+For forms and user interactions, the first approach is usually better.
