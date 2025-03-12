@@ -1813,3 +1813,87 @@ If we need to catch unexpected errors (e.g. database failures), we can use try/c
 server action must throw an error (throw new Error(...))
 
 For forms and user interactions, the first approach is usually better.
+
+## Safer server actions
+
+1.  Introduction
+    For it, we will use the next-safe-action library to perform server-side actions more safely, with Zod Schema validation
+    and error handling.
+
+2.  Server Setup
+
+    Create the server action using actionClient and pass the Zod Schema. Example:
+
+    export const createSaleAction = actionClient.schema(createSaleSchema)
+
+    Here, createSAleSchema will be validated automatically by the library, so there's no need to call .parse() on the input
+    object
+
+3.  Action Structure
+
+    After defining the schema, we concatenate action passing an object with the valid input. The input is a structure
+    containing the attributes defined in the schema. Example:
+
+    actionClient
+    .schema(createSaleSchema)
+    .action((input) => {
+    // action logic
+    })
+
+4.  Error handling
+
+    When the error occurs, we use the returnValidationErrors() function to generate a structured error, like
+
+    import { returnValidationErrors } from 'next-safe-action'
+
+    if (someError) {
+    throw returnValidationErrors(createSaleSchema, { \_errors: ['Error message'] })
+    }
+
+    the returnValidationErrors function takes the schema and an object with the errors, allowing for consistent error
+    handling
+
+5.  Client-Side usage with useAction
+
+    Calling the action:
+
+    . On the client-side, we can use the useAction hook from the library to call the action defined on the server
+
+          Example:
+
+             ```ts
+             const { execute: executeCreateSale } = useAction(createSale, {
+             onError: (error: any) => {
+                console.log({ error })
+                toast.error('Error creating the sale order')
+             },
+             onSuccess: () => {
+                toast.success('Sale was successfully made')
+                onSubmitSuccess()
+             },
+             })
+             ```
+
+where useAction takes as a first argument the serverAction created with the client, and as second argument, an object
+with useError, that is the error we thrown with returnValidationErrors, and the onSuccess
+
+6: Better the error visualization
+
+By returning the { error } on onError, we will see that the error is an object, which contains an error property, and
+then the validationErrors. To fix this, we can flatten the error using a function from the same library, e.g.
+
+```ts
+   onError: ({ error: { validationErrors, serverError } }) => {
+   const flattenedErrors = flattenValidationErrors(validationErrors)
+   toast.error(serverError ?? flattenedErrors.formErrors[0])
+   },
+```
+
+this will result on an error displayed with the validationError we set on the server.
+
+This library also offers us middlewares for logging, etc.
+
+This was more an introduction of how the library works, how it helps us dealing with errors, etc.
+
+We will now rollback to the code as it was being used before, where we are dealing with the client side and the server
+side that is more common for us.
