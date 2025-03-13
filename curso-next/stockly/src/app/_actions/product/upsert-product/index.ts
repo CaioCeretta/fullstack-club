@@ -1,19 +1,21 @@
 'use server'
 
 import { db } from '@/_lib/prisma'
+import { actionClient } from '@/_lib/safe-action'
+import {} from 'next-safe-action'
 import { revalidateTag } from 'next/cache'
-import { upsertProductSchema, type UpsertProductType } from './schema'
+import { upsertProductSchema } from './schema'
 
-export const upsertProduct = async (data: UpsertProductType) => {
-  upsertProductSchema.parse(data)
+export const upsertProduct = actionClient
+  .schema(upsertProductSchema)
+  .action(async ({ parsedInput: { id, ...data } }) => {
+    await db.product.upsert({
+      where: {
+        id: id ?? '',
+      },
+      update: data,
+      create: data,
+    })
 
-  await db.product.upsert({
-    where: {
-      id: data.id ?? '',
-    },
-    update: data,
-    create: data,
+    revalidateTag('get-products')
   })
-
-  revalidateTag('get-products')
-}

@@ -69,7 +69,7 @@ export const ProductTableDropdownMenu = ({
             price: Number(product.price),
             stock: product.stock,
           }}
-          onDialogClose={() => setEditDialogIsOpen(false)}
+          setIsDialogOpen={setEditDialogIsOpen}
         />
         <DeleteProductDialogContent productId={product.id!} />
       </Dialog>

@@ -9,9 +9,9 @@ import UpsertProductDialogContent from './upsert-dialog-content'
 const AddProductButton = () => {
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false)
 
-  function onDialogClose() {
-    setIsDialogOpen(false)
-  }
+  // function onDialogClose() {
+  //   setIsDialogOpen(false)
+  // }
 
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -21,8 +21,10 @@ const AddProductButton = () => {
           New Product
         </Button>
       </DialogTrigger>
-      <UpsertProductDialogContent onDialogClose={onDialogClose} />
-      {/*  Another option would be onDialogClose={() => setIsDialogOpen(false)} */}
+      <UpsertProductDialogContent
+        setIsDialogOpen={() => setIsDialogOpen(false)}
+      />
+      {/*  Another option would be onDialogClose={onDialogClose}, that will change also change the state */}
     </Dialog>
   )
 }
