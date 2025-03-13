@@ -8,6 +8,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/app/_components/ui/alert-dialog'
+import { useAction } from 'next-safe-action/hooks'
 import { toast } from 'sonner'
 
 interface DeleteProductDialogContentProps {
@@ -17,23 +18,23 @@ interface DeleteProductDialogContentProps {
 const DeleteProductDialogContent = ({
   productId,
 }: DeleteProductDialogContentProps) => {
-  const handleContinueClick = async () => {
-    //The try catch is used because we are going to be dealing with a http request and we need to "treat" it
-    try {
-      await deleteProduct({ id: productId })
+  const { execute: executeDeleteProduct } = useAction(deleteProduct, {
+    onSuccess: () => {
+      toast.success('Product successfully deleted')
+    },
+    onError: () => {
+      toast.error('An error occurr ed while deleting the product')
+    },
+  })
 
-      toast.success('Product was successfully deleted')
-    } catch (err) {
-      console.error(err)
-    }
-  }
+  const handleContinueClick = () => executeDeleteProduct({ id: productId })
 
   return (
     <AlertDialogContent>
       <AlertDialogHeader>
         <AlertDialogTitle>Are you sure?</AlertDialogTitle>
         <AlertDialogDescription>
-          This action cannot be undone. This will permantenly delete this
+          This action cannot be undone. This will permantenenly delete this
           product and remove its data from the server.
         </AlertDialogDescription>
       </AlertDialogHeader>

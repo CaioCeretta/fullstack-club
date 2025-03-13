@@ -1,17 +1,18 @@
 'use server'
 
 import { db } from '@/_lib/prisma'
-import { deleteProductSchema, type DeleteProductType } from './schema'
+import { actionClient } from '@/_lib/safe-action'
 import { revalidateTag } from 'next/cache'
+import { deleteProductSchema } from './schema'
 
-export const deleteProduct = async ({ id }: DeleteProductType) => {
-  deleteProductSchema.parse({ id })
+export const deleteProduct = actionClient
+  .schema(deleteProductSchema)
+  .action(async ({ parsedInput: { id } }) => {
+    await db.product.delete({
+      where: {
+        id,
+      },
+    })
 
-  await db.product.delete({
-    where: {
-      id,
-    },
+    revalidateTag('get-products')
   })
-
-  revalidateTag('get-products')
-}
