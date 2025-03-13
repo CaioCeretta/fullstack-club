@@ -1895,5 +1895,40 @@ This library also offers us middlewares for logging, etc.
 
 This was more an introduction of how the library works, how it helps us dealing with errors, etc.
 
-We will now rollback to the code as it was being used before, where we are dealing with the client side and the server
-side that is more common for us.
+### Another use case example is on the upsert product, this steps were followed.
+
+1. We define the function action using actionClient, passing the schema to the function validate its received data. Inside
+   the function we extract the id from parsedInput while the rest of the properties are stored in the data object. Since data
+   already contains the needed attributes, we pass it directly to the upsert method.
+
+```ts
+export const upsertProduct = actionClient
+  .schema(upsertProductSchema)
+  .action(async ({ parsedInput: { id, ...data } }) => {
+    await db.product.upsert({
+      where: {
+        id: id ?? '',
+      },
+      update: data,
+      create: data,
+    })
+
+    revalidateTag('get-products')
+  })
+```
+
+2. On the client, we use the useAction hook from the next-safe-action/hooks library. We assign the action defined to the
+   executeUpsertProduct constant, and additionally, we handle success and error states by displaying a toast notification
+   and closing the dialog if the operation is successful
+
+```ts
+const { execute: executeUpsertProduct } = useAction(upsertProduct, {
+  onSuccess: () => {
+    toast.success('Product successfully created')
+    onDialogClose?.()
+  },
+  onError: () => {
+    toast.error('Something went wrong')
+  },
+})
+```
