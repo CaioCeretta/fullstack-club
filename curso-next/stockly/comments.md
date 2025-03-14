@@ -1932,3 +1932,29 @@ const { execute: executeUpsertProduct } = useAction(upsertProduct, {
   },
 })
 ```
+
+## DTO (Data Transfer Object)
+
+Taking a look on everything we have on our DAL, that is part of our data fetching, we can see it as part of the back-end.
+
+Therefore, many times, it is not ideal to fetch what we need from the db and return it to the user, as we are doing on our
+getProducts and getSales. But many times, the data will need some sort of treatment, for example, when we get a user to
+return it to the user, we want to remove sensitive data, such as the user password.
+
+This object returned by us, we call it DTO, that are the objects we transfer through the different agents of our application,
+between the back and the front end. Despite all of this being Next.JS, we want to treat this as a back end.
+
+All the functions present in our dal, will preferably return a DTO, so we can create an interface for this.
+
+Instead of simply returning the sales type, we created our own interface, with the values we need, and declare that the
+function to getSales, return this defined DTO, which means that the application has its own interface and we are no longer
+"hostage" to what we store in the db, because the now the db needs to obey the DTO, which is the ideal.
+
+What we are doing now, is very useful, because we are now able to create these dynamic fields, that most of the times, we
+don't want to store these in the data bases, because things like order total, products quantity total, etc, we don't need
+to, since when we want to do this we can simply query the tables. Therefore, dynamic data, many times is even better for
+us to don't store them in the db.
+
+## Sales Page Data Table
+
+The sales data table, will have, in addition to the sales, their products
