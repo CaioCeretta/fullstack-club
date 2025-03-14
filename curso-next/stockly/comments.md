@@ -1935,26 +1935,125 @@ const { execute: executeUpsertProduct } = useAction(upsertProduct, {
 
 ## DTO (Data Transfer Object)
 
-Taking a look on everything we have on our DAL, that is part of our data fetching, we can see it as part of the back-end.
+When analyzing our DAL (Data Access Layer), which is responsible for data fetching, we can see it as part of the back-end.
 
-Therefore, many times, it is not ideal to fetch what we need from the db and return it to the user, as we are doing on our
-getProducts and getSales. But many times, the data will need some sort of treatment, for example, when we get a user to
-return it to the user, we want to remove sensitive data, such as the user password.
+In many cases, it is not ideal to simply fetch data from the db and return it directly to the user, as we are currently in
+our getProducts and getSales. Often, the data needs some kind of processing. For example, when retrieving user data, we
+may need to remove sensitive information, such as the user password, before returning it.
 
-This object returned by us, we call it DTO, that are the objects we transfer through the different agents of our application,
-between the back and the front end. Despite all of this being Next.JS, we want to treat this as a back end.
+The object we return after this processing, is called DTO. DTOs are the objects we transfer between different layers of
+our application, particularly between the back and the front end. Even though we are using Next.JS (which supports full
+stack development), we want to treat this layer as a proper back end.
 
-All the functions present in our dal, will preferably return a DTO, so we can create an interface for this.
+Ideally, all functions in our DAL, should return a DTO. To achieve this, we define an interface for these objects.
 
-Instead of simply returning the sales type, we created our own interface, with the values we need, and declare that the
-function to getSales, return this defined DTO, which means that the application has its own interface and we are no longer
-"hostage" to what we store in the db, because the now the db needs to obey the DTO, which is the ideal.
+Instead of returning raw database entities, such as a Sale type, we create a dedicated interface, containing only the
+necessary fields. Our getSales function, for example, will return this defined DTO. This approach ensures that our application
+has its own interface structured, making us less dependent on the db structure. Now, instead of our application adapting
+to the database, the database needs to comply with the DTO structure, which is the ideal scenario.
 
-What we are doing now, is very useful, because we are now able to create these dynamic fields, that most of the times, we
-don't want to store these in the data bases, because things like order total, products quantity total, etc, we don't need
-to, since when we want to do this we can simply query the tables. Therefore, dynamic data, many times is even better for
-us to don't store them in the db.
+Another advantage of this approach is the ability to create dynamic fields, that we don't necessarily want to store in
+the database. For example, values like order total, total product quantity don't need to be persisted, since they can be
+dynamically calculated by querying the necessary tables when required. In many cases, avoiding unnecessary storage of
+dynamic data leads to a more efficient and flexible system.
+
+### Other use cases
+
+DTOs don't always need to be connected to a data fetch. They are used every time we want to define a data structure that
+will be transferred between parts of the application, regardless of the data origin
+
+When are they used?
+
+1. DTOs for sending data (Request DTOs) -> When we receive user information to update something
+2. DTOs for formatting responses (Response DTOs) -> When we want to control what is being returned (e.g when fetching data)
+3. DTOs for conversion and internal transformations -> When we need to create objects that follow a specific structure before
+   passing them forward
+
+   . DTOs for data sending (Request DTO)
+
+   If a user registering a product, we can define a DTO just to validate and structure the incoming data
+
+   ```ts
+   interface CreateProductDTO {
+     name: string
+     price: number
+     categoryId: string
+   }
+   ```
+
+   And then we use the DTO receiving the request
+
+   ```ts
+   function createProduct(data: CreateProductDTP) {
+     // Here we validate and send the data to persist it
+     return productRepository.save(data)
+   }
+   ```
+
+   Here, the DTO is not connected to a fetch, but to the creation of an object with a defined format
+
+   . DTOs for formatting response (Response DTO)
+
+   This scenario is more common in fetches. As we seen before, when we fetch something from the database, many times we
+   want to filter or modify the data before returning it.
+
+   ````ts
+   interface ProductDTO {
+     id: string
+     name: string
+     price: number
+   }
+
+   ```ts
+   function getProductById(id: string): ProductDTO {
+     const product = productRepository.findById(id)
+     return {
+       id: product.id,
+       name: product.name,
+       price: product.price,
+     }
+   }
+   ````
+
+   . DTOs for conversion and internal transformations
+
+   We can use DTOs even when we don't fetch anything, simply by structuring objects before passing them forward.
+
+   Example: Suppose that we have a function that needs to create a report with dynamically calculated data.
+
+   ```ts
+   interface SalesReportDTO {
+     totalSales: number
+     totalRevenue: number
+     bestSellingProduct: string
+   }
+
+   function generateSalesReport(): SalesReportDTO {
+     const totalSales = calculateTotalSales()
+     const totalRevenue = calculateTotalRevenue()
+     const bestSellingProduct = findBestSeller()
+
+     return {
+       totalSales,
+       totalRevenue,
+       bestSellingProduct,
+     }
+   }
+   ```
+
+   Here we don't have any direct data base queries linked to the DTO, but we still use one to ensure the consistent
+   data structure
+
+Conclusion:
+
+✔ DTOs don't need to be always linked to fetches
+✔ They can be used for sending data (Request DTOs), responses (Response DTOs) or simply to organize internal objects.
+✔ The main objective of a DTO is ensure clarity, security and control over transferred data across parts of the system
 
 ## Sales Page Data Table
 
 The sales data table, will have, in addition to the sales, their products
+
+```
+
+```
