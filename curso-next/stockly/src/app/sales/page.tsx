@@ -1,6 +1,9 @@
 import { getProducts } from '@/_data/dal/product/get-products'
 import CreateSaleButton from './_components/create-sale-button'
 import type { ComboboxOption } from '../_components/ui/combobox'
+import { getSales } from '@/_data/dal/sales/get-sales'
+import { DataTable } from '../_components/ui/data-table'
+import { salesTableColumns } from './_components/table-columns'
 
 const SalesPage = async () => {
   const products = await getProducts()
@@ -9,6 +12,8 @@ const SalesPage = async () => {
     label: product.name,
     value: product.id,
   }))
+
+  const sales = await getSales()
 
   return (
     <div className="ml-8 mt-8 w-full space-y-8 bg-white p-8 py-8">
@@ -24,6 +29,7 @@ const SalesPage = async () => {
           productsOptions={productsOptions}
         />
       </div>
+      <DataTable columns={salesTableColumns} data={sales} />
     </div>
   )
 }

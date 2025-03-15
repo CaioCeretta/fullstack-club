@@ -7,7 +7,6 @@ import { unstable_cache } from 'next/cache'
 // import { unstable_cache } from "next/cache";
 
 export const getProducts = async (): Promise<Product[]> => {
-  console.log('Fetching products')
   return await db.product.findMany({})
 }
 
