@@ -2052,8 +2052,37 @@ Conclusion:
 
 ## Sales Page Data Table
 
-The sales data table, will have, in addition to the sales, their products
+The sales data table, will have, in addition to the sales, their products.
 
+First of all, we'll create a get-sales action and create a DTO for the expected type, which will be
+
+```ts
+interface SaleDTO {
+  id: string
+  productNames: string[]
+  productsQuantity: number
+  totalAmount: number
+  date: Date
+}
 ```
 
+Its name will be SaleDTO because it contains the properties we want to pass on every sale from the back-end to the front-end.
+
+However, even though in our DTO we have the productNames and the quantity, when trying to return this information, we are
+not able to do it. Every sale has a list of sale products, and we must use the include property from the prisma query
+to fetch those. e.g.
+
+```ts
+const sales = await db.sale.findMany({
+  include: { saleProducts: true },
+})
 ```
+
+Now, we will have access to the saleProducts of the sale and we can access them in the way we desire.
+
+Regarding the product names, if this backend were supposed to serve more than one app, it would make sense to return the
+products in a more "generic" way (e.g. a list of names). However, as we are only dealing with this in the sales page, we
+can already return them in a preformatted way, which means we won't need to do much work to do in the component.
+
+The query now, inside the include { saleProducts: true }, will be { saleProducts: { include: {products: true }}}. This
+means we can now access the specific product details when we pass a saleProduct.product.name to access the product name.
