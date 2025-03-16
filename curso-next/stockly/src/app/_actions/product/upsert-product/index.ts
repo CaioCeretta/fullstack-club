@@ -8,10 +8,12 @@ import { upsertProductSchema } from './schema'
 
 export const upsertProduct = actionClient
   .schema(upsertProductSchema)
-  .action(async ({ parsedInput: { id, ...data } }) => {
+  .action(async ({ parsedInput }) => {
+    console.log('parsedInput:', parsedInput)
+    const { id, ...data } = parsedInput
     await db.product.upsert({
       where: {
-        id: id ?? '',
+        id: id ? id : '',
       },
       update: data,
       create: data,
