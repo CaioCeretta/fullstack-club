@@ -35,7 +35,7 @@ import { CheckIcon, PlusIcon } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { SalesTableDropdownMenu } from './table-dropdown-menu'
+import { UpsertSalesTableDropdownMenu } from './upsert-table-dropdown-menu'
 import { createSale } from '@/app/_actions/sale/create-sale'
 import { toast } from 'sonner'
 
@@ -240,7 +240,7 @@ const UpsertSheetContent = ({
                 )}
               </TableCell>
               <TableCell>
-                <SalesTableDropdownMenu
+                <UpsertSalesTableDropdownMenu
                   onRemoval={onRemoval}
                   product={selectedProduct}
                 />
