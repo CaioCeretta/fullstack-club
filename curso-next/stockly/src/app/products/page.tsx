@@ -16,11 +16,6 @@ const prismaClient = new PrismaClient(); */
 const ProductsPage = async () => {
   const products = await cachedGetProducts()
 
-  const productsWithStatus = products.map((product) => ({
-    ...product,
-    status: product.stock > 0 ? 'IN_STOCK' : 'OUT_OF_STOCK',
-  }))
-
   return (
     <div className="ml-8 mt-8 w-full space-y-8 bg-white p-8 py-8">
       {/*
@@ -67,7 +62,7 @@ const ProductsPage = async () => {
 
       <DataTable
         columns={productTableColumns}
-        data={JSON.parse(JSON.stringify(productsWithStatus))}
+        data={JSON.parse(JSON.stringify(products))}
       />
     </div>
   )
