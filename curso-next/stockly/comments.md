@@ -1957,6 +1957,9 @@ the database. For example, values like order total, total product quantity don't
 dynamically calculated by querying the necessary tables when required. In many cases, avoiding unnecessary storage of
 dynamic data leads to a more efficient and flexible system.
 
+An important benefit of using a DTO is that we are no longer dependent on the DB. Now prisma will must adhere to the
+DTO, and if we switch to another ORM, the transition will require minimum effort.
+
 ### Other use cases
 
 DTOs don't always need to be connected to a data fetch. They are used every time we want to define a data structure that
