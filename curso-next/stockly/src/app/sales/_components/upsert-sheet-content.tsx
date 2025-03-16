@@ -35,9 +35,9 @@ import { CheckIcon, PlusIcon } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { UpsertSalesTableDropdownMenu } from './upsert-table-dropdown-menu'
 import { createSale } from '@/app/_actions/sale/create-sale'
 import { toast } from 'sonner'
+import { UpsertSalesTableDropdownMenu } from './upsert-table-dropdown-menu'
 
 const upsertSheetFormSchema = z.object({
   productId: z.string().uuid({ message: 'Product is required' }),
