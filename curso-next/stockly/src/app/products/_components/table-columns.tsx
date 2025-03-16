@@ -5,6 +5,7 @@ import type { Product as PrismaProduct } from '@prisma/client'
 import { ColumnDef } from '@tanstack/react-table'
 import { CircleIcon } from 'lucide-react'
 import { ProductTableDropdownMenu } from './table-dropdown-menu'
+import type { ProductDTO } from '@/_data/dal/product/get-products'
 
 export interface Product extends Omit<PrismaProduct, 'price'> {
   status: string
@@ -19,7 +20,7 @@ const getStatusLabel = (status: string) => {
   }
 }
 
-export const productTableColumns: ColumnDef<Product>[] = [
+export const productTableColumns: ColumnDef<ProductDTO>[] = [
   {
     accessorKey: 'name',
     header: 'Product',
@@ -66,7 +67,12 @@ export const productTableColumns: ColumnDef<Product>[] = [
     cell: (row) => {
       const product = row.row.original
 
-      return <ProductTableDropdownMenu product={product} />
+      const parsedProduct = {
+        ...product,
+        price: Number(product.price),
+      }
+
+      return <ProductTableDropdownMenu product={parsedProduct} />
     },
   },
 ]
