@@ -62,23 +62,27 @@ declare global {
 }
 
 const createPrismaClient = () => {
-  return new PrismaClient().$extends({
-    result: {
-      product: {
-        status: {
-          needs: { stock: true },
-          compute(product) {
-            if (product.stock <= 0) {
-              return 'OUT_OF_STOCK'
-            } else {
-              return 'IN_STOCK'
-            }
-          },
-        },
-      },
-    },
-  })
+  return new PrismaClient()
 }
+
+// const createPrismaClient = () => {
+//   return new PrismaClient().$extends({
+//     result: {
+//       product: {
+//         status: {
+//           needs: { stock: true },
+//           compute(product) {
+//             if (product.stock <= 0) {
+//               return 'OUT_OF_STOCK'
+//             } else {
+//               return 'IN_STOCK'
+//             }
+//           },
+//         },
+//       },
+//     },
+//   })
+// }
 
 /*  
   Explanation of the status column
