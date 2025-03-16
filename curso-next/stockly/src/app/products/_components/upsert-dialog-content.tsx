@@ -52,6 +52,12 @@ const UpsertDialogContent = ({
     },
   })
 
+  const onSubmit = (data: UpsertProductType) => {
+    const payload = { id: productValues?.id, ...data }
+
+    executeUpsertProduct(payload)
+  }
+
   const form = useForm<UpsertProductType>({
     shouldUnregister: true,
     resolver: zodResolver(upsertProductSchema),
@@ -75,10 +81,7 @@ const UpsertDialogContent = ({
         </DialogDescription>
       </DialogHeader>
       <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(executeUpsertProduct)}
-          className="space-y-2"
-        >
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
           <FormField
             control={form.control}
             name="name"
