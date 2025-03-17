@@ -8,7 +8,7 @@ export const upsertProductSchema = z.object({
       message: 'The name of product is required',
     })
     .trim(),
-  price: z.coerce.number().min(0.01, {
+  price: z.coerce.number().min(0, {
     message: 'Product price is required',
   }),
   stock: z.number().min(0, { message: 'Stock is required' }),
