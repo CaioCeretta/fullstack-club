@@ -1,4 +1,4 @@
-import { deleteProduct } from '@/app/_actions/product/delete-product'
+import { deleteSale } from '@/app/_actions/sale/delete-sale'
 import {
   AlertDialogAction,
   AlertDialogCancel,
@@ -15,13 +15,13 @@ interface DeleteSaleDialogContentProps {
   saleId: string
 }
 
-const deleteSaleDialogContent = ({ saleId }: DeleteSaleDialogContentProps) => {
-  const { execute: executeDeleteSale } = useAction(deleteProduct, {
+const DeleteSaleDialogContent = ({ saleId }: DeleteSaleDialogContentProps) => {
+  const { execute: executeDeleteSale } = useAction(deleteSale, {
     onSuccess: () => {
-      toast.success('Product successfully deleted')
+      toast.success('Sale successfully deleted')
     },
     onError: () => {
-      toast.error('An error occurred while deleting the product')
+      toast.error('An error occurred while deleting the sale')
     },
   })
 
@@ -32,7 +32,7 @@ const deleteSaleDialogContent = ({ saleId }: DeleteSaleDialogContentProps) => {
       <AlertDialogHeader>
         <AlertDialogTitle>Are you sure?</AlertDialogTitle>
         <AlertDialogDescription>
-          This action cannot be undone. This will permantenenly delete this
+          This action cannot be undone. This will permanently delete this
           product and remove its data from the server.
         </AlertDialogDescription>
       </AlertDialogHeader>
@@ -46,4 +46,4 @@ const deleteSaleDialogContent = ({ saleId }: DeleteSaleDialogContentProps) => {
   )
 }
 
-export default DeleteProductDialogContent
+export default DeleteSaleDialogContent
