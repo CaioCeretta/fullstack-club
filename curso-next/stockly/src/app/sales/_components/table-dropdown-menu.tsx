@@ -21,13 +21,15 @@ import {
 import { useState } from 'react'
 import { toast } from 'sonner'
 import DeleteSaleDialogContent from './delete-sale-dialog'
+import { Sheet, SheetTrigger } from '@/app/_components/ui/sheet'
+import UpsertSheetContent from './upsert-sheet-content'
 
 interface SalesTableDropdownMenuProps {
   sale: Pick<Sale, 'id'>
 }
 
 const SalesTableDropdownMenu = ({ sale }: SalesTableDropdownMenuProps) => {
-  const [editDialogIsOpen, setEditDialogIsOpen] = useState<boolean>(false)
+  const [upsertSheetIsOpen, setUpsertSheetIsOpen] = useState<boolean>(false)
 
   const handleClipboardClick = (id: string) => {
     navigator.clipboard.writeText(id)
@@ -35,8 +37,8 @@ const SalesTableDropdownMenu = ({ sale }: SalesTableDropdownMenuProps) => {
   }
 
   return (
-    <AlertDialog>
-      <Dialog open={editDialogIsOpen} onOpenChange={setEditDialogIsOpen}>
+    <Sheet open={upsertSheetIsOpen} onOpenChange={setUpsertSheetIsOpen}>
+      <AlertDialog>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <MoreHorizontalIcon size={16} />
@@ -49,12 +51,12 @@ const SalesTableDropdownMenu = ({ sale }: SalesTableDropdownMenuProps) => {
               <ClipboardCopyIcon size={16} />
               Copy Id
             </DropdownMenuItem>
-            <DialogTrigger>
+            <SheetTrigger asChild>
               <DropdownMenuItem className="gap-1.5">
                 <EditIcon size={16} />
                 Edit
               </DropdownMenuItem>
-            </DialogTrigger>
+            </SheetTrigger>
             <AlertDialogTrigger asChild>
               <DropdownMenuItem
                 onSelect={(e) => e.preventDefault()} // Impede que o menu feche antes do AlertDialog abrir
@@ -66,8 +68,15 @@ const SalesTableDropdownMenu = ({ sale }: SalesTableDropdownMenuProps) => {
           </DropdownMenuContent>
         </DropdownMenu>
         <DeleteSaleDialogContent saleId={sale.id} />
-      </Dialog>
-    </AlertDialog>
+      </AlertDialog>
+
+      <UpsertSheetContent
+        productsOptions={[]}
+        products={[]}
+        defaultSelectedProducts={[]}
+        upsertSheetIsOpen={setUpsertSheetIsOpen}
+      />
+    </Sheet>
   )
 }
 
