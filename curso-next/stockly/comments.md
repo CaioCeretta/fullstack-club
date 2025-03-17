@@ -2089,3 +2089,41 @@ can already return them in a preformatted way, which means we won't need to do m
 
 The query now, inside the include { saleProducts: true }, will be { saleProducts: { include: {products: true }}}. This
 means we can now access the specific product details when we pass a saleProduct.product.name to access the product name.
+
+## Sale Edit Dialog
+
+When we click on Edit, we will open the sheet, and pass the current sale information to it.
+
+First , we are adding a new optional property to the upsert sheet called "defaultSelectProducts", which will
+contain all the current products. We will then set the select products state default value to this property or an empty
+array if it is not provided.
+
+To open the sheet content when clicking edit, we will set the edit menu option as the trigger and this and turn the
+sale drop down into an actual sheet.
+
+For the sheet to function properly, we wrap the entire dropdown inside a sheet component and place the UpsertSheetContent
+at the bottom, outside of the AlertDialog.
+
+During the sale creation, we pass the products, and product options (an object containing each product's name and value
+for the combobox option) to the sheet. Now we also need to include these products in the edit sheet.
+
+Our table-columns, which are part of the DataTable rendered on the sales page, contain both the defined table columns and
+the sales data. Since the SalesTableDropdownMenu renders the dropdown, we create a new interface extending the SaleDTO,
+adding two new properties:
+
+1. products - an array of ProductDTO
+2. productOptions - a list of selectable options
+
+By defining the ColumnDef with this new interface, the dropdown property (when accessing our row's original value)
+will now include these new properties.
+
+Finally, when rendering this DataTable on the sale page, instead of passing only the sales object as data, we now pass a
+new object:
+
+const tableData = {
+...sales,
+products,
+productOptions
+}
+
+We then pass this tableData to the DataTable, ensuring it has the correct type
