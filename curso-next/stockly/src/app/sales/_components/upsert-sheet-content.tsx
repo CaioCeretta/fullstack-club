@@ -57,14 +57,12 @@ interface UpsertSheetContentProps {
   productsOptions: ComboboxOption[]
   products: Product[]
   upsertSheetIsOpen: Dispatch<SetStateAction<boolean>>
-  onSubmitSuccess: () => void
   defaultSelectedProducts?: SelectedProduct[]
 }
 
 const UpsertSheetContent = ({
   productsOptions,
   products,
-  onSubmitSuccess,
   defaultSelectedProducts,
 }: UpsertSheetContentProps) => {
   const [selectedProducts, setSelectedProducts] = useState<SelectedProduct[]>(
