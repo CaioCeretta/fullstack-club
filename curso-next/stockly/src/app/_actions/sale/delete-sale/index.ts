@@ -2,7 +2,7 @@
 
 import { db } from '@/_lib/prisma'
 import { actionClient } from '@/_lib/safe-action'
-import { revalidateTag } from 'next/cache'
+import { revalidatePath } from 'next/cache'
 import { deleteSaleSchema } from './schema'
 
 export const deleteSale = actionClient
@@ -14,5 +14,5 @@ export const deleteSale = actionClient
       },
     })
 
-    revalidateTag('get-sales')
+    revalidatePath('/sales')
   })

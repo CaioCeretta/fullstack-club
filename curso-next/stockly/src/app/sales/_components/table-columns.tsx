@@ -4,7 +4,7 @@ import type { SaleDTO } from '@/_data/dal/sales/get-sales'
 import { Button } from '@/app/_components/ui/button'
 import { formatCurrency } from '@/helpers/currency'
 import type { ColumnDef } from '@tanstack/react-table'
-import { MoreHorizontalIcon } from 'lucide-react'
+import SalesTableDropdownMenu from './table-dropdown-menu'
 
 export const salesTableColumns: ColumnDef<SaleDTO>[] = [
   {
@@ -34,9 +34,9 @@ export const salesTableColumns: ColumnDef<SaleDTO>[] = [
   },
   {
     header: 'Actions',
-    cell: () => (
-      <Button>
-        <MoreHorizontalIcon size={16} />
+    cell: ({ row: { original: sale } }) => (
+      <Button asChild>
+        <SalesTableDropdownMenu sale={sale} />
       </Button>
     ),
   },

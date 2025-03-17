@@ -11,23 +11,28 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/app/_components/ui/dropdown-menu'
+import type { Sale } from '@prisma/client'
 import {
   ClipboardCopyIcon,
   EditIcon,
   MoreHorizontalIcon,
   TrashIcon,
 } from 'lucide-react'
-import type { UpsertProductType } from '@/app/_actions/product/upsert-product/schema'
 import { useState } from 'react'
+import { toast } from 'sonner'
+import DeleteSaleDialogContent from './delete-sale-dialog'
 
 interface SalesTableDropdownMenuProps {
-  product: UpsertProductType
+  sale: Pick<Sale, 'id'>
 }
 
-export const SalesTableDropdownMenu = ({
-  product,
-}: SalesTableDropdownMenuProps) => {
-  const [editDialogIsOpen, setEditDialogIsOpen] = useState(false)
+const SalesTableDropdownMenu = ({ sale }: SalesTableDropdownMenuProps) => {
+  const [editDialogIsOpen, setEditDialogIsOpen] = useState<boolean>(false)
+
+  const handleClipboardClick = (id: string) => {
+    navigator.clipboard.writeText(id)
+    toast.success('ID copied to clipboard!')
+  }
 
   return (
     <AlertDialog>
@@ -39,7 +44,7 @@ export const SalesTableDropdownMenu = ({
           <DropdownMenuContent>
             <DropdownMenuItem
               className="gap-1.5"
-              onClick={() => navigator.clipboard.writeText(product.id!)}
+              onClick={() => handleClipboardClick(sale.id)}
             >
               <ClipboardCopyIcon size={16} />
               Copy Id
@@ -60,7 +65,10 @@ export const SalesTableDropdownMenu = ({
             </AlertDialogTrigger>
           </DropdownMenuContent>
         </DropdownMenu>
+        <DeleteSaleDialogContent saleId={sale.id} />
       </Dialog>
     </AlertDialog>
   )
 }
+
+export default SalesTableDropdownMenu
