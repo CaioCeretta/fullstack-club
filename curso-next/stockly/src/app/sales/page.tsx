@@ -6,14 +6,19 @@ import { DataTable } from '../_components/ui/data-table'
 import { salesTableColumns } from './_components/table-columns'
 
 const SalesPage = async () => {
+  const sales = await getSales()
   const products = await getProducts()
 
-  const productsOptions: ComboboxOption[] = products.map((product) => ({
+  const productOptions: ComboboxOption[] = products.map((product) => ({
     label: product.name,
     value: product.id,
   }))
 
-  const sales = await getSales()
+  const tableData = sales.map((sale) => ({
+    ...sale,
+    products,
+    productOptions,
+  }))
 
   return (
     <div className="ml-8 mt-8 w-full space-y-8 bg-white p-8 py-8">
@@ -26,10 +31,10 @@ const SalesPage = async () => {
         </div>
         <CreateSaleButton
           products={products}
-          productsOptions={productsOptions}
+          productsOptions={productOptions}
         />
       </div>
-      <DataTable columns={salesTableColumns} data={sales} />
+      <DataTable columns={salesTableColumns} data={tableData} />
     </div>
   )
 }

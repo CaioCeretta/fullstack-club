@@ -1,0 +1,56 @@
+'use server'
+
+import { db } from '@/_lib/prisma'
+import { upsertSaleSchema, type UpsertSaleType } from './schema'
+import { revalidatePath } from 'next/cache'
+
+export const upsertSale = async (data: UpsertSaleType) => {
+  await db.$transaction(async (trx) => {
+    upsertSaleSchema.parse(data)
+
+    const sale = await trx.sale.create({
+      data: {
+        date: new Date(),
+      },
+    })
+
+    for (const product of data.products) {
+      const dbProduct = await trx.product.findUnique({
+        where: {
+          id: product.id,
+        },
+      })
+
+      if (!dbProduct) {
+        throw new Error('Product not found')
+      }
+
+      const productIsOutOfStock = product.quantity > dbProduct.stock
+
+      if (productIsOutOfStock) {
+        throw new Error('The product does not have the available stock')
+      }
+
+      await trx.saleProduct.create({
+        data: {
+          saleId: sale.id,
+          quantity: product.quantity,
+          productId: product.id,
+          unitPrice: dbProduct.price,
+        },
+      })
+
+      await trx.product.update({
+        where: {
+          id: product.id,
+        },
+        data: {
+          stock: {
+            decrement: product.quantity,
+          },
+        },
+      })
+    }
+  })
+  revalidatePath('/products')
+}

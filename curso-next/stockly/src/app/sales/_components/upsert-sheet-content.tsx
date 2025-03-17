@@ -32,10 +32,10 @@ import { formatCurrency } from '@/helpers/currency'
 import { zodResolver } from '@hookform/resolvers/zod'
 import type { Product } from '@prisma/client'
 import { CheckIcon, PlusIcon } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { useMemo, useState, type Dispatch, type SetStateAction } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { createSale } from '@/app/_actions/sale/create-sale'
+import { upsertSale } from '@/app/_actions/sale/upsert-sale'
 import { toast } from 'sonner'
 import { UpsertSalesTableDropdownMenu } from './upsert-table-dropdown-menu'
 
@@ -46,12 +46,6 @@ const upsertSheetFormSchema = z.object({
 
 type UpsertSheetFormType = z.infer<typeof upsertSheetFormSchema>
 
-interface UpsertSheetContentProps {
-  productsOptions: ComboboxOption[]
-  products: Product[]
-  onSubmitSuccess: () => void
-}
-
 interface SelectedProduct {
   id: string
   name: string
@@ -59,13 +53,22 @@ interface SelectedProduct {
   quantity: number
 }
 
+interface UpsertSheetContentProps {
+  productsOptions: ComboboxOption[]
+  products: Product[]
+  upsertSheetIsOpen: Dispatch<SetStateAction<boolean>>
+  onSubmitSuccess: () => void
+  defaultSelectedProducts?: SelectedProduct[]
+}
+
 const UpsertSheetContent = ({
   productsOptions,
   products,
   onSubmitSuccess,
+  defaultSelectedProducts,
 }: UpsertSheetContentProps) => {
   const [selectedProducts, setSelectedProducts] = useState<SelectedProduct[]>(
-    [],
+    defaultSelectedProducts ?? [],
   )
 
   const onSubmit = (data: UpsertSheetFormType) => {
@@ -145,7 +148,7 @@ const UpsertSheetContent = ({
 
   const onSubmitSale = async () => {
     try {
-      await createSale({
+      await upsertSale({
         products: selectedProducts.map((selectedProduct) => ({
           id: selectedProduct.id,
           quantity: selectedProduct.quantity,

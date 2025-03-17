@@ -5,8 +5,15 @@ import { Button } from '@/app/_components/ui/button'
 import { formatCurrency } from '@/helpers/currency'
 import type { ColumnDef } from '@tanstack/react-table'
 import SalesTableDropdownMenu from './table-dropdown-menu'
+import type { ProductDTO } from '@/_data/dal/product/get-products'
+import type { ComboboxOption } from '@/app/_components/ui/combobox'
 
-export const salesTableColumns: ColumnDef<SaleDTO>[] = [
+interface SaleTableColumn extends SaleDTO {
+  products: ProductDTO[]
+  productsOptions: ComboboxOption[]
+}
+
+export const salesTableColumns: ColumnDef<SaleTableColumn>[] = [
   {
     accessorKey: 'productNames',
     header: 'Products',
