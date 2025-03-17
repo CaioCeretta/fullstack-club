@@ -2126,4 +2126,90 @@ products,
 productOptions
 }
 
-We then pass this tableData to the DataTable, ensuring it has the correct type
+We then pass this tableData to the DataTable, ensuring it has the correct type.
+
+Now, because our table columns contain this data, we can simply define a similar interface to the dropdown, and pass down
+these options for the edit. Our table is correctly rendering the products to add and we can now go to the final step which
+is populating the sale with the current products.
+
+On the getSales function, where we define our SaleDto, i'm retrieving a list of the sales from the database, and each
+sale has an associated list of saleProduct. The prisma query also includes the product associated to this saleProduct
+using the include clause. This allows us to access the properties of the related product, even though we're iterating
+over SaleProduct.
+
+### Here's how it is works
+
+1.  Prisma Query with include:
+
+The query we're using is db.sale.findMany({ include: {saleProducts: {include: { product: true } } } } ). The include
+product: true part of the query makes sure that, for every saleProduct, the related product object is also fetched
+along with it. This means that saleProduct.product will contain the properties of the associated product (e.g. name, price)
+
+2.  Accessing saleProduct.product.name: When we do a saleProduct.product.name inside the sale.saleProducts.map function,
+    we are accessing the product object that's already part of each saleProduct. Prisma automatically attaches this related
+    product data to each saleProduct in the result, so we can access product.name, product.price, etc., without any additional
+    steps needed.
+
+3.  Mapping Over `saleProducts`: When we're mapping over sale.saleProducts, we are iterating through each saleProduct
+    object, and since the product was included in the query, we can access its name directly. Receiving the desired information
+
+So, step by step
+
+1. In the getSales function:
+
+   . We are fetching sales from database using Prisma and including the related salesProduct and their associated product
+   data through the foreign key relationship. We will add a new property to the SaleDTO called saleProducts that contains
+   the information of the sale products, including product details.
+
+2. Populating the Sales Table
+
+   . On the table page, when invoking the getSales function, we create a new object of tableData that we pass to the table
+   columns. This object will include not just the sales data but also the list of products for populating the product select
+   dropdown and the productOptions for the ComboBox
+
+3. Extending the Table Columns interface
+
+   . We are now extending the SaleDTO to include products and productOptions. which are necessary to populate the product
+   list and ComboBox options in the dropdown when we interact with the specific sale.
+
+   . The sale object passed to SalesTableDropdownMenu includes the saleProducts, which we can use to show the specific
+   products associated with that sale
+
+4. Upsert Operation (Mapping saleProducts to SelectedProduct):
+
+   . When we're handling the upsert operation, we will receive the saleProduct, but they don't have all the required fields
+   of a SelectedProduct. For instance, it requires name, stock, price, etc.
+
+   . However, a saleProduct, is connected to its product, and we can extract the needed information from it, for example
+   saleProduct.product.name, saleProduct.product.stock...
+
+5. Modifying SaleDTO to include SaleProductDTO:
+
+   . When defining the SaleDTO, we ensure that it includes the saleProducts as an array of SaleProductDTO. This DTO will
+   contain the product details (like name, stock, unitPrice), which we will use when iterating over the sales and saleProducts
+
+   ```ts
+   export interface SaleDTO {
+     id: string
+     productNames: string
+     productsQuantity: number
+     totalAmount: number
+     date: Date
+     saleProducts: SaleProductDTO[]
+   }
+
+   export interface SaleProductDTO {
+     name: string
+     quantity: number
+     unitPrice: number
+   }
+   ```
+
+6. Iterating Over sale and saleProduct:
+
+   . With the updated SaleDTO, which includes a property saleProducts that contains a list of SaleProductDTO, whenever we
+   iterate over a sale and its saleProducts, we'll have access to all the properties defined in the DTOs
+
+So basically, on our getSale action, we are going to have access to all the information returned from the query, which
+includes the salesProduct, and the referenced product. Meaning we are able to return on this function, everything
+we'd like and pass them down to the upsertSheet.
