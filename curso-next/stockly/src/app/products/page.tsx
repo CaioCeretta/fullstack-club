@@ -2,6 +2,12 @@ import { cachedGetProducts } from '@/_data/dal/product/get-products'
 import { DataTable } from '../_components/ui/data-table'
 import AddProductButton from './_components/create-product-button'
 import { productTableColumns } from './_components/table-columns'
+import Header, {
+  HeaderLeft,
+  HeaderRight,
+  HeaderSubtitle,
+  HeaderTitle,
+} from '../_components/header'
 
 /* 
   By creating here like this, every time the application is rebuilt, we are going to generate a new db connection, because
@@ -48,17 +54,15 @@ const ProductsPage = async () => {
 
 
     */}
-
-      {/*/Left*/}
-      <div className="flex w-full items-center justify-between">
-        <div className="space-y-1">
-          <span className="text-xs font-semibold text-slate-500">
-            Products Management
-          </span>
-          <h2 className="text-xl font-semibold">Products</h2>
-        </div>
-        <AddProductButton />
-      </div>
+      <Header>
+        <HeaderLeft>
+          <HeaderTitle>Products Management</HeaderTitle>
+          <HeaderSubtitle>Products</HeaderSubtitle>
+        </HeaderLeft>
+        <HeaderRight>
+          <AddProductButton />
+        </HeaderRight>
+      </Header>
 
       <DataTable
         columns={productTableColumns}

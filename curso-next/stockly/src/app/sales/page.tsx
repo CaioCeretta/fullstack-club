@@ -4,6 +4,12 @@ import type { ComboboxOption } from '../_components/ui/combobox'
 import { getSales } from '@/_data/dal/sales/get-sales'
 import { DataTable } from '../_components/ui/data-table'
 import { salesTableColumns } from './_components/table-columns'
+import Header, {
+  HeaderLeft,
+  HeaderRight,
+  HeaderSubtitle,
+  HeaderTitle,
+} from '../_components/header'
 
 const SalesPage = async () => {
   const sales = await getSales()
@@ -22,18 +28,18 @@ const SalesPage = async () => {
 
   return (
     <div className="ml-8 mt-8 w-full space-y-8 bg-white p-8 py-8">
-      <div className="flex w-full items-center justify-between">
-        <div className="space-y-1">
-          <span className="text-xs font-semibold text-slate-500">
-            Sales Management
-          </span>
-          <h2 className="text-xl font-semibold">Sales</h2>
-        </div>
-        <CreateSaleButton
-          products={products}
-          productsOptions={productOptions}
-        />
-      </div>
+      <Header>
+        <HeaderLeft>
+          <HeaderTitle>Sales Management</HeaderTitle>
+          <HeaderSubtitle>Sale</HeaderSubtitle>
+        </HeaderLeft>
+        <HeaderRight>
+          <CreateSaleButton
+            products={products}
+            productsOptions={productOptions}
+          />
+        </HeaderRight>
+      </Header>
       <DataTable columns={salesTableColumns} data={tableData} />
     </div>
   )
