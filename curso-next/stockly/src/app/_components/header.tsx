@@ -1,3 +1,4 @@
+import { cn } from '@/_lib/utils'
 import type { ReactNode } from 'react'
 
 interface HeaderComponentProps {
@@ -14,23 +15,23 @@ export const HeaderSubtitle = ({
   className,
 }: HeaderComponentProps) => {
   return (
-    <span className={`${className}text-xs font-semibold text-slate-500`}>
+    <span className={cn(`text-xs font-semibold text-slate-500`, className)}>
       {children}
     </span>
   )
 }
 
 export const HeaderLeft = ({ children, className }: HeaderComponentProps) => {
-  return <div className={`${className} space-y-2`}>{children}</div>
+  return <div className={cn('space-y-2', className)}>{children}</div>
 }
 
 export const HeaderRight = ({ children, className }: HeaderComponentProps) => {
-  return <div className={`${className}`}>{children}</div>
+  return <div className={cn(className)}>{children}</div>
 }
 
 export const Header = ({ children, className }: HeaderComponentProps) => {
   return (
-    <div className={`${className} flex w-full items-center justify-between`}>
+    <div className={cn('flex w-full items-center justify-between', className)}>
       {children}
     </div>
   )
