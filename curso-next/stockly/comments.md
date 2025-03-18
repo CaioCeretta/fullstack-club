@@ -2213,3 +2213,22 @@ So, step by step
 So basically, on our getSale action, we are going to have access to all the information returned from the query, which
 includes the salesProduct, and the referenced product. Meaning we are able to return on this function, everything
 we'd like and pass them down to the upsertSheet.
+
+## Upsert Sheet Action
+
+Now that we defined the logical part of the tables, we also need to update the CreateSale action. The first step is going
+to be modifying the name from create to upsert, and pass an the saleID to our UpsertSheetContent.
+
+After changing the functions and schemas and define that they receive a saleId. We now are going to face some issues whenever
+we delete a sale, which is deleting the sale, then deleting its products, then increasing the product stock, etc.
+
+The best option is, when we are updating, to delete the entire sale and its product, then create a new sale. Because when
+we are updating an entity, which holds many things that will have to be updated in case of a deletion, it'sometimes preferable
+to delete everything and create a new one from zero.
+
+On the upsert we will check if the id is truthy, otherwise, it will to delete all the corresponding values of the saleId,
+and after the deletion is done, it will follow the normal flow of creation.
+
+For the product deletion and restoring the product stock on delete, what we'll do is that we are going to get the saleId,
+and check all the salesProduct with that saleId being deleted, then we iterate over the products and increment to that
+referenced product, the quantity it has been decremented on the insertion
