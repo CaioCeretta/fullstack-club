@@ -2232,3 +2232,25 @@ and after the deletion is done, it will follow the normal flow of creation.
 For the product deletion and restoring the product stock on delete, what we'll do is that we are going to get the saleId,
 and check all the salesProduct with that saleId being deleted, then we iterate over the products and increment to that
 referenced product, the quantity it has been decremented on the insertion
+
+## Composition Pattern
+
+Shadcn follows the composition pattern, which involves breaking down a component into smaller, reusable components.
+
+For example, instead of defining a `Card` component with multiple props like this:
+
+<Card title="Title Example" description="Example description" footer="Footer example">
+  {/* Children go here */}
+</Card>
+
+ShadCN takes a more modular approach by breaking the Card into separate subcomponents:
+
+<Card>
+  <CardTitle>Title Example</CardTitle>
+  <CardDescription>Example description</CardDescription>
+  <CardContent>Some content here</CardContent>
+  <CardFooter>Footer example</CardFooter>
+</Card>
+
+This approach improves code readability, reusability and maintainability, making it easier to read, modify and extend the
+component structure as needed.
