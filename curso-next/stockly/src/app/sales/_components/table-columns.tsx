@@ -10,7 +10,7 @@ import type { ComboboxOption } from '@/app/_components/ui/combobox'
 
 interface SaleTableColumn extends SaleDTO {
   products: ProductDTO[]
-  productsOptions: ComboboxOption[]
+  productOptions: ComboboxOption[]
 }
 
 export const salesTableColumns: ColumnDef<SaleTableColumn>[] = [
@@ -43,7 +43,11 @@ export const salesTableColumns: ColumnDef<SaleTableColumn>[] = [
     header: 'Actions',
     cell: ({ row: { original: sale } }) => (
       <Button asChild>
-        <SalesTableDropdownMenu sale={sale} />
+        <SalesTableDropdownMenu
+          productOptions={sale.productOptions}
+          products={sale.products}
+          sale={sale}
+        />
       </Button>
     ),
   },

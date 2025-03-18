@@ -38,6 +38,8 @@ import { z } from 'zod'
 import { upsertSale } from '@/app/_actions/sale/upsert-sale'
 import { toast } from 'sonner'
 import { UpsertSalesTableDropdownMenu } from './upsert-table-dropdown-menu'
+import { useAction } from 'next-safe-action/hooks'
+import { flattenValidationErrors } from 'next-safe-action'
 
 const upsertSheetFormSchema = z.object({
   productId: z.string().uuid({ message: 'Product is required' }),
@@ -54,20 +56,34 @@ interface SelectedProduct {
 }
 
 interface UpsertSheetContentProps {
+  saleId?: string
   productsOptions: ComboboxOption[]
   products: Product[]
   upsertSheetIsOpen: Dispatch<SetStateAction<boolean>>
-  defaultSelectedProducts?: SelectedProduct[]
+  defaultSelectedProducts?: SelectedProduct[] | undefined
 }
 
 const UpsertSheetContent = ({
+  saleId,
   productsOptions,
   products,
+  upsertSheetIsOpen,
   defaultSelectedProducts,
 }: UpsertSheetContentProps) => {
   const [selectedProducts, setSelectedProducts] = useState<SelectedProduct[]>(
     defaultSelectedProducts ?? [],
   )
+
+  const { execute: executeUpsertSale } = useAction(upsertSale, {
+    onError: ({ error: { validationErrors, serverError } }) => {
+      const flattenedErrors = flattenValidationErrors(validationErrors)
+      toast.error(serverError ?? flattenedErrors.formErrors[0])
+    },
+    onSuccess: () => {
+      toast.success('Sale completed!')
+      upsertSheetIsOpen(false)
+    },
+  })
 
   const onSubmit = (data: UpsertSheetFormType) => {
     const selectedProduct = products.find(
@@ -145,20 +161,13 @@ const UpsertSheetContent = ({
   }
 
   const onSubmitSale = async () => {
-    try {
-      await upsertSale({
-        products: selectedProducts.map((selectedProduct) => ({
-          id: selectedProduct.id,
-          quantity: selectedProduct.quantity,
-        })),
-      })
-
-      toast.success('Sale completed successfully')
-
-      onSubmitSuccess()
-    } catch (error) {
-      toast.error('Error in the sale creation')
-    }
+    executeUpsertSale({
+      id: saleId,
+      products: selectedProducts.map((product) => ({
+        id: product.id,
+        quantity: product.quantity,
+      })),
+    })
   }
 
   const form = useForm<UpsertSheetFormType>({

@@ -1,17 +1,19 @@
 'use client'
 
+import type { ProductDTO } from '@/_data/dal/product/get-products'
+import type { SaleDTO } from '@/_data/dal/sales/get-sales'
 import {
   AlertDialog,
   AlertDialogTrigger,
 } from '@/app/_components/ui/alert-dialog'
-import { Dialog, DialogTrigger } from '@/app/_components/ui/dialog'
+import type { ComboboxOption } from '@/app/_components/ui/combobox'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/app/_components/ui/dropdown-menu'
-import type { Sale } from '@prisma/client'
+import { Sheet, SheetTrigger } from '@/app/_components/ui/sheet'
 import {
   ClipboardCopyIcon,
   EditIcon,
@@ -21,14 +23,19 @@ import {
 import { useState } from 'react'
 import { toast } from 'sonner'
 import DeleteSaleDialogContent from './delete-sale-dialog'
-import { Sheet, SheetTrigger } from '@/app/_components/ui/sheet'
 import UpsertSheetContent from './upsert-sheet-content'
 
 interface SalesTableDropdownMenuProps {
-  sale: Pick<Sale, 'id'>
+  sale: Pick<SaleDTO, 'id' | 'saleProducts'>
+  products: ProductDTO[]
+  productOptions: ComboboxOption[]
 }
 
-const SalesTableDropdownMenu = ({ sale }: SalesTableDropdownMenuProps) => {
+const SalesTableDropdownMenu = ({
+  sale,
+  products,
+  productOptions,
+}: SalesTableDropdownMenuProps) => {
   const [upsertSheetIsOpen, setUpsertSheetIsOpen] = useState<boolean>(false)
 
   const handleClipboardClick = (id: string) => {
@@ -71,9 +78,17 @@ const SalesTableDropdownMenu = ({ sale }: SalesTableDropdownMenuProps) => {
       </AlertDialog>
 
       <UpsertSheetContent
-        productsOptions={[]}
-        products={[]}
-        defaultSelectedProducts={[]}
+        saleId={sale.id}
+        productsOptions={productOptions}
+        products={products}
+        defaultSelectedProducts={
+          sale.saleProducts.map((saleProduct) => ({
+            id: saleProduct.productId,
+            quantity: saleProduct.quantity,
+            price: Number(saleProduct.unitPrice),
+            name: saleProduct.name,
+          })) ?? []
+        }
         upsertSheetIsOpen={setUpsertSheetIsOpen}
       />
     </Sheet>

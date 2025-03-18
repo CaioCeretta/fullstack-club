@@ -28,7 +28,7 @@ export const CreateSaleButton = (props: CreateSaleButtonProps) => {
       <UpsertSheetContent
         productsOptions={props.productsOptions}
         products={props.products}
-        onSubmitSuccess={() => setSheetIsOpen(false)}
+        upsertSheetIsOpen={setSheetIsOpen}
       />
     </Sheet>
   )

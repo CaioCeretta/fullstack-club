@@ -3,12 +3,20 @@ import 'server-only'
 import { db } from '@/_lib/prisma'
 import { unstable_cache } from 'next/cache'
 
+export interface SaleProductDTO {
+  productId: string
+  name: string
+  quantity: number
+  unitPrice: number
+}
+
 export interface SaleDTO {
   id: string
   productNames: string
   productsQuantity: number
   totalAmount: number
   date: Date
+  saleProducts: SaleProductDTO[]
 }
 
 export const getSales = async (): Promise<SaleDTO[]> => {
@@ -37,6 +45,14 @@ export const getSales = async (): Promise<SaleDTO[]> => {
       productsQuantity: sale.saleProducts.reduce(
         (acc, saleProduct) => acc + saleProduct.quantity,
         0,
+      ),
+      saleProducts: sale.saleProducts.map(
+        (saleProduct): SaleProductDTO => ({
+          name: saleProduct.product.name,
+          quantity: saleProduct.quantity,
+          unitPrice: Number(saleProduct.unitPrice),
+          productId: saleProduct.product.id,
+        }),
       ),
     }),
   )
