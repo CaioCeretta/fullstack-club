@@ -2252,5 +2252,23 @@ ShadCN takes a more modular approach by breaking the Card into separate subcompo
   <CardFooter>Footer example</CardFooter>
 </Card>
 
-This approach improves code readability, reusability and maintainability, making it easier to read, modify and extend the
-component structure as needed.
+Improving Consistency and Flexibility
+To further enhance this approach, it's recommended to:
+
+Ensure consistent styles by allowing each subcomponent to accept a className prop. This provides flexibility without modifying the component directly.
+Use prop types effectively by defining a common interface for subcomponents, making the code more readable and type-safe.
+For example, applying these improvements to a Header component:
+
+```ts
+interface HeaderComponentProps {
+  children: ReactNode
+  className?: string
+}
+
+export const HeaderTitle = ({ children, className }: HeaderComponentProps) => {
+  return <h2 className={`text-xl font-semibold ${className}`}>{children}</h2>
+}
+```
+
+By following these practices, components become more modular, customizable, and scalable, aligning with the best practices
+used in ShadCN.
