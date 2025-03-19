@@ -1,4 +1,4 @@
-import { deleteSale } from '@/app/_actions/sale/delete-sale'
+import { deleteSale } from '@/_data/_actions/sale/delete-sale'
 import {
   AlertDialogAction,
   AlertDialogCancel,

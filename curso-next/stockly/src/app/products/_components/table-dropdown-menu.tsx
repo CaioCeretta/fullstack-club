@@ -19,7 +19,7 @@ import {
 } from 'lucide-react'
 import DeleteProductDialogContent from './delete-product-dialog'
 import UpsertDialogContent from './upsert-dialog-content'
-import type { UpsertProductType } from '@/app/_actions/product/upsert-product/schema'
+import type { UpsertProductType } from '@/_data/_actions/product/upsert-product/schema'
 import { useState } from 'react'
 
 interface ProductTableDropdownMenuProps {
