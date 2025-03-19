@@ -3,7 +3,7 @@
 import { db } from '@/_lib/prisma'
 import { actionClient } from '@/_lib/safe-action'
 import {} from 'next-safe-action'
-import { revalidateTag } from 'next/cache'
+import { revalidatePath } from 'next/cache'
 import { upsertProductSchema } from './schema'
 
 export const upsertProduct = actionClient
@@ -19,5 +19,7 @@ export const upsertProduct = actionClient
       create: data,
     })
 
-    revalidateTag('get-products')
+    // revalidateTag('get-products')
+    revalidatePath('/products', 'page')
+    revalidatePath('/')
   })

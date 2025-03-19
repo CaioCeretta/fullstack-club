@@ -2273,9 +2273,15 @@ export const HeaderTitle = ({ children, className }: HeaderComponentProps) => {
 By following these practices, components become more modular, customizable, and scalable, aligning with the best practices
 used in ShadCN.
 
-## Home styling
+## Home components
 
 In our app, there is a specific folder for the components of each page, however, inside of app folder, we already have
 the components folder that store the components used across more than one page.
 
-We can solve the above issue by creating a specific route group for our dashboard,
+We can solve the above issue by creating a specific route group for our dashboard, and creating the components for the
+specific folder
+
+## Revalidate
+
+To prevent the many revalidatePaths, for example if we would like to revalidate products, sales and dashboard, we can
+simply use a revalidatePath('/', 'layout'). This will revalidate the root layout and all the pages rendered after it
