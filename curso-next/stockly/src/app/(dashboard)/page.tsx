@@ -18,12 +18,13 @@ import SummaryCard, {
   SummaryCardValue,
 } from './components/SummaryCard'
 import { getDashboard } from '@/_data/dal/dashboard/get-dashboard'
+import RevenueChart from './components/revenue-chart'
 
 export default async function Home() {
   const dashboard = await getDashboard()
 
   return (
-    <div className="ml-8 mt-8 w-full space-y-8 py-8">
+    <div className="ml-8 mt-8 flex w-full flex-col space-y-8 py-8">
       <Header>
         <HeaderLeft>
           <HeaderTitle>Dashboard</HeaderTitle>
@@ -80,6 +81,12 @@ export default async function Home() {
             <ShoppingBasketIcon />
           </SummaryCardIcon>
         </SummaryCard>
+      </div>
+
+      <div className="flex h-full flex-col overflow-hidden rounded-xl bg-white p-6">
+        <p className="text-sm font-medium text-slate-500">Revenue</p>
+
+        <RevenueChart data={dashboard.last14DaysRevenue} />
       </div>
     </div>
   )
