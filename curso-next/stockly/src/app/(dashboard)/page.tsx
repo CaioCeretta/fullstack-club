@@ -1,3 +1,4 @@
+import { getDashboard } from '@/_data/dal/dashboard/get-dashboard'
 import { formatCurrency } from '@/helpers/currency'
 import {
   CircleDollarSign,
@@ -12,13 +13,13 @@ import Header, {
   HeaderTitle,
 } from '../_components/header'
 import { Button } from '../_components/ui/button'
+import RevenueChart from './components/revenue-chart'
 import SummaryCard, {
   SummaryCardIcon,
   SummaryCardTitle,
   SummaryCardValue,
-} from './components/SummaryCard'
-import { getDashboard } from '@/_data/dal/dashboard/get-dashboard'
-import RevenueChart from './components/revenue-chart'
+} from './components/summary-card'
+import MostSoldProductsItem from './components/most-sold-products-item'
 
 export default async function Home() {
   const dashboard = await getDashboard()
@@ -83,10 +84,24 @@ export default async function Home() {
         </SummaryCard>
       </div>
 
-      <div className="flex h-full flex-col overflow-hidden rounded-xl bg-white p-6">
-        <p className="text-sm font-medium text-slate-500">Revenue</p>
+      <div className="grid min-h-0 grid-cols-[minmax(0,2.5fr),minmax(0,1fr)] gap-6">
+        <div className="flex h-full flex-col overflow-hidden rounded-xl bg-white p-6">
+          <p className="text-sm font-medium text-slate-500">Revenue</p>
 
-        <RevenueChart data={dashboard.last14DaysRevenue} />
+          <RevenueChart data={dashboard.last14DaysRevenue} />
+        </div>
+        <div className="flex h-full flex-col overflow-hidden rounded-xl bg-white">
+          <p className="p-6 text-sm font-medium text-slate-900">Best Sellers</p>
+
+          <div className="space-y-7 overflow-y-auto px-6 pb-6">
+            {dashboard.mostSoldProducts.map((mostSoldProduct) => (
+              <MostSoldProductsItem
+                key={mostSoldProduct.productId}
+                product={mostSoldProduct}
+              />
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   )

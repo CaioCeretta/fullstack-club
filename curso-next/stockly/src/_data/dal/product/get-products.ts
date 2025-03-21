@@ -6,6 +6,8 @@ import type { Product } from '@prisma/client'
 import { unstable_cache } from 'next/cache'
 // import { unstable_cache } from "next/cache";
 
+export type ProductStatusDTO = 'IN_STOCK' | 'OUT_OF_STOCK'
+
 export interface ProductDTO extends Product {
   status: 'IN_STOCK' | 'OUT_OF_STOCK'
 }
