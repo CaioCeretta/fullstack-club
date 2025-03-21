@@ -2408,3 +2408,54 @@ last14DaysRevenue summary:
    beneficial to use Promise.allSettled instead. This method ensures that even if one or more promises fail (e.g., to
    a database query error), the other promises will still resolve, and we can handle the failures individually without
    interrupting the rest of the execution
+
+## Most Sold Products
+
+The instructor, to obtain the most sold products, used the following query:
+
+SELECT "Product"."name",
+SUM("SaleProduct"."quantity") AS "totalSold",
+"Product"."price"
+FROM "SaleProduct"
+JOIN "Product" ON "SaleProduct"."productId" = "Product"."id"
+GROUP BY "Product"."name", "Product"."price"
+ORDER BY "totalSold" DESC
+LIMIT 10;
+
+This command, unites the tables SaleProduct and Product, sums the sale quantity by product, and returns the name, price,
+and quantity, as well as the price and quantity sold of each product.
+The query uses a JOIN to combine the two tables and group by for grouping the results by product name
+It also sorts products by total quantity sold in descending order and limits them to find the first 10.
+And whenever we use a group by, every column that's not used in the aggregation function, (such as SUM, COUNT, etc) they
+must be on the group by, this ensures that these columns have unique values.
+
+However, prisma doesn't have full support for complex SQL operations, such as JOIN and group by, in a single query, as well
+with more advanced aggregations and calculus, because of its query abstraction limitations. Prisma focus in providing a
+simpler and more flexible API to interact with the db, but that implies that it doesn't cover every SQL use case
+
+Therefore, for this query, we'll end up using a rawQuery because of prisma limitations, which are:
+
+1.  Aggregations and JOIN: Prisma supports groupBy and aggregations, but does not have a built-in mechanism to do JOIN and
+    grouping in a single query like traditional SQL
+
+2.  Relationships: While Prisma makes it easy to work with relationships, more complex operations (like JOIN with Group By
+    and Order By) require multiple queries or the use of raw queries
+
+3.  Performance: In some cases, using multiple queries (such as groupBy and then findMany) may be easy to understand and
+    maintain, but it may affect the performance if the number rows is too big.
+
+## Most sold products
+
+For the revenue table and the most sold product table, we defined a grid wit the following classes, here is an explanation
+
+min-h-0: this class is useful to avoid it from unexpected growth in case it's inside a flex container of other context with
+limited height
+
+minmax(0, 2.5fr): the first column will have a minimum size of 0 (it doesn't force a minimum size, it means that it can
+shrink until the value is 0, if the space available is small, it won't occupy the width.), the flexible size is
+2.5fr, that is, it receives 2.5 times the fraction of the available space.
+
+minmax(0, 1fr): Same thing, but it has a minimum size of 1 fraction of the available width
+
+In practice this means that the first column will be 2.5 times bigger than the second one, so if a container has 1000px
+of width, the first column will have approximately 714px and the second one 286px
