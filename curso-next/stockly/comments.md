@@ -2285,3 +2285,126 @@ specific folder
 
 To prevent the many revalidatePaths, for example if we would like to revalidate products, sales and dashboard, we can
 simply use a revalidatePath('/', 'layout'). This will revalidate the root layout and all the pages rendered after it
+
+## 14 Days Revenue Chart
+
+Explanation of the revenue chart
+
+```ts
+export interface DayTotalRevenue {
+  day: string
+  totalRevenue: number
+}
+
+interface DashboardDTO {
+  totalRevenue: number
+  todayRevenue: number
+  totalSales: number
+  totalInStock: number
+  totalProducts: number
+  last14DaysRevenue: DayTotalRevenue[]
+}
+
+const getSales = async (date: Date) => {
+  const startOfDay = dayjs(date).startOf('day').toDate()
+  const endOfDay = dayjs(date).endOf('day').toDate()
+
+const getSales = async (date: Date) => {
+    const startOfDay = dayjs(date).startOf('day').toDate()
+    const endOfDay = dayjs(date).endOf('day').toDate()
+
+    const sales = await db.saleProduct.findMany({
+      where: {
+        createdAt: {
+          gte: startOfDay,
+          lte: endOfDay,
+        },
+      },
+      select: {
+        unitPrice: true,
+        quantity: true,
+      },
+    })
+
+    return sales
+  }
+
+const last14Days = Array.from({ length: 14 }, (_, i) => {
+  return dayjs().subtract(i, 'day').toDate() // Generate the dates of the last 14 days
+}).reverse()
+
+const salesPromises = last14Days.map((day) => getSales(day))
+
+const allSales = await Promise.all(salesPromises)
+
+const last14DaysRevenue = allSales.map((dailySales, index): DayTotalRevenue => {
+  const dailyRevenue = dailySales.reduce(
+    (acc, sale) => acc + Number(sale.unitPrice) * sale.quantity,
+    0,
+  )
+
+  // Format the date for displaying
+  const day = dayjs(last14Days[index])
+  return {
+    day: day.format('DD/MM'), // formatted date
+    totalRevenue: dailyRevenue,
+  }
+})
+
+/// rest of code
+
+return {
+  totalRevenue,
+  totalSales,
+  todayRevenue,
+  totalInStock: Number(totalInStock._sum.stock),
+  totalProducts,
+  last14DaysRevenue,
+}
+```
+
+last14DaysRevenue summary:
+
+1. Defining the getSales function: The getSales constant, which holds a function that receives a date as parameter, this function will
+   store the start of the day, the end of the day, and create a sales constant inside of it, that'll invoke the database
+   to get all the sales where the createdAt is greater than the start and lower than the end, and finally, after this fetch,
+   return all the unitPrice and the quantity for each sale.
+
+2. Generating the last 14 days (last14Days): To create an array of dates representing the last 14 days, we use
+   Array.from({ length: 14 }, (\_, i) => dayjs().subtract(i, 'day').toDate()). This generates 14 items, where each item is
+   a Date object representing one of the last 14 days. The subtract(i, 'day') method shifts the current date by i days,
+   and the .toDate() converts the dayjs object to a native JavaScript Date. The reverse() method is then applied to ensure the days are ordered from oldest to newest (i.e., starting from the first day in the array as the oldest).
+
+3. Fetching sales data (salesPromises): We then map over the last14Days array and invoke the getSales function for each day.
+   This returns an array of promises (salesPromises), each of which will eventually resolve to the sales data for one of the
+   last 14 days. The Promise.all() method is used to resolve all the promises concurrently, ensuring that we have all the
+   sales data before proceeding.
+
+4. allSales now hold the result of all the resolved promises, obtaining the unit price and quantity of each sale of the day
+   that was returned from the action
+
+5. Then the last14Days revenue will create a new array mapping by mapping the resolved promises, each iteration will get reduce
+   over every sale, calculate its revenue and return an object with the day of this sale based on the index. Since each index
+   is a new dayjs date, it will hold the correct corresponding day.
+
+6. Finally, the value returned, respecting the interface that is an object with day and revenue, whenever we import
+   these values,
+
+   ```ts
+   const chartConfig = {
+     totalRevenue: {
+       label: 'Revenue',
+     },
+   } satisfies ChartConfig
+
+   export interface RevenueChartProps {
+     data: DayTotalRevenue[]
+   }
+   ```
+
+   There are some suggestions for improvement, which are
+
+   . Handling possible promise failures: While promise.all() is used to resolve all promises concurrently, it might be
+   beneficial to use Promise.allSettled instead. This method ensures that even if one or more promises fail (e.g., to
+   a database query error), the other promises will still resolve, and we can handle the failures individually without
+   interrupting the rest of the execution
