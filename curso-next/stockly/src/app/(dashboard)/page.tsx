@@ -1,4 +1,3 @@
-import { getDashboard } from '@/_data/dal/dashboard/get-dashboard'
 import { formatCurrency } from '@/helpers/currency'
 import {
   CircleDollarSign,
@@ -20,9 +19,22 @@ import SummaryCard, {
   SummaryCardValue,
 } from './components/summary-card'
 import MostSoldProductsItem from './components/most-sold-products-item'
+import { getTotalRevenue } from '@/_data/dal/dashboard/get-total-revenue'
+import { getDailyRevenue } from '@/_data/dal/dashboard/get-today-revenue'
+import { getTotalSales } from '@/_data/dal/dashboard/total-sales'
+import { getTotalInStock } from '@/_data/dal/dashboard/get-total-in-stock'
+import { getTotalProducts } from '@/_data/dal/dashboard/get-total-products'
+import { getLast14DaysRevenue } from '@/_data/dal/dashboard/get-last-14-days-revenue'
+import { getMostSoldProducts } from '@/_data/dal/dashboard/get-most-sold-products'
 
 export default async function Home() {
-  const dashboard = await getDashboard()
+  const totalRevenue = await getTotalRevenue()
+  const dailyRevenue = await getDailyRevenue()
+  const totalSales = await getTotalSales()
+  const totalStock = await getTotalInStock()
+  const totalProducts = await getTotalProducts()
+  const last14DaysRevenue = await getLast14DaysRevenue()
+  const mostSoldProducts = await getMostSoldProducts()
 
   return (
     <div className="ml-8 mt-8 flex w-full flex-col space-y-8 py-8">
@@ -39,9 +51,7 @@ export default async function Home() {
       <div className="grid grid-cols-2 gap-6">
         <SummaryCard>
           <SummaryCardTitle>Total Revenue</SummaryCardTitle>
-          <SummaryCardValue>
-            {formatCurrency(dashboard.totalRevenue)}
-          </SummaryCardValue>
+          <SummaryCardValue>{formatCurrency(totalRevenue)}</SummaryCardValue>
           <SummaryCardIcon>
             <DollarSign />
           </SummaryCardIcon>
@@ -49,9 +59,7 @@ export default async function Home() {
 
         <SummaryCard>
           <SummaryCardTitle>Today's Revenue</SummaryCardTitle>
-          <SummaryCardValue>
-            {formatCurrency(dashboard.todayRevenue)}
-          </SummaryCardValue>
+          <SummaryCardValue>{formatCurrency(dailyRevenue)}</SummaryCardValue>
           <SummaryCardIcon>
             <DollarSign />
           </SummaryCardIcon>
@@ -61,7 +69,7 @@ export default async function Home() {
       <div className="grid grid-cols-3 gap-6">
         <SummaryCard>
           <SummaryCardTitle>Total Sales</SummaryCardTitle>
-          <SummaryCardValue>{dashboard.totalSales}</SummaryCardValue>
+          <SummaryCardValue>{totalSales}</SummaryCardValue>
           <SummaryCardIcon>
             <CircleDollarSign />
           </SummaryCardIcon>
@@ -69,7 +77,7 @@ export default async function Home() {
 
         <SummaryCard>
           <SummaryCardTitle>Total In Stock</SummaryCardTitle>
-          <SummaryCardValue>{dashboard.totalInStock}</SummaryCardValue>
+          <SummaryCardValue>{totalStock}</SummaryCardValue>
           <SummaryCardIcon>
             <PackageIcon />
           </SummaryCardIcon>
@@ -77,7 +85,7 @@ export default async function Home() {
 
         <SummaryCard>
           <SummaryCardTitle>Products</SummaryCardTitle>
-          <SummaryCardValue>{dashboard.totalProducts}</SummaryCardValue>
+          <SummaryCardValue>{totalProducts}</SummaryCardValue>
           <SummaryCardIcon>
             <ShoppingBasketIcon />
           </SummaryCardIcon>
@@ -88,13 +96,13 @@ export default async function Home() {
         <div className="flex h-full flex-col overflow-hidden rounded-xl bg-white p-6">
           <p className="text-sm font-medium text-slate-500">Revenue</p>
 
-          <RevenueChart data={dashboard.last14DaysRevenue} />
+          <RevenueChart data={last14DaysRevenue} />
         </div>
         <div className="flex h-full flex-col overflow-hidden rounded-xl bg-white">
           <p className="p-6 text-sm font-medium text-slate-900">Best Sellers</p>
 
           <div className="space-y-7 overflow-y-auto px-6 pb-6">
-            {dashboard.mostSoldProducts.map((mostSoldProduct) => (
+            {mostSoldProducts.map((mostSoldProduct) => (
               <MostSoldProductsItem
                 key={mostSoldProduct.productId}
                 product={mostSoldProduct}
