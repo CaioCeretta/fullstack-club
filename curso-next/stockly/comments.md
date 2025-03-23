@@ -1520,7 +1520,7 @@ the conversion, such as
 2. Alter product typing on the table
 
 If productTableColumns, is based on Product, and Product extends PrismaProduct, so price will be Decimal. If we want to avoid
-this conversion eeverytime we're using product, we can modify its typing byda
+this conversion every time we're using product, we can modify its typing byda
 
 export interface Product extends Omit<PrismaProduct, 'price'> {
 price: number
@@ -2459,3 +2459,56 @@ minmax(0, 1fr): Same thing, but it has a minimum size of 1 fraction of the avail
 
 In practice this means that the first column will be 2.5 times bigger than the second one, so if a container has 1000px
 of width, the first column will have approximately 714px and the second one 286px
+
+## Possible resolving delay
+
+In our app, inside the dashboard, we call the getDashboard function. This function returns all the functions used in the
+dashboard, such as Daily Revenue, Total Revenue, Products Stock, etc, but what happens if some of these functions take
+too long? It would "crash" the application, because it needs every promise to be resolved to be finally send to the
+client. So how can we fix it?
+
+There are two popular options to do so, one is the loading.tsx placed on the same folder and the other is streaming.
+With streaming we are able to make that part of our application is displayed while the other part is still being loading.
+
+1. Loading: We'll create a file named loading.tsx, which will simply return us a loading message, this is a reserved name from next.js,
+   which will automatically overlaps the page if the fetches are still processing, we are still able to move to the other pages
+   through the sidebar links. As soon as the promises complete, the full page will be rendered.
+
+2. Suspense with streaming: The issue is that loading didn't solve is that one promise was preventing the page of being
+   displayed, and to fix this, we'll choose this option.
+
+   We'll start by fragmenting the promise calls, and create a component for each card. These components are going to be
+   server components and on the data access layer folder, we'll create a file for each function.
+
+   After this, to start using streaming, we'll put a <Suspense> around the TotalRevenueCard (Suspense only works on server
+   components, if we were using client components, suspense wouldn't support promises directly and a useEffect would be
+   necessary), and in it, a fallback property with the text supposed to appear while the component is loading.
+
+   With suspense, we are still able to use our whole application, but only that card component we used, is waiting to be
+   resolved, this way our screen doesn't get blocked by a promise.
+
+   We can even use a skeleton component in place of the suspense message. A Skeleton loader is a visual effect that simulates
+   content loading before the actual data arrives. It improves the user experience by reducing the perceived waiting time.
+   In our case, we used the shadcn skeleton, but in the next topic
+   i'll create my own and explain what was done.
+
+   Step by step
+
+   1. Using Skeletons in the Layout
+      Skeletons are placeholder UIs that mimic the structure of content before real data loads. They improve perceived performance and enhance the user experience.
+
+   2. Creating a Skeleton Component
+      We'll start by creating a Skeleton component, which will initially be just a <div> with the following classes:
+
+      bg-gray-200 → Sets the skeleton color to light gray.
+
+      animate-pulse → Applies a pulsing animation, simulating loading.
+
+      rounded-md → Rounds the borders for a smoother effect.
+
+      className → Allows customization of the skeleton's size.
+
+3. Applying Skeletons to Pages
+   Once the Skeleton component is created, we can use it across different pages. For example, if we have a Card component
+   with a title, subtitle, and icon, we can replace those elements with Skeletons of the same width and height. This will
+   display a pulsing gray placeholder while the data is being loaded.
