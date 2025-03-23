@@ -8,6 +8,8 @@ import { DollarSign } from 'lucide-react'
 import { formatCurrency } from '@/helpers/currency'
 
 export const TotalRevenueCard = async () => {
+  await new Promise((resolve) => setTimeout(resolve, 5000))
+
   const totalRevenue = await getTotalRevenue()
 
   return (

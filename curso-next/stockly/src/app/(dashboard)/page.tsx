@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import Header, {
   HeaderLeft,
   HeaderRight,
@@ -7,13 +8,14 @@ import Header, {
 import { Button } from '../_components/ui/button'
 import Last14DaysRevenueCard from './components/last-14-days-revenue-card'
 import MostSoldProductsCard from './components/most-sold-products-card'
+import { SkeletonTotalRevenueCard } from './components/skeletons/skeleton-total-revenue-card'
 import TodaysRevenueCard from './components/todays-revenue-card'
 import TotalInStockCard from './components/total-in-stock-card'
 import TotalProductsCard from './components/total-products-card'
 import TotalRevenueCard from './components/total-revenue-card'
 import TotalSalesCard from './components/total-sales-card'
 
-export default async function Home() {
+export default function Home() {
   return (
     <div className="ml-8 mt-8 flex w-full flex-col space-y-8 py-8">
       <Header>
@@ -27,7 +29,9 @@ export default async function Home() {
       </Header>
 
       <div className="grid grid-cols-2 gap-6">
-        <TotalRevenueCard />
+        <Suspense fallback={<SkeletonTotalRevenueCard />}>
+          <TotalRevenueCard />
+        </Suspense>
         <TodaysRevenueCard />
       </div>
 

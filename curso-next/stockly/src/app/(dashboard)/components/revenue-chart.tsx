@@ -1,6 +1,6 @@
 'use client'
 
-import type { DayTotalRevenue } from '@/_data/dal/dashboard/get-dashboard'
+import type { DayTotalRevenue } from '@/_data/dal/dashboard/get-last-14-days-revenue'
 import {
   ChartContainer,
   ChartTooltip,
