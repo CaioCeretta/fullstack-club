@@ -23,7 +23,7 @@ const ProductsPage = async () => {
   const products = await cachedGetProducts()
 
   return (
-    <div className="ml-8 mt-8 w-full space-y-8 bg-white p-8 py-8">
+    <div className="ml-8 mt-8 w-full space-y-8 overflow-auto bg-white p-8 py-8">
       {/*
       Just a comment in case you forget
 

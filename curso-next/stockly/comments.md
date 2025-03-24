@@ -2512,3 +2512,5 @@ With streaming we are able to make that part of our application is displayed whi
    Once the Skeleton component is created, we can use it across different pages. For example, if we have a Card component
    with a title, subtitle, and icon, we can replace those elements with Skeletons of the same width and height. This will
    display a pulsing gray placeholder while the data is being loaded.
+
+## App Deployment
