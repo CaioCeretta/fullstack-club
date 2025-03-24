@@ -26,6 +26,7 @@ export const CreateSaleButton = (props: CreateSaleButtonProps) => {
       </SheetTrigger>
       {/* We could also pass a destructuring of the props to the properties of the component, (e.g. {...props}) */}
       <UpsertSheetContent
+        isOpen={sheetIsOpen}
         productsOptions={props.productsOptions}
         products={props.products}
         upsertSheetIsOpen={setSheetIsOpen}
