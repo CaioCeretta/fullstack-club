@@ -2514,3 +2514,10 @@ With streaming we are able to make that part of our application is displayed whi
    display a pulsing gray placeholder while the data is being loaded.
 
 ## App Deployment
+
+First, we are just doing some updates to improve the UI
+
+1. add overflow-auto to product and sales
+2. set the selectedProducts of an empty array if the sheet was closed.
+3. ensure the edit product dialog always have the current products
+4.
